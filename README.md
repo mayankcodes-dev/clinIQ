@@ -210,7 +210,3 @@ Language Select (22 langs)
   → Doctor Review Dashboard
   → Session Complete & PII Cleared
 ```
-
----
-
-*Built for the All India Institute of Ayurveda, Ministry of AYUSH — Smart India Hackathon 2026*
