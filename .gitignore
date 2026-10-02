@@ -41,3 +41,7 @@ next-env.d.ts
 .vercel
 
 /proposal
+
+# Internal docs
+cliniq_engineering_handoff.md
+cliniq_logo.jpg

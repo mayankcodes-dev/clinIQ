@@ -5,6 +5,8 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js_15-black?logo=next.js) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white) ![Gemini](https://img.shields.io/badge/Gemini_AI-4285F4?logo=google&logoColor=white) ![Groq](https://img.shields.io/badge/Groq-F55036?logoColor=white) ![Bhashini](https://img.shields.io/badge/Bhashini-138808?logoColor=white)
 
+🔗 **[Live Demo →](https://cliniq.mayankcodes.dev)** &nbsp; 📂 **[Source Code →](https://github.com/mayankcodes-dev/clinIQ)**
+
 ---
 
 ## The Problem
@@ -143,8 +145,8 @@ Built for Indian hospital networks (intermittent WiFi, shared mobile data):
 ## Getting Started
 
 ```bash
-git clone https://github.com/mayankcodes-dev/ClinIQ.git
-cd ClinIQ/product
+git clone https://github.com/mayankcodes-dev/clinIQ.git
+cd clinIQ/product
 npm install
 cp .env.example .env.local   # Fill in API keys
 npm run dev                   # http://localhost:3000
