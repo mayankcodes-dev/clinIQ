@@ -13,6 +13,7 @@ import {
   KioskFooter,
 } from "@/components/kiosk/KioskLayout";
 import { Button } from "@/components/ui/primitives";
+import { ClinIQLoader } from "@/components/ClinIQLoader";
 import type { StructuredSummary } from "@/app/api/history/chat/route";
 import type { ExtractedDoc } from "@/app/api/scan/extract/route";
 
@@ -256,8 +257,7 @@ export default function SummaryPage() {
     return (
       <KioskScreen>
         <KioskBody className="flex flex-col items-center justify-center gap-6 py-16">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-            className="h-14 w-14 rounded-full border-4 border-brand-100 border-t-brand-600" />
+          <ClinIQLoader />
           <div className="text-center space-y-1">
             <h2 className="text-xl font-bold text-neutral-900">Clinical Record तैयार हो रहा है…</h2>
             <p className="text-sm text-neutral-400">Generating your AI Clinical Intake Record</p>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <text x="4" y="46" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="48" fill="#1a365d">Clin</text>
+  <text x="108" y="46" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="48" fill="#0d9488">IQ</text>
+  <circle cx="186" cy="12" r="8" stroke="#0d9488" stroke-width="3" fill="none"/>
+  <path d="M183 12 L186 15 L192 9" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

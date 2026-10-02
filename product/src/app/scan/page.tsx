@@ -11,6 +11,7 @@ import {
   KioskFooter,
 } from "@/components/kiosk/KioskLayout";
 import { Button, Card } from "@/components/ui/primitives";
+import { ClinIQLoader } from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/translations";
 import type { DocType, ExtractedDoc } from "@/app/api/scan/extract/route";
@@ -378,11 +379,7 @@ export default function ScanPage() {
     return (
       <KioskScreen>
         <KioskBody className="flex flex-col items-center justify-center gap-6 py-16">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-            className="h-16 w-16 rounded-full border-4 border-brand-100 border-t-brand-600"
-          />
+          <ClinIQLoader />
           <div className="text-center space-y-1">
             <h2 className="text-xl font-bold text-neutral-900">ClinIQ पढ़ रहा है…</h2>
             <p className="text-sm text-neutral-400">ClinIQ AI is reading your document</p>

@@ -2,23 +2,30 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────── */
 @theme {
-  /* Primary — Blue */
-  --color-brand-50:  #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-900: #1e3a8a;
+  /* Primary — Navy */
+  --color-brand-50:  #f0f4f8;
+  --color-brand-100: #e2e8f0;
+  --color-brand-200: #cbd5e1;
+  --color-brand-500: #2d4f7c;
+  --color-brand-600: #1a365d;
+  --color-brand-700: #152c4a;
+  --color-brand-900: #0f172a;
 
-  /* Secondary — Orange */
-  --color-secondary-50:  #fff7ed;
-  --color-secondary-100: #ffedd5;
-  --color-secondary-200: #fed7aa;
-  --color-secondary-400: #fb923c;
-  --color-secondary-500: #f97316;
-  --color-secondary-600: #ea580c;
-  --color-secondary-700: #c2410c;
+  /* Secondary — Teal */
+  --color-secondary-50:  #f0fdfa;
+  --color-secondary-100: #ccfbf1;
+  --color-secondary-200: #99f6e4;
+  --color-secondary-400: #2dd4bf;
+  --color-secondary-500: #14b8a6;
+  --color-secondary-600: #0d9488;
+  --color-secondary-700: #0f766e;
+
+  --color-primary: #1a365d;
+  --color-primary-light: #2d4f7c;
+  --color-accent: #0d9488;
+  --color-accent-light: #14b8a6;
+  --color-bg: #f0f4f8;
+  --color-surface: #ffffff;
 
   --color-success-50:  #f0fdf4;
   --color-success-500: #22c55e;
@@ -72,7 +79,7 @@
   }
 
   body {
-    background-color: #ffffff;
+    background-color: var(--color-bg);
     color: #1f2937;
     font-family: var(--font-sans);
     line-height: 1.6;
@@ -82,7 +89,7 @@
 
   /* Focus visible — never remove focus rings */
   :focus-visible {
-    outline: 3px solid #2563eb;
+    outline: 3px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -107,7 +114,7 @@
     display: inline-block;
     width: 4px;
     border-radius: 2px;
-    background-color: #2563eb;
+    background-color: var(--color-primary);
     animation: wave 1.2s ease-in-out infinite;
   }
   .wave-bar:nth-child(2) { animation-delay: 0.15s; }
@@ -125,9 +132,9 @@
     animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
   }
   @keyframes pulse-ring {
-    0%   { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(37,99,235,0.6); }
-    70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(37,99,235,0); }
-    100% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+    0%   { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(26,54,93,0.6); }
+    70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(26,54,93,0); }
+    100% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(26,54,93,0); }
   }
 
   /* ── Micro-interactions ───────────────────────────────────────── */

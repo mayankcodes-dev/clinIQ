@@ -35,7 +35,10 @@ const LANG_NAMES: Record<string, string> = {
 
 // ── Allopathic stages ────────────────────────────────────────────────────────
 const ALLOPATHIC_STAGES = [
-  "chief_complaint", "hpi", "past_history", "drug_allergy",
+  "chief_complaint", "hpi", 
+  "symptom_duration", "symptom_modifiers", "medicines_taken", 
+  "allergies", "past_surgeries", "habits", "family_disease_history",
+  "past_history", "drug_allergy",
   "family_history", "personal_history", "review_of_systems", "summary",
 ] as const;
 
@@ -412,6 +415,34 @@ const FALLBACK_QUESTIONS: Partial<Record<Stage, Record<string, string>>> = {
     ml: "ഇത് എപ്പോൾ തുടങ്ങി, എങ്ങനെ അനുഭവപ്പെടുന്നു, എത്ര കഠിനം?",
     pa: "ਇਹ ਕਦੋਂ ਸ਼ੁਰੂ ਹੋਇਆ, ਕਿਵੇਂ ਮਹਿਸੂਸ ਹੁੰਦਾ ਹੈ, ਕਿੰਨਾ ਤੇਜ਼ ਹੈ?",
     ur: "یہ کب شروع ہوا، کیسا محسوس ہوتا ہے، کتنا شدید ہے؟",
+  },
+  symptom_duration: {
+    hi: "आपको यह लक्षण कितने समय से हैं? (दिन/हफ्ते/महीने)",
+    en: "How long have you had these symptoms? (days/weeks/months)"
+  },
+  symptom_modifiers: {
+    hi: "क्या कोई चीज आपके लक्षणों को बेहतर या खराब बनाती है?",
+    en: "Does anything make your symptoms better or worse?"
+  },
+  medicines_taken: {
+    hi: "क्या आपने इसके लिए कोई दवा ली है? यदि हाँ, तो कौन सी?",
+    en: "Have you taken any medicines for this? If yes, which ones?"
+  },
+  allergies: {
+    hi: "क्या आपको दवाओं या भोजन से कोई ज्ञात एलर्जी है?",
+    en: "Do you have any known allergies to medicines or food?"
+  },
+  past_surgeries: {
+    hi: "क्या अतीत में आपकी कोई सर्जरी या अस्पताल में भर्ती हुई है?",
+    en: "Have you had any surgeries or hospitalizations in the past?"
+  },
+  habits: {
+    hi: "क्या आप धूम्रपान करते हैं, शराब पीते हैं, या तंबाकू (गुटखा/पान) का उपयोग करते हैं?",
+    en: "Do you smoke, drink alcohol, or use tobacco (gutka/paan)?"
+  },
+  family_disease_history: {
+    hi: "क्या परिवार में मधुमेह, हृदय रोग या कैंसर का कोई इतिहास है?",
+    en: "Is there any family history of diabetes, heart disease, or cancer?"
   },
   past_history: {
     hi: "क्या पहले कोई बड़ी बीमारी, मधुमेह, BP, या ऑपरेशन हुआ है?",

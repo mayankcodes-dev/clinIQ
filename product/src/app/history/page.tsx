@@ -11,6 +11,7 @@ import {
   AudioWave,
 } from "@/components/kiosk/KioskLayout";
 import { Button, Card } from "@/components/ui/primitives";
+import { ClinIQLoader } from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
 import { COMMON_SYMPTOMS } from "@/lib/constants";
 import { t } from "@/lib/translations";
@@ -22,6 +23,8 @@ type Stage =
   | "chief_complaint" | "hpi"
   | "past_history" | "drug_allergy"
   | "family_history" | "personal_history" | "review_of_systems"
+  | "symptom_duration" | "symptom_modifiers" | "medicines_taken" 
+  | "allergies" | "past_surgeries" | "habits" | "family_disease_history"
   | "ayush_prakriti" | "ayush_vikriti" | "ayush_agni"
   | "ayush_koshtha" | "ayush_ahara_vihara" | "ayush_nidana" | "ayush_samprapti"
   | "ayush_sara" | "ayush_samhanana" | "ayush_satmya"
@@ -31,6 +34,8 @@ type Stage =
 // Allopathic-only stages (no AYUSH params)
 const ALLOPATHIC_STAGES: Stage[] = [
   "chief_complaint", "hpi",
+  "symptom_duration", "symptom_modifiers", "medicines_taken", 
+  "allergies", "past_surgeries", "habits", "family_disease_history",
   "past_history", "drug_allergy",
   "family_history", "personal_history", "review_of_systems",
 ];
@@ -49,7 +54,7 @@ const AYUSH_ONLY_STAGES: Stage[] = [
 
 // Multilingual stage labels
 function getStageLabels(lang: string): Record<Stage, string> {
-  const labels: Record<string, Record<Stage, string>> = {
+  const labels: Record<string, Partial<Record<Stage, string>>> = {
     hi: {
       chief_complaint: "मुख्य शिकायत", hpi: "वर्तमान बीमारी",
       past_history: "पुराना इतिहास", drug_allergy: "दवा/एलर्जी",
@@ -64,6 +69,8 @@ function getStageLabels(lang: string): Record<Stage, string> {
     },
     en: {
       chief_complaint: "Problem", hpi: "HPI",
+      symptom_duration: "Duration", symptom_modifiers: "Modifiers", medicines_taken: "Medicines",
+      allergies: "Allergies", past_surgeries: "Surgeries", habits: "Habits", family_disease_history: "Family Disease Hx",
       past_history: "Past History", drug_allergy: "Drug/Allergy",
       family_history: "Family Hx", personal_history: "Personal Hx",
       review_of_systems: "Review of Systems",
@@ -181,7 +188,8 @@ function getStageLabels(lang: string): Record<Stage, string> {
       summary: "خلاصہ",
     },
   };
-  return labels[lang] ?? labels["hi"];
+  const chosen = labels[lang] ?? labels["hi"];
+  return { ...(labels["en"] as Record<Stage, string>), ...chosen } as Record<Stage, string>;
 }
 
 // ── Build summary from raw messages when Gemini is unavailable ───────────────
@@ -534,6 +542,52 @@ const TOUCH_OPTIONS_L10N: Record<string, Partial<Record<Stage, string[]>>> = {
 };
 
 
+function CircularProgress({ current, total }: { current: number; total: number }) {
+  const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+  const r = 32; // radius
+  const stroke = 5;
+  const normalizedR = r - stroke;
+  const circumference = 2 * Math.PI * normalizedR;
+  const offset = circumference - (pct / 100) * circumference;
+
+  return (
+    <div className="flex items-center gap-4 px-4 py-3 bg-blue-50 rounded-2xl mb-4">
+      {/* Circular ring */}
+      <div className="relative flex-shrink-0" style={{ width: 72, height: 72 }}>
+        <svg width="72" height="72" viewBox="0 0 72 72" className="-rotate-90">
+          <circle cx="36" cy="36" r={normalizedR} stroke="#e2e8f0" strokeWidth={stroke} fill="none" />
+          <circle
+            cx="36" cy="36" r={normalizedR}
+            stroke="#1a365d"
+            strokeWidth={stroke}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-sm font-bold" style={{ color: '#1a365d' }}>{pct}%</span>
+        </div>
+      </div>
+      {/* Right side: label + bar */}
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between text-xs font-semibold mb-1.5" style={{ color: '#1a365d' }}>
+          <span>{current} / {total} questions</span>
+          <span>{pct}%</span>
+        </div>
+        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${pct}%`, backgroundColor: '#1a365d' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function HistoryPage() {
   const router = useRouter();
   const [lang, setLang] = useState("hi");
@@ -833,6 +887,9 @@ export default function HistoryPage() {
 
         </div>
 
+        {/* Circular Progress Indicator */}
+        <CircularProgress current={stageIndex + 1} total={STAGES.length} />
+
         {/* AI Question bubble */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -844,16 +901,7 @@ export default function HistoryPage() {
           >
             {aiLoading ? (
               <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.jpg" alt="ClinIQ" className="h-7 w-7 rounded-full object-cover" />
-                </div>
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-2 w-2 rounded-full bg-brand-400 animate-bounce"
-                      style={{ animationDelay: `${i * 150}ms` }} />
-                  ))}
-                </div>
+                <ClinIQLoader />
               </div>
             ) : (
               <div className="flex items-start gap-3">
