@@ -1,5 +1,5 @@
 // src/lib/db/schema.ts
-// Drizzle ORM schema for MediKiosk
+// Drizzle ORM schema for ClinIQ
 // Tables: sessions, patients, history_records, scanned_documents
 
 import {

@@ -1,4 +1,4 @@
-// src/app/summary/page.tsx - MediKiosk AI Clinical Intake Record
+// src/app/summary/page.tsx - ClinIQ AI Clinical Intake Record
 "use client";
 
 import { useEffect, useState } from "react";
@@ -305,9 +305,9 @@ export default function SummaryPage() {
         <div className="bg-brand-700 text-white rounded-2xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.jpg" alt="MediKiosk" className="h-10 w-10 rounded-xl object-cover shrink-0 border-2 border-brand-500" />
+            <img src="/logo.jpg" alt="ClinIQ" className="h-10 w-10 rounded-xl object-cover shrink-0 border-2 border-brand-500" />
             <div>
-              <p className="text-xs text-brand-200 font-medium uppercase tracking-wide">MediKiosk</p>
+              <p className="text-xs text-brand-200 font-medium uppercase tracking-wide">ClinIQ</p>
               <p className="font-bold text-base leading-tight">AI Clinical Intake Record</p>
               <p className="text-xs text-brand-300 mt-0.5">{now}</p>
             </div>
@@ -364,7 +364,7 @@ export default function SummaryPage() {
           <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden">
             <div className="px-4 py-2.5 bg-neutral-50 border-b border-neutral-200 flex items-center justify-between">
               <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">
-                🩺 History Collected by MediKiosk
+                🩺 History Collected by ClinIQ
               </p>
               {summary.suggestedICD10 && (
                 <span className="text-xs font-mono text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100">
@@ -733,7 +733,7 @@ export default function SummaryPage() {
               : "Voice history not recorded. Review document extracts above.";
 
             const reportHTML = `<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><title>MediKiosk Clinical Record</title>
+<html lang="en"><head><meta charset="UTF-8"><title>ClinIQ Clinical Record</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',-apple-system,sans-serif;font-size:12px;max-width:800px;margin:0 auto;padding:20px;color:#1e293b;line-height:1.5}
@@ -759,7 +759,7 @@ th{font-weight:600;color:#6b7280;text-transform:uppercase;background:#f9fafb}
 @media print{body{margin:0;padding:10px}.no-print{display:none!important}}
 </style></head><body>
 <div class="watermark">DRAFT</div>
-<div class="header"><div><h1>MediKiosk</h1><p>AI Clinical Intake Record</p></div><div style="text-align:right"><p>All India Institute of Ayurveda</p><p>${now}</p></div></div>
+<div class="header"><div><h1>ClinIQ</h1><p>AI Clinical Intake Record</p></div><div style="text-align:right"><p>All India Institute of Ayurveda</p><p>${now}</p></div></div>
 <div class="patient-bar">
 <div><span class="label">Name</span><br>${esc(patient.name || "")}</div>
 <div><span class="label">Age/Gender</span><br>${patientAge || "—"} / ${patient.gender || "—"}</div>

@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MediKiosk — AI Healthcare for Every Indian",
+  title: "ClinIQ — Pre-consultation AI that interviews patients",
   description:
-    "Voice-first AI kiosk that takes your medical history in your language before you see the doctor. ABDM certified. 22 Indian languages.",
-  metadataBase: new URL("https://medikiosk.mayankcodes.dev"),
+    "Pre-consultation AI that interviews patients before the doctor does. ABDM certified. 22 Indian languages.",
+  metadataBase: new URL("https://cliniq.mayankcodes.dev"),
   icons: {
     icon: "/favicon.jpg",
     apple: "/favicon.jpg",
   },
   openGraph: {
-    title: "MediKiosk — AI Healthcare for Every Indian",
-    description: "Voice-first clinical history kiosk in 22 Indian languages.",
-    url: "https://medikiosk.mayankcodes.dev",
-    siteName: "MediKiosk",
-    images: [{ url: "/favicon.jpg", width: 256, height: 256, alt: "MediKiosk" }],
+    title: "ClinIQ — Pre-consultation AI that interviews patients",
+    description: "Pre-consultation AI that interviews patients before the doctor does. ABDM certified. 22 Indian languages.",
+    url: "https://cliniq.mayankcodes.dev",
+    siteName: "ClinIQ",
+    images: [{ url: "/favicon.jpg", width: 256, height: 256, alt: "ClinIQ" }],
     locale: "en_IN",
     type: "website",
   },

@@ -14,10 +14,10 @@ export function ServiceWorkerRegistrar() {
       navigator.serviceWorker
         .register("/sw.js")
         .then((reg) => {
-          console.log("[MediKiosk] Service worker registered:", reg.scope);
+          console.log("[ClinIQ] Service worker registered:", reg.scope);
         })
         .catch((err) => {
-          console.warn("[MediKiosk] Service worker registration failed:", err);
+          console.warn("[ClinIQ] Service worker registration failed:", err);
         });
     }
   }, []);

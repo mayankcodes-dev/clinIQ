@@ -1,5 +1,5 @@
 // public/sw.js
-// MediKiosk Progressive Web App Service Worker
+// ClinIQ Progressive Web App Service Worker
 // Strategy:
 //   - Static assets (_next/static/*, images, fonts): Cache-First
 //   - API routes (/api/*): Network-First with offline fallback JSON
@@ -11,7 +11,7 @@
 //   Sherpa-onnx / CTranslate2 local inference requires native binaries in a
 //   separate edge container — NOT implemented in this service worker.
 
-const CACHE_NAME = "medikiosk-v2";
+const CACHE_NAME = "ClinIQ-v2";
 const OFFLINE_PAGE = "/offline.html";
 
 const STATIC_PATTERNS = [

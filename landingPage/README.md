@@ -1,6 +1,6 @@
-# MediKiosk — Landing Page
+# ClinIQ — Landing Page
 
-> Marketing and information website for MediKiosk.
+> Marketing and information website for ClinIQ.
 
 This is the public-facing landing page that explains the product, its features, and the problem it solves for Indian hospitals and AYUSH clinics.
 

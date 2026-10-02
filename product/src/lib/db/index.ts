@@ -21,7 +21,7 @@ function getDb(): NeonHttpDatabase<Schema> {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error(
-      "[MediKiosk] DATABASE_URL environment variable is not set. " +
+      "[ClinIQ] DATABASE_URL environment variable is not set. " +
       "Add it in Cloudflare Pages → Settings → Environment Variables."
     );
   }

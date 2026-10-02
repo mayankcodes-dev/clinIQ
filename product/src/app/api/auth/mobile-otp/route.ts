@@ -1,12 +1,12 @@
 // src/app/api/auth/mobile-otp/route.ts
-// Twilio SMS OTP — custom "MediKiosk" branded message.
+// Twilio SMS OTP — custom "ClinIQ" branded message.
 //
 // Required env vars (.env.local):
 //   TWILIO_ACCOUNT_SID   — from console.twilio.com (starts with AC)
 //   TWILIO_AUTH_TOKEN    — from console.twilio.com
 //   TWILIO_PHONE_NUMBER  — your Twilio number e.g. +14155552671
 //
-// Message sent: "Your MediKiosk verification code is 123456. Valid for 5 minutes."
+// Message sent: "Your ClinIQ verification code is 123456. Valid for 5 minutes."
 // OTP is NEVER returned in the API response.
 
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ import { eq, lt } from "drizzle-orm";
 // Hash OTPs before storing in DB — prevents plaintext credential exposure if DB
 // is ever compromised. Uses HMAC-SHA256 with the app secret as salt.
 function hashOtp(otp: string): string {
-  const secret = process.env.NEXTAUTH_SECRET ?? "medikiosk-otp-salt";
+  const secret = process.env.NEXTAUTH_SECRET ?? "ClinIQ-otp-salt";
   return crypto.createHmac("sha256", secret).update(otp).digest("hex");
 }
 
@@ -38,7 +38,7 @@ async function sendViaTwilio(mobile: string, otp: string): Promise<void> {
   const to = `+91${mobile}`;
 
   // Custom branded message — NOT Twilio's default
-  const body = `Your MediKiosk verification code is ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
+  const body = `Your ClinIQ verification code is ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
 
   const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
 

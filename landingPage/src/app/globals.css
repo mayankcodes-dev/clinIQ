@@ -16,24 +16,24 @@ html.lenis, html.lenis body { height: auto; }
 .btn-login {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 11px 24px; border-radius: 9999px;
-  border: 2px solid #2563eb; background: transparent; color: #2563eb;
+  border: 2px solid #1a365d; background: transparent; color: #1a365d;
   font-family: inherit; font-weight: 700; font-size: 15px;
   cursor: pointer; text-decoration: none; white-space: nowrap;
   transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.15s ease;
 }
-.btn-login:hover { background: #f97316; border-color: #f97316; color: #fff; transform: scale(1.02); }
+.btn-login:hover { background: #0d9488; border-color: #0d9488; color: #fff; transform: scale(1.02); }
 .btn-login-white { border-color: rgba(255,255,255,0.8); color: #fff; }
-.btn-login-white:hover { background: #f97316; border-color: #f97316; }
+.btn-login-white:hover { background: #0d9488; border-color: #0d9488; }
 
 .btn-download {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 11px 24px; border-radius: 9999px;
-  border: 2px solid #2563eb; background: #2563eb; color: #fff;
+  border: 2px solid #1a365d; background: #1a365d; color: #fff;
   font-family: inherit; font-weight: 700; font-size: 15px;
   cursor: pointer; text-decoration: none; white-space: nowrap;
   transition: background 0.22s ease, border-color 0.22s ease, transform 0.15s ease;
 }
-.btn-download:hover { background: #f97316; border-color: #f97316; transform: scale(1.02); }
+.btn-download:hover { background: #0d9488; border-color: #0d9488; transform: scale(1.02); }
 .btn-login-lg  { padding: 14px 34px; font-size: 17px; }
 .btn-download-lg { padding: 14px 34px; font-size: 17px; }
 

@@ -1,5 +1,5 @@
 // ─── Language Configuration ─────────────────────────────────────
-// All 22 scheduled languages + English for MediKiosk
+// All 22 scheduled languages + English for ClinIQ
 // ISO 639-1 codes aligned with Bhashini ULCA API language codes
 
 export interface Language {

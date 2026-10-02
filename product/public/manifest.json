@@ -1,6 +1,6 @@
 {
-  "name": "MediKiosk — AI Health Kiosk",
-  "short_name": "MediKiosk",
+  "name": "ClinIQ — AI Health Kiosk",
+  "short_name": "ClinIQ",
   "description": "AI-powered multilingual clinical history kiosk for Indian hospitals",
   "start_url": "/",
   "display": "fullscreen",

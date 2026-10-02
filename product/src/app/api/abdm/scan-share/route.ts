@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
   const callbackBase =
     process.env.NEXT_PUBLIC_CALLBACK_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
-    "https://app.medikiosk.mayankcodes.dev";
+    "https://app.ClinIQ.mayankcodes.dev";
 
 
   sessions.set(sessionId, {

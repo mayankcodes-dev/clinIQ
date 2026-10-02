@@ -11,7 +11,7 @@ export default function Loading() {
       <div className="relative">
         <Image
           src="/logo.jpg"
-          alt="MediKiosk"
+          alt="ClinIQ"
           width={96}
           height={96}
           className="rounded-full border-2 border-blue-100 shadow-sm"

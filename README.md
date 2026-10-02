@@ -1,4 +1,4 @@
-# MediKiosk — AI Clinical History Kiosk
+# ClinIQ — AI Clinical History Kiosk
 
 > **AI-powered multilingual clinical history-taking platform for Indian hospitals and AYUSH clinics.**
 > Captures structured patient history through natural voice conversation and guided touchscreen interaction — in 22 Indian languages — before the patient enters the consultation room.
@@ -11,7 +11,7 @@
 
 Indian OPDs see 4,000–10,000 patients daily with 2–5 minute consultations. Doctors spend most of that time *asking* history instead of *examining and counselling*. AYUSH practitioners face even more complexity — Dashavidha Pariksha requires 10+ constitutional parameters that are impossible to capture manually under time pressure.
 
-**MediKiosk solves this by conducting the entire clinical history interview autonomously, in the patient''s own language, before they enter the consultation room.**
+**ClinIQ solves this by conducting the entire clinical history interview autonomously, in the patient''s own language, before they enter the consultation room.**
 
 ---
 
@@ -77,7 +77,7 @@ Indian OPDs see 4,000–10,000 patients daily with 2–5 minute consultations. D
 
 [Bhashini](https://bhashini.gov.in) is India''s National Language Translation Mission — a Government of India initiative for Indian language AI services.
 
-| Service | Usage in MediKiosk |
+| Service | Usage in ClinIQ |
 |---------|-------------------|
 | **ASR (Speech-to-Text)** | Converts patient''s spoken words to text in real-time across 22 Indian languages with 10s timeout |
 | **TTS (Text-to-Speech)** | Reads every question and instruction aloud automatically — critical for low-literacy and elderly patients |
@@ -143,8 +143,8 @@ Built for Indian hospital networks (intermittent WiFi, shared mobile data):
 ## Getting Started
 
 ```bash
-git clone https://github.com/mayankcodes-dev/medikiosk.git
-cd medikiosk/product
+git clone https://github.com/mayankcodes-dev/ClinIQ.git
+cd ClinIQ/product
 npm install
 cp .env.example .env.local   # Fill in API keys
 npm run dev                   # http://localhost:3000
@@ -169,7 +169,7 @@ npm run dev                   # http://localhost:3000
 ## Project Structure
 
 ```
-medikiosk/
+ClinIQ/
 ├── product/                    # Next.js application
 │   ├── src/app/
 │   │   ├── page.tsx             # Language selection (22 languages)

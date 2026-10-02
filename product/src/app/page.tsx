@@ -24,7 +24,7 @@ export default function LanguageSelectionPage() {
       <div className="flex flex-col items-center pt-10 pb-4 px-6">
         <Image
           src="/logo.jpg"
-          alt="MediKiosk Logo"
+          alt="ClinIQ Logo"
           width={96}
           height={96}
           className="rounded-full border-2 border-brand-100 shadow-sm"

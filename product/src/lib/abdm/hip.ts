@@ -54,7 +54,7 @@ export async function linkCareContexts(
       accessToken: req.abhaNumber, // ABDM uses ABHA number as patient token in this flow
       patient: {
         referenceNumber: req.patientId,
-        display: "MediKiosk Patient",
+        display: "ClinIQ Patient",
         careContexts: req.careContexts,
       },
     },
@@ -79,7 +79,7 @@ export async function linkCareContexts(
 }
 
 /**
- * Build a care context from a MediKiosk session.
+ * Build a care context from a ClinIQ session.
  */
 export function buildCareContext(
   tokenNumber: string,
@@ -90,6 +90,6 @@ export function buildCareContext(
   });
   return {
     referenceNumber: `MK-${tokenNumber}-${date.toISOString().slice(0, 10)}`,
-    display: `MediKiosk OPD Visit — ${dateStr} (Token ${tokenNumber})`,
+    display: `ClinIQ OPD Visit — ${dateStr} (Token ${tokenNumber})`,
   };
 }

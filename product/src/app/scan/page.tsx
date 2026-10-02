@@ -355,8 +355,8 @@ export default function ScanPage() {
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleExtract}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.jpg" alt="MediKiosk" className="h-5 w-5 rounded-full object-cover inline-block mr-1.5 align-middle" />
-            MediKiosk से पढ़ें · Extract with MediKiosk AI
+            <img src="/logo.jpg" alt="ClinIQ" className="h-5 w-5 rounded-full object-cover inline-block mr-1.5 align-middle" />
+            ClinIQ से पढ़ें · Extract with ClinIQ AI
           </Button>
           <Button
             variant="ghost"
@@ -384,8 +384,8 @@ export default function ScanPage() {
             className="h-16 w-16 rounded-full border-4 border-brand-100 border-t-brand-600"
           />
           <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-neutral-900">MediKiosk पढ़ रहा है…</h2>
-            <p className="text-sm text-neutral-400">MediKiosk AI is reading your document</p>
+            <h2 className="text-xl font-bold text-neutral-900">ClinIQ पढ़ रहा है…</h2>
+            <p className="text-sm text-neutral-400">ClinIQ AI is reading your document</p>
           </div>
           <div className="text-left w-full max-w-xs space-y-2">
             {[
@@ -424,7 +424,7 @@ export default function ScanPage() {
           stepLabel="5 / 6"
         />
         <KioskBody className="space-y-3">
-          {/* ── MediKiosk Document Read Confirmation ── */}
+          {/* ── ClinIQ Document Read Confirmation ── */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -433,14 +433,14 @@ export default function ScanPage() {
           >
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.jpg" alt="MediKiosk" className="h-8 w-8 rounded-lg object-cover" />
+              <img src="/logo.jpg" alt="ClinIQ" className="h-8 w-8 rounded-lg object-cover" />
             </div>
             <div className="flex-1">
               <p className="font-bold text-sm leading-tight">
-                MediKiosk ने दस्तावेज़ पढ़ लिया है ✓
+                ClinIQ ने दस्तावेज़ पढ़ लिया है ✓
               </p>
               <p className="text-xs text-white/75 mt-0.5">
-                Document successfully read by MediKiosk AI
+                Document successfully read by ClinIQ AI
               </p>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"

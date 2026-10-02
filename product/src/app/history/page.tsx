@@ -846,7 +846,7 @@ export default function HistoryPage() {
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0 overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo.jpg" alt="MediKiosk" className="h-7 w-7 rounded-full object-cover" />
+                  <img src="/logo.jpg" alt="ClinIQ" className="h-7 w-7 rounded-full object-cover" />
                 </div>
                 <div className="flex gap-1.5">
                   {[0, 1, 2].map((i) => (

@@ -6,16 +6,17 @@ import { motion, useInView } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const APP_URL = "https://app.medikiosk.mayankcodes.dev";
+const APP_URL = "https://app.cliniq.mayankcodes.dev";
+const DEMO_URL = "#";
 
 const C = {
   white:  "#ffffff",
-  black:  "#0d0d0d",
-  blue:   "#2563eb",
-  orange: "#f97316",
-  gray:   "#f4f4f5",
-  muted:  "#6b7280",
-  border: "rgba(0,0,0,0.08)",
+  black:  "#0f172a",
+  navy:   "#1a365d",
+  teal:   "#0d9488",
+  gray:   "#f8fafc",
+  muted:  "#64748b",
+  border: "rgba(0,0,0,0.06)",
 };
 const FONT = "'Manrope', system-ui, sans-serif";
 
@@ -37,7 +38,7 @@ function Reveal({ children, delay = 0, className = "", style = {} }: {
 }
 
 // ── Shared text styles ────────────────────────────────────────────────────────
-const tagLabel = (color = C.blue): React.CSSProperties => ({
+const tagLabel = (color = C.navy): React.CSSProperties => ({
   fontFamily: FONT, fontSize: 11, fontWeight: 700,
   letterSpacing: "0.1em", textTransform: "uppercase" as const,
   color, marginBottom: 16, display: "block",
@@ -54,17 +55,17 @@ const bodyText: React.CSSProperties = {
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const FEATURES = [
-  { tag: "Voice-first",  headline: "Talk to us.\nWe understand every language.",            body: "Speak in Hindi, Tamil, Bengali — or any of India's 22 Scheduled Languages. MediKiosk listens and understands. No typing needed.",                                                             img: "/feature-voice.png",    alt: "Patient speaking to MediKiosk" },
-  { tag: "AI History",   headline: "Your doctor gets the full picture\nbefore you walk in.", body: "Our AI asks about your chief complaint, symptoms, duration, and past history — structuring everything into a clinical summary the doctor can act on.",                                          img: "/feature-ai.avif",      alt: "Doctor reviewing clinical summary" },
-  { tag: "Documents",    headline: "Old prescriptions and reports —\njust scan them.",       body: "Upload a photo of your lab report, prescription, or discharge summary. MediKiosk reads it and adds key findings to your record automatically.",                                                 img: "/feature-docs.avif",    alt: "Scanning medical documents" },
-  { tag: "Privacy",      headline: "Your data belongs to you.\nAlways.",                    body: "DPDP Act 2023 compliant. ABDM certified. No Aadhaar stored. Your record is shared only with your treating doctor, only on the day of your visit.",                                             img: "/feature-privacy.png",  alt: "Digital health privacy" },
+  { tag: "AI Interview",    headline: "Your patients tell us everything.\nBefore they see you.",    body: "ClinIQ conducts an adaptive AI clinical interview in 22 Indian languages — voice or touch. Patients walk in, and their complete history is already on your screen.",                           img: "/feature-voice.png",    alt: "Patient using ClinIQ" },
+  { tag: "Clinical Summary", headline: "Complete SOAP notes.\nBefore the consultation.",             body: "Chief Complaint → HPI → Past History → Medications → Allergies → Family History → Review of Systems. Structured, standardized, ready to edit and approve in one click.",                     img: "/feature-ai.avif",      alt: "Doctor reviewing ClinIQ summary" },
+  { tag: "Document AI",     headline: "Old prescriptions?\nWe read those too.",                     body: "Patient snaps a photo of prescriptions, lab reports, or discharge summaries. ClinIQ extracts medications, diagnoses, and lab values automatically. Even handwritten ones.",                   img: "/feature-docs.avif",    alt: "Scanning medical documents" },
+  { tag: "Compliance",      headline: "DPDP compliant.\nABDM native.\nZero risk.",                  body: "Built on ABDM/ABHA from day one. FHIR R4 compliant. DPDP Act 2023 audit-ready. Patient consent recorded in their own language. Your clinic stays compliant without effort.",                 img: "/feature-privacy.png",  alt: "Healthcare data compliance" },
 ];
 
 const STEPS = [
-  { n: "01", title: "Choose your language",     body: "Hindi, Tamil, Bengali, and 19 more." },
-  { n: "02", title: "Speak your symptoms",      body: "Voice or touch — whatever feels natural." },
-  { n: "03", title: "Upload old reports",       body: "Prescriptions, lab reports, discharge summaries." },
-  { n: "04", title: "Doctor gets your summary", body: "Full clinical record ready before you enter." },
+  { n: "01", title: "Patient checks in",        body: "Scans QR at your clinic or opens link from WhatsApp." },
+  { n: "02", title: "AI takes the history",     body: "5-8 min voice conversation in patient's language." },
+  { n: "03", title: "Documents get scanned",    body: "Old prescriptions + lab reports → digitized instantly." },
+  { n: "04", title: "You get the summary",      body: "Structured clinical history on your screen. Edit and approve." },
 ];
 
 const LANGS = [
@@ -117,15 +118,15 @@ export default function LandingPage() {
         <div className="page-container" style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           {/* Logo */}
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <Image src="/logo.jpg" alt="MediKiosk" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
+            <Image src="/logo.jpg" alt="ClinIQ" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
             <span style={{ fontFamily: FONT, fontWeight: 800, fontSize: 18, letterSpacing: "-0.3px", color: C.black }}>
-              Medi<span style={{ color: C.blue }}>Kiosk</span>
+              Clin<span style={{ color: C.teal }}>IQ</span>
             </span>
           </a>
 
           {/* Nav links — desktop only */}
           <nav className="hide-mobile" style={{ display: "flex", gap: 32 }}>
-            {["Features", "For Hospitals", "Languages"].map((item) => (
+            {["Features", "For Clinics", "Pricing", "Languages"].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(" ", "-")}`}
                 style={{ fontFamily: FONT, fontSize: 14, fontWeight: 500, color: C.muted, textDecoration: "none" }}>
                 {item}
@@ -136,11 +137,8 @@ export default function LandingPage() {
           {/* CTA buttons — desktop */}
           <div className="hide-mobile" style={{ display: "flex", gap: 8 }}>
             <a href={APP_URL} className="btn-login">Log In ›</a>
-            <a href={APP_URL} target="_blank" rel="noopener noreferrer" className="btn-download">
-              Get the App
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 16l-4-4h3V4h2v8h3l-4 4z"/><path d="M4 20h16"/>
-              </svg>
+            <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="btn-download">
+              Book a Demo
             </a>
           </div>
 
@@ -153,9 +151,9 @@ export default function LandingPage() {
               background: "none", border: "none", cursor: "pointer",
               display: "none", flexDirection: "column", gap: 5, padding: 6,
             }}>
-            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.blue : C.black, transition: "0.2s", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
-            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.blue : C.black, transition: "0.2s", opacity: menuOpen ? 0 : 1 }} />
-            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.blue : C.black, transition: "0.2s", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
+            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.navy : C.black, transition: "0.2s", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
+            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.navy : C.black, transition: "0.2s", opacity: menuOpen ? 0 : 1 }} />
+            <span style={{ display: "block", width: 22, height: 2, background: menuOpen ? C.navy : C.black, transition: "0.2s", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
           </button>
         </div>
 
@@ -166,7 +164,7 @@ export default function LandingPage() {
             background: C.white, borderBottom: `1px solid ${C.border}`,
             padding: "16px 24px 24px", display: "flex", flexDirection: "column", gap: 16,
           }}>
-            {["Features", "For Hospitals", "Languages"].map((item) => (
+            {["Features", "For Clinics", "Pricing", "Languages"].map((item) => (
               <a key={item} href={`#${item.toLowerCase().replace(" ", "-")}`}
                 onClick={() => setMenuOpen(false)}
                 style={{ fontFamily: FONT, fontSize: 15, fontWeight: 600, color: C.black, textDecoration: "none" }}>
@@ -175,8 +173,8 @@ export default function LandingPage() {
             ))}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
               <a href={APP_URL} className="btn-login" style={{ textAlign: "center" }}>Log In ›</a>
-              <a href={APP_URL} target="_blank" rel="noopener noreferrer" className="btn-download" style={{ textAlign: "center" }}>
-                Get the App
+              <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="btn-download" style={{ textAlign: "center" }}>
+                Book a Demo
               </a>
             </div>
           </div>
@@ -199,7 +197,7 @@ export default function LandingPage() {
           }}>
             <Image
               src="/hero.jpg"
-              alt="Patient at MediKiosk"
+              alt="Patient at ClinIQ"
               fill
               priority
               style={{ objectFit: "cover", objectPosition: "center 20%" }}
@@ -215,22 +213,17 @@ export default function LandingPage() {
                 fontWeight: 800, letterSpacing: "-1.5px", lineHeight: 1.08,
                 color: C.white, marginBottom: 18,
               }}>
-                Healthcare in<br />your language.
+                Your patients' story.<br />Before they walk in.
               </h1>
               <p style={{
                 fontFamily: FONT, fontSize: "clamp(14px, 1.8vw, 17px)",
                 color: "rgba(255,255,255,0.85)", lineHeight: 1.6, marginBottom: 28, maxWidth: 380,
               }}>
-                MediKiosk takes your full medical history — by voice, in your language — before you see the doctor.
+                ClinIQ interviews patients in their language, scans their old records, and delivers a complete clinical summary to your screen — before the consultation begins.
               </p>
               <div className="btn-group" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <a href={APP_URL} className="btn-login btn-login-white">Log In ›</a>
-                <a href={APP_URL} target="_blank" rel="noopener noreferrer" className="btn-download">
-                  Get the App
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M12 16l-4-4h3V4h2v8h3l-4 4z"/><path d="M4 20h16"/>
-                  </svg>
-                </a>
+                <a href={APP_URL} className="btn-login btn-login-white">Start Free Trial ›</a>
+                <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="btn-download">Book a Demo</a>
               </div>
             </div>
 
@@ -244,10 +237,10 @@ export default function LandingPage() {
                 background: "rgba(255,255,255,0.96)", borderRadius: 18,
                 padding: "12px 16px", display: "flex", alignItems: "center", gap: 12, maxWidth: 250,
               }}>
-              <Image src="/logo.jpg" alt="MediKiosk" width={40} height={40}
+              <Image src="/logo.jpg" alt="ClinIQ" width={40} height={40}
                 style={{ borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
               <div>
-                <p style={{ fontFamily: FONT, fontSize: 10, color: "#999", fontWeight: 600, marginBottom: 3 }}>MediKiosk AI</p>
+                <p style={{ fontFamily: FONT, fontSize: 10, color: "#999", fontWeight: 600, marginBottom: 3 }}>ClinIQ AI</p>
                 <p style={{ fontFamily: FONT, fontSize: 13, fontWeight: 700, color: C.black, lineHeight: 1.3 }}>
                   &ldquo;आपको क्या तकलीफ है?&rdquo;
                 </p>
@@ -256,7 +249,7 @@ export default function LandingPage() {
           </div>
           {/* Footnote below card */}
           <p style={{ fontFamily: FONT, fontSize: 11, color: "#bbb", marginTop: 10, textAlign: "right" }}>
-            * Free · No app store · Android · iOS · Desktop
+            * Free for 30 days · No credit card · Works on any device
           </p>
         </div>
       </section>
@@ -268,9 +261,9 @@ export default function LandingPage() {
       <section id="features" style={{ background: C.white }}>
         <div className="page-container" style={{ paddingTop: 96, paddingBottom: 96 }}>
           <Reveal>
-            <p style={tagLabel(C.blue)}>Simple process</p>
+            <p style={tagLabel(C.teal)}>How it works</p>
             <h2 style={{ ...h2, fontSize: "clamp(30px, 4vw, 48px)", maxWidth: 340, marginBottom: 56 }}>
-              Four steps.<br />Under four minutes.
+              Setup takes 10 minutes.<br />Each patient takes 5.
             </h2>
           </Reveal>
           <div className="four-col">
@@ -292,7 +285,7 @@ export default function LandingPage() {
           <section key={feat.tag} style={{ background: i % 2 === 0 ? C.gray : C.white }}>
             <div className="page-container two-col" style={{ paddingTop: 80, paddingBottom: 80 }}>
               <Reveal className={isEven ? "" : "order-flip"} style={{ order: isEven ? 1 : 2 }}>
-                <p style={tagLabel(C.blue)}>{feat.tag}</p>
+                <p style={tagLabel(C.navy)}>{feat.tag}</p>
                 <h2 style={{ ...h2, fontSize: "clamp(26px, 3vw, 38px)", whiteSpace: "pre-line" }}>{feat.headline}</h2>
                 <p style={bodyText}>{feat.body}</p>
               </Reveal>
@@ -306,8 +299,79 @@ export default function LandingPage() {
         );
       })}
 
+      {/* ── PRICING ──────────────────────────────────────────────────────── */}
+      <section id="pricing" style={{ background: C.gray }}>
+        <div className="page-container" style={{ paddingTop: 96, paddingBottom: 96 }}>
+          <Reveal>
+            <p style={tagLabel(C.teal)}>Simple pricing</p>
+            <h2 style={{ ...h2, fontSize: "clamp(30px, 4vw, 48px)", maxWidth: 400, marginBottom: 56 }}>
+              One plan.<br />No surprises.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="two-col" style={{ gap: 32 }}>
+              {/* Solo/Small Clinic */}
+              <div style={{
+                border: `2px solid ${C.border}`, borderRadius: 20, padding: 40,
+                background: C.white, display: "flex", flexDirection: "column", gap: 16,
+              }}>
+                <p style={{ fontFamily: FONT, fontWeight: 700, fontSize: 14, color: C.teal, textTransform: "uppercase", letterSpacing: "0.08em" }}>Starter</p>
+                <p style={{ fontFamily: FONT, fontWeight: 800, fontSize: 40, color: C.black }}>
+                  ₹2,000<span style={{ fontSize: 16, fontWeight: 500, color: C.muted }}>/month</span>
+                </p>
+                <p style={{ fontFamily: FONT, fontSize: 14, color: C.muted, lineHeight: 1.6 }}>
+                  Perfect for solo practitioners and small clinics. Up to 200 patient intakes/month.
+                </p>
+                <ul style={{ fontFamily: FONT, fontSize: 14, color: C.muted, lineHeight: 2, paddingLeft: 20 }}>
+                  <li>AI voice interview in 22 languages</li>
+                  <li>Document scanning & OCR</li>
+                  <li>Doctor summary dashboard</li>
+                  <li>ABDM/ABHA integration</li>
+                  <li>Email support</li>
+                </ul>
+                <a href={APP_URL} className="btn-download" style={{ textAlign: "center", marginTop: 8 }}>Start Free Trial</a>
+              </div>
+
+              {/* Multi-Doctor / Hospital */}
+              <div style={{
+                border: `2px solid ${C.teal}`, borderRadius: 20, padding: 40,
+                background: C.white, display: "flex", flexDirection: "column", gap: 16,
+                position: "relative",
+              }}>
+                <div style={{
+                  position: "absolute", top: -1, right: 32,
+                  background: C.teal, color: C.white, padding: "6px 16px",
+                  borderRadius: "0 0 8px 8px", fontSize: 11, fontWeight: 700,
+                  fontFamily: FONT, letterSpacing: "0.05em",
+                }}>MOST POPULAR</div>
+                <p style={{ fontFamily: FONT, fontWeight: 700, fontSize: 14, color: C.teal, textTransform: "uppercase", letterSpacing: "0.08em" }}>Growth</p>
+                <p style={{ fontFamily: FONT, fontWeight: 800, fontSize: 40, color: C.black }}>
+                  ₹8,000<span style={{ fontSize: 16, fontWeight: 500, color: C.muted }}>/month</span>
+                </p>
+                <p style={{ fontFamily: FONT, fontSize: 14, color: C.muted, lineHeight: 1.6 }}>
+                  For multi-doctor clinics and nursing homes. Unlimited intakes. Priority support.
+                </p>
+                <ul style={{ fontFamily: FONT, fontSize: 14, color: C.muted, lineHeight: 2, paddingLeft: 20 }}>
+                  <li>Everything in Starter</li>
+                  <li>Unlimited patient intakes</li>
+                  <li>Multi-doctor support</li>
+                  <li>Waiting room queue manager</li>
+                  <li>WhatsApp intake links for patients</li>
+                  <li>AYUSH Dashavidha Pariksha mode</li>
+                  <li>Priority WhatsApp support</li>
+                </ul>
+                <a href={DEMO_URL} className="btn-download" style={{ textAlign: "center", marginTop: 8 }}>Book a Demo</a>
+              </div>
+            </div>
+            <p style={{ fontFamily: FONT, fontSize: 13, color: "#bbb", marginTop: 24, textAlign: "center" }}>
+              Hospital chains and enterprise? <a href={DEMO_URL} style={{ color: C.teal, fontWeight: 600 }}>Talk to us →</a>
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ── LANGUAGES ──────────────────────────────────────────────────────── */}
-      <section id="languages" style={{ background: C.blue }}>
+      <section id="languages" style={{ background: C.navy }}>
         <div className="page-container" style={{ paddingTop: 96, paddingBottom: 96 }}>
           <Reveal>
             <p style={tagLabel("rgba(255,255,255,0.55)")}>Inclusive by design</p>
@@ -341,22 +405,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FOR HOSPITALS ──────────────────────────────────────────────────── */}
-      <section id="for-hospitals" style={{ background: C.white }}>
+      {/* ── FOR CLINICS ────────────────────────────────────────────────────── */}
+      <section id="for-clinics" style={{ background: C.white }}>
         <div className="page-container two-col" style={{ paddingTop: 96, paddingBottom: 96, alignItems: "stretch" }}>
           <Reveal>
-            <p style={tagLabel(C.orange)}>For Hospitals</p>
+            <p style={tagLabel(C.teal)}>For Clinics & Hospitals</p>
             {/* Consistent large heading — each sentence locked to one line with nowrap */}
             <h2 style={{ ...h2, fontSize: "clamp(26px, 3vw, 40px)", maxWidth: 420, marginBottom: 36 }}>
-              <span style={{ display: "block", whiteSpace: "nowrap" }}>Cut OPD wait times.</span>
-              <span style={{ display: "block", whiteSpace: "nowrap" }}>Not quality of care.</span>
+              <span style={{ display: "block", whiteSpace: "nowrap" }}>See more patients.</span>
+              <span style={{ display: "block", whiteSpace: "nowrap" }}>With better outcomes.</span>
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               {[
-                { icon: "⚡", title: "Faster OPD flow",  body: "Doctor gets a structured clinical summary before the patient enters." },
-                { icon: "📊", title: "Doctor dashboard", body: "Annotate, approve, and print records from one clean screen." },
-                { icon: "🔗", title: "ABDM / ABHA",      body: "Auto-push records to the patient's digital health locker." },
-                { icon: "📵", title: "Offline-ready",    body: "Service worker keeps the kiosk running even when network drops." },
+                { icon: "⚡", title: "2-3x more patients/day",  body: "Doctors spend zero time on history-taking. Every minute goes to diagnosis and care." },
+                { icon: "📊", title: "Doctor dashboard",         body: "Review, edit, and approve patient summaries from one clean screen. Mobile-friendly." },
+                { icon: "💰", title: "Instant ROI",              body: "Starts at ₹2,000/month. Cost per patient: under ₹2. Pays for itself in the first week." },
+                { icon: "📵", title: "Works offline",            body: "No internet? No problem. ClinIQ runs locally and syncs when connected." },
               ].map((item) => (
                 <div key={item.title} style={{ display: "flex", gap: 14 }}>
                   <span style={{ fontSize: 18, flexShrink: 0, marginTop: 2 }}>{item.icon}</span>
@@ -372,7 +436,7 @@ export default function LandingPage() {
           {/* Hospital image stretches full height */}
           <Reveal delay={0.12} style={{ display: "flex" }}>
             <div style={{ borderRadius: 20, overflow: "hidden", position: "relative", flex: 1, minHeight: 380 }}>
-              <Image src="/hospital.jpg" alt="Hospital OPD" fill style={{ objectFit: "cover" }} />
+              <Image src="/hospital.jpg" alt="Clinic OPD" fill style={{ objectFit: "cover" }} />
             </div>
           </Reveal>
         </div>
@@ -383,23 +447,20 @@ export default function LandingPage() {
         <div className="page-container" style={{ paddingTop: 96, paddingBottom: 96, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <Reveal>
             <h2 style={{ fontFamily: FONT, fontSize: "clamp(34px, 5vw, 60px)", fontWeight: 800, letterSpacing: "-1.2px", lineHeight: 1.08, color: C.black, marginBottom: 14 }}>
-              Ready to try MediKiosk?
+              Ready to see more patients?
             </h2>
             {/* Subtitle — 1 line on desktop, wraps naturally on mobile */}
             <p className="cta-subtitle" style={{ fontFamily: FONT, fontSize: 17, color: C.muted, lineHeight: 1.5, marginBottom: 36, whiteSpace: "nowrap" }}>
-              Free. No app store needed. Works on any device.
+              Free for 30 days. No credit card. Setup in 10 minutes.
             </p>
             <div className="btn-group" style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <a href={APP_URL} className="btn-login btn-login-lg">Log In ›</a>
-              <a href={`${APP_URL}?pwa=install`} target="_blank" rel="noopener noreferrer" className="btn-download btn-download-lg">
-                Download
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M12 16l-4-4h3V4h2v8h3l-4 4z"/><path d="M4 20h16"/>
-                </svg>
+              <a href={APP_URL} className="btn-login btn-login-lg">Start Free Trial ›</a>
+              <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="btn-download btn-download-lg">
+                Book a Demo
               </a>
             </div>
             <p style={{ fontFamily: FONT, fontSize: 12, color: "#bbb", marginTop: 18 }}>
-              Android · iOS · Desktop · No app store required
+              Works on any tablet, phone, or desktop · No hardware required
             </p>
           </Reveal>
         </div>
@@ -414,23 +475,22 @@ export default function LandingPage() {
           alignItems: "center",
           gap: 16,
         }}>
-          {/* Left — logo + MediKiosk name */}
+          {/* Left — logo + ClinIQ name */}
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <Image src="/logo.jpg" alt="MediKiosk" width={26} height={26} style={{ borderRadius: 7, objectFit: "cover" }} />
+            <Image src="/logo.jpg" alt="ClinIQ" width={26} height={26} style={{ borderRadius: 7, objectFit: "cover" }} />
             <span style={{ fontFamily: FONT, fontWeight: 800, fontSize: 15, color: C.black }}>
-              Medi<span style={{ color: C.blue }}>Kiosk</span>
+              Clin<span style={{ color: C.teal }}>IQ</span>
             </span>
           </a>
 
           {/* Center — copyright */}
           <p style={{ fontFamily: FONT, fontSize: 13, color: "#aaa", fontWeight: 500, textAlign: "center", whiteSpace: "nowrap" }}>
-            © 2026 MediKiosk · SIH 2026
+            © 2026 ClinIQ Health Technologies
           </p>
 
           {/* Right — team credit */}
           <p style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: "#aaa", textAlign: "right", whiteSpace: "nowrap" }}>
-            Designed &amp; Developed by Team{" "}
-            <span style={{ color: C.blue, fontWeight: 700 }}>वैद्य सहायक</span>
+            <a href="mailto:hello@cliniq.health" style={{ color: C.teal, textDecoration: "none", fontWeight: 600 }}>hello@cliniq.health</a>
           </p>
         </div>
       </footer>

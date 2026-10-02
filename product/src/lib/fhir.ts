@@ -165,7 +165,7 @@ export function buildFHIRBundle(
     subject: { reference: `Patient/${patientId}` },
     encounter: { reference: `Encounter/${encounterId}` },
     date: now,
-    author: [{ display: "MediKiosk AI — Vaidya Sahayak" }],
+    author: [{ display: "ClinIQ AI — Vaidya Sahayak" }],
     title: "OPD Pre-Consultation History Record",
     section: [
       {

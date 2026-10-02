@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Build for Billions — Screening Proposal — Vaidya Sahayak</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size:A4; margin:18mm 16mm; }
+  body {
+    font-family:'Inter',sans-serif; color:#111; line-height:1.55;
+    font-size:10.5pt; background:#fff; max-width:210mm; margin:0 auto; padding:18mm 16mm;
+  }
+  @media print { body{padding:0;max-width:none;} .no-print{display:none;} .page-break{page-break-before:always;} }
+
+  .header { text-align:center; border-bottom:2px solid #222; padding-bottom:14px; margin-bottom:16px; }
+  .header img { height:52px; margin-bottom:6px; }
+  .header h1 { font-size:18pt; font-weight:700; color:#111; margin-bottom:2px; }
+  .header .event { font-size:11pt; font-weight:600; color:#333; }
+
+  .info-table { width:100%; border-collapse:collapse; margin-bottom:18px; font-size:10pt; }
+  .info-table td { padding:5px 8px; border:1px solid #ccc; }
+  .info-table td:first-child { font-weight:600; width:155px; background:#f5f5f5; }
+
+  .section { margin-bottom:16px; }
+  .section h2 { font-size:12pt; font-weight:700; color:#111; border-bottom:1.5px solid #333; padding-bottom:3px; margin-bottom:6px; }
+  .section p, .section li { font-size:10pt; color:#222; line-height:1.5; }
+  .section ul, .section ol { padding-left:16px; margin:4px 0; }
+  .section li { margin-bottom:2px; }
+
+  table.data { width:100%; border-collapse:collapse; font-size:9.5pt; margin:6px 0; }
+  table.data th { background:#222; color:#fff; padding:5px 8px; text-align:left; font-weight:600; }
+  table.data td { padding:4px 8px; border:1px solid #ccc; }
+  table.data tr:nth-child(even) td { background:#fafafa; }
+
+  .footer { text-align:center; margin-top:16px; padding-top:10px; border-top:1.5px solid #333; font-size:8.5pt; color:#666; }
+  .print-btn { position:fixed; bottom:20px; right:20px; background:#222; color:#fff; border:none; padding:10px 20px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; z-index:100; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Save as PDF (Ctrl+P)</button>
+
+<div class="header">
+  <img src="../product/public/logo.jpg" alt="ClinIQ Logo" />
+  <h1>ClinIQ — Vaidya Sahayak</h1>
+  <div class="event">Build for Billions — Initial Screening Proposal</div>
+</div>
+
+<table class="info-table">
+  <tr><td>Team Name</td><td>Vaidya Sahayak</td></tr>
+  <tr><td>Team Leader</td><td>Mayank Singh</td></tr>
+  <tr><td>Team Members</td><td>Mayank Singh, Arman Yadav, MP Nihal</td></tr>
+  <tr><td>College / University</td><td>Babu Sunder Singh Degree College, University of Lucknow</td></tr>
+  <tr><td>Selected Track</td><td>Track 3 — Reinvent Digital Public Infrastructure For Billions</td></tr>
+</table>
+
+<!-- 1 -->
+<div class="section">
+  <h2>1. Problem Statement</h2>
+  <p>Indian government hospitals serve 4,000–10,000 OPD patients daily with 2–5 minute consultations. Doctors spend 60–70% of that time asking history instead of examining patients. India has 1 doctor per 1,511 people — every second of doctor time is critical.</p>
+  <p style="margin-top:4px;">The problem is worse for <strong>non-English speaking, low-literacy, elderly, and rural patients</strong> who cannot fill digital forms. AYUSH practitioners face additional complexity — Dashavidha Pariksha requires 10+ constitutional parameters that cannot be captured manually under time pressure.</p>
+  <p style="margin-top:4px;">ABDM has built the digital health infrastructure, but there is <strong>no patient-facing DPI application</strong> that captures structured clinical history in 22 Indian languages and feeds it into the ABDM ecosystem.</p>
+</div>
+
+<!-- 2 -->
+<div class="section">
+  <h2>2. Proposed Solution</h2>
+  <p><strong>ClinIQ</strong> is an AI-powered kiosk application that conducts the entire clinical history interview autonomously, in the patient's own language, before they enter the consultation room. It produces a doctor-ready clinical summary in standard medical format.</p>
+
+  <p style="margin-top:6px;"><strong>How it works:</strong></p>
+  <ol>
+    <li>Patient selects language (22 Indian languages) → authenticates via ABHA ID / Aadhaar OTP / Mobile OTP</li>
+    <li>Gives ABDM-compliant consent (with Bhashini TTS audio explanation in their language)</li>
+    <li>Chooses OPD type — General Medicine or AYUSH</li>
+    <li>AI conducts adaptive clinical interview via voice (Bhashini ASR) + guided touch chips</li>
+    <li>Scans existing prescriptions, lab reports, discharge summaries (Gemini Vision OCR)</li>
+    <li>AI generates structured summary — Chief Complaint, HPI, PMHx, Drug/Allergy, Family, Personal, ROS</li>
+    <li>Doctor sees pre-filled report on dashboard → spends time on examination, not history-taking</li>
+    <li>Session ends → all PII cleared from device (DPDP Act 2023 compliant)</li>
+  </ol>
+
+  <p style="margin-top:6px;"><strong>Key features:</strong></p>
+  <ul>
+    <li>Adaptive SOCRATES-framework questioning with real-time red-flag emergency detection</li>
+    <li>AYUSH Dashavidha Pariksha — all 10 constitutional parameters (Prakriti through Vaya)</li>
+    <li>Medical document OCR with dosage normalization and abnormal-value highlighting</li>
+    <li>Triple AI fallback (Groq → Gemini → Offline) — interview never breaks, even without internet</li>
+    <li>Professional A4 print-ready clinical report with ICD-10 suggestions</li>
+  </ul>
+</div>
+
+<!-- 3 -->
+<div class="section">
+  <h2>3. Target Users & Impact</h2>
+  <table class="data">
+    <tr><th>User</th><th>Pain Point</th><th>ClinIQ Impact</th></tr>
+    <tr><td>Patients (1.4B Indians)</td><td>Cannot communicate in English; low digital literacy</td><td>Voice-first interface in their own language — no typing, no forms</td></tr>
+    <tr><td>OPD Doctors (1.3M)</td><td>60–70% of consultation spent asking history</td><td>Pre-filled structured summary — more time for examination</td></tr>
+    <tr><td>AYUSH Practitioners (8L)</td><td>Cannot capture 10+ Dashavidha parameters manually</td><td>Guided interview captures all 10 parameters automatically</td></tr>
+  </table>
+  <p style="margin-top:6px;">ClinIQ targets <strong>rural patients, elderly users, low-literacy populations, and non-English speakers</strong> — the billions excluded from current digital health solutions. Voice-first, audio-first design with large tap targets ensures zero digital literacy required.</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- 4 -->
+<div class="section">
+  <h2>4. Technology Stack</h2>
+  <table class="data">
+    <tr><th>Layer</th><th>Technology</th></tr>
+    <tr><td>Frontend</td><td>Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Framer Motion</td></tr>
+    <tr><td>AI — Conversation</td><td>Groq API (LLaMA 3.3 70B) — ultra-low latency for real-time interview</td></tr>
+    <tr><td>AI — Summary + OCR</td><td>Google Gemini 2.5 Flash — structured JSON generation + Vision OCR</td></tr>
+    <tr><td>Speech (DPI)</td><td>Bhashini ASR (speech-to-text) + Bhashini TTS (text-to-speech) — 22 Indian languages</td></tr>
+    <tr><td>Identity (DPI)</td><td>ABHA ID + Aadhaar OTP authentication</td></tr>
+    <tr><td>Interoperability (DPI)</td><td>FHIR R4 resource generation + ABDM Consent Framework</td></tr>
+    <tr><td>Database</td><td>Neon Serverless Postgres</td></tr>
+    <tr><td>Privacy</td><td>sessionStorage-based, DPDP Act 2023 compliant — zero PII persistence</td></tr>
+    <tr><td>Network Resilience</td><td>resilientFetch with retries, AbortSignal timeouts, triple AI fallback</td></tr>
+    <tr><td>Deployment</td><td>Vercel (Edge + Serverless Functions), PWA-ready</td></tr>
+  </table>
+</div>
+
+<!-- 5 -->
+<div class="section">
+  <h2>5. Innovation & Scalability</h2>
+  <p><strong>What makes it unique:</strong></p>
+  <ul>
+    <li><strong>First DPI-native clinical history application</strong> — integrates ABDM + Bhashini + ABHA + FHIR R4 simultaneously. The missing patient-facing layer in India's digital health stack.</li>
+    <li><strong>Voice-first, not form-first</strong> — patients talk naturally; AI listens, probes deeper using SOCRATES framework, and structures the response into standard clinical format.</li>
+    <li><strong>AYUSH as a first-class mode</strong> — Dashavidha Pariksha with all 10 parameters has dedicated interview stages. No existing system supports this.</li>
+    <li><strong>Triple-fallback AI</strong> — Groq → Gemini → Offline clinically vetted questions in 11 languages. Works even with zero internet.</li>
+    <li><strong>Red-flag emergency detection</strong> — real-time multilingual pattern matching for cardiac, stroke, bleeding, and psychiatric emergencies.</li>
+  </ul>
+  <p style="margin-top:6px;"><strong>Scalability:</strong> ClinIQ is a PWA — runs on any device with a browser. A hospital deploys by opening a URL on an existing tablet. Bhashini and ABDM APIs are free for public sector use, so incremental cost per deployment is near zero. Can scale from a single hospital pilot to 10,000+ PHCs/CHCs across India.</p>
+</div>
+
+<!-- 6 -->
+<div class="section">
+  <h2>6. Prototype / References</h2>
+  <table class="data">
+    <tr><th>Resource</th><th>Link</th></tr>
+    <tr><td>Live Demo (Deployed)</td><td><a href="https://ClinIQ.mayankcodes.dev">ClinIQ.mayankcodes.dev</a></td></tr>
+    <tr><td>GitHub Repository</td><td><a href="https://github.com/mayankcodes-dev/ClinIQ">github.com/mayankcodes-dev/ClinIQ</a></td></tr>
+    <tr><td>ABDM Documentation</td><td><a href="https://abdm.gov.in">abdm.gov.in</a></td></tr>
+    <tr><td>Bhashini API</td><td><a href="https://bhashini.gov.in">bhashini.gov.in</a></td></tr>
+  </table>
+  <p style="margin-top:6px;">The application is fully functional — all 4 modules (Conversational History, Document OCR, Summary Generation, ABDM Integration) are implemented and deployed. The codebase compiles with 0 TypeScript errors.</p>
+</div>
+
+<!-- 7 -->
+<div class="section">
+  <h2>7. Team Contribution</h2>
+  <table class="data">
+    <tr><th>Member</th><th>Role</th><th>Contribution</th></tr>
+    <tr><td>Mayank Singh (Lead)</td><td>Full-Stack + AI</td><td>System architecture, Groq/Gemini AI engine, ABDM/ABHA integration, Bhashini ASR/TTS, API design, deployment</td></tr>
+    <tr><td>Arman Yadav</td><td>Frontend + UX</td><td>Kiosk UI, accessibility, animations, responsive design, multilingual translation system, print report styling</td></tr>
+    <tr><td>MP Nihal</td><td>Backend + Domain</td><td>Neon DB schema, FHIR R4 generation, consent framework, clinical history structure, OCR pipeline, testing</td></tr>
+  </table>
+</div>
+
+</body>
+</html>

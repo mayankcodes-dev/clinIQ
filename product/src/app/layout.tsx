@@ -12,34 +12,34 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://app.medikiosk.mayankcodes.dev"
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://app.ClinIQ.mayankcodes.dev"
   ),
-  title: "MediKiosk — AI Clinical History Kiosk",
+  title: "ClinIQ — AI Clinical History Kiosk",
   description:
     "AI-powered multilingual clinical history-taking kiosk for Indian hospitals and AYUSH clinics. Speaks 13 Indian languages. PS 26047 | Ministry of AYUSH | SIH 2026",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "MediKiosk",
+    title: "ClinIQ",
   },
   keywords: [
-    "MediKiosk", "ABHA", "ABDM", "clinical history",
+    "ClinIQ", "ABHA", "ABDM", "clinical history",
     "AYUSH", "multilingual healthcare", "SIH 2026",
     "Bhashini", "voice kiosk",
   ],
   openGraph: {
-    title: "MediKiosk — AI Clinical History Kiosk",
+    title: "ClinIQ — AI Clinical History Kiosk",
     description: "AI voice agent takes patient history in 13 Indian languages before doctor consultation.",
-    url: "https://app.medikiosk.mayankcodes.dev",
-    siteName: "MediKiosk",
+    url: "https://app.ClinIQ.mayankcodes.dev",
+    siteName: "ClinIQ",
     type: "website",
     images: [
       {
         url: "/logo.jpg",
         width: 512,
         height: 512,
-        alt: "MediKiosk Logo",
+        alt: "ClinIQ Logo",
       },
     ],
   },

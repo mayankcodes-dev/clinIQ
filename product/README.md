@@ -1,4 +1,4 @@
-# MediKiosk — Product (Next.js Application)
+# ClinIQ — Product (Next.js Application)
 
 > The core clinical history-taking application built with Next.js 15, React 19, and TypeScript.
 

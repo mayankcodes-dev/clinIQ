@@ -179,8 +179,8 @@ export function KioskFooter({
   );
 }
 
-// ─── MediKioskLogo ───────────────────────────────────────────────
-export function MediKioskLogo({
+// ─── ClinIQLogo ───────────────────────────────────────────────
+export function ClinIQLogo({
   size = "md",
   className,
   showText = true,
@@ -196,7 +196,7 @@ export function MediKioskLogo({
     <div className={cn("flex items-center gap-2.5", className)}>
       <Image
         src="/logo.jpg"
-        alt="MediKiosk"
+        alt="ClinIQ"
         width={imgSizes[size]}
         height={imgSizes[size]}
         className="rounded-full border border-brand-100 shadow-sm"
