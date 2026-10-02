@@ -13,7 +13,7 @@ import {
   KioskFooter,
 } from "@/components/kiosk/KioskLayout";
 import { Button } from "@/components/ui/primitives";
-import { ClinIQLoader } from "@/components/ClinIQLoader";
+import ClinIQLoader from "@/components/ClinIQLoader";
 import type { StructuredSummary } from "@/app/api/history/chat/route";
 import type { ExtractedDoc } from "@/app/api/scan/extract/route";
 

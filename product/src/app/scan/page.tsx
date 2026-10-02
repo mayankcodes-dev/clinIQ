@@ -11,7 +11,7 @@ import {
   KioskFooter,
 } from "@/components/kiosk/KioskLayout";
 import { Button, Card } from "@/components/ui/primitives";
-import { ClinIQLoader } from "@/components/ClinIQLoader";
+import ClinIQLoader from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/translations";
 import type { DocType, ExtractedDoc } from "@/app/api/scan/extract/route";

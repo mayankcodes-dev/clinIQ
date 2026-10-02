@@ -11,7 +11,7 @@ import {
   AudioWave,
 } from "@/components/kiosk/KioskLayout";
 import { Button, Card } from "@/components/ui/primitives";
-import { ClinIQLoader } from "@/components/ClinIQLoader";
+import ClinIQLoader from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
 import { COMMON_SYMPTOMS } from "@/lib/constants";
 import { t } from "@/lib/translations";
@@ -671,7 +671,7 @@ export default function HistoryPage() {
   const fetchNextQuestion = useCallback(
     async (forStage: Stage, history: ChatMessage[]) => {
       // INSTANT RESPONSE: Show offline fallback question immediately (zero wait)
-      const INSTANT: Record<string, Record<Stage, string>> = {
+      const INSTANT: Record<string, Partial<Record<Stage, string>>> = {
         hi: { chief_complaint:"आज आपको मुख्य रूप से क्या तकलीफ है?",hpi:"यह तकलीफ कब से है?",past_history:"क्या पहले कोई बड़ी बीमारी हुई है?",drug_allergy:"कोई दवाई या एलर्जी?",family_history:"परिवार में कोई बड़ी बीमारी?",personal_history:"आप क्या काम करते हैं?",review_of_systems:"और किसी अंग में तकलीफ?",ayush_prakriti:"आपकी त्वचा कैसी है?",ayush_vikriti:"अभी कैसा महसूस कर रहे हैं?",ayush_agni:"भूख कैसी है?",ayush_koshtha:"पेट साफ कैसे होता है?",ayush_ahara_vihara:"आप क्या खाते हैं?",ayush_nidana:"तकलीफ से पहले क्या बदला?",ayush_samprapti:"तकलीफ कब बढ़ती है?",ayush_sara:"त्वचा बाल नाखून की स्थिति?",ayush_samhanana:"शरीर का गठन?",ayush_satmya:"कौन सा खाना सूट करता है?",ayush_pramana:"लंबाई और वजन?",ayush_sattva:"मानसिक स्थिति?",ayush_ahara_shakti:"खाना पचाने की क्षमता?",ayush_vyayama_shakti:"व्यायाम की क्षमता?",ayush_vaya:"उम्र के हिसाब से कैसा महसूस?",summary:"" },
         en: { chief_complaint:"What is your main problem today?",hpi:"When did it start and how does it feel?",past_history:"Any past major illness or surgery?",drug_allergy:"Any medicines or allergies?",family_history:"Family history of major diseases?",personal_history:"Your occupation?",review_of_systems:"Any other body part issues?",ayush_prakriti:"How is your skin usually?",ayush_vikriti:"How do you feel right now?",ayush_agni:"How is your appetite?",ayush_koshtha:"How is your bowel movement?",ayush_ahara_vihara:"What do you usually eat?",ayush_nidana:"What changed before this problem?",ayush_samprapti:"When does it worsen?",ayush_sara:"Skin hair nail quality?",ayush_samhanana:"Body build?",ayush_satmya:"What foods suit you?",ayush_pramana:"Height and weight?",ayush_sattva:"Mental state?",ayush_ahara_shakti:"Digestion capacity?",ayush_vyayama_shakti:"Exercise tolerance?",ayush_vaya:"How do you feel for your age?",summary:"" },
         ta: { chief_complaint:"இன்று உங்கள் முக்கிய பிரச்சினை என்ன?",hpi:"இது எப்போது தொடங்கியது?",past_history:"முன்பு பெரிய நோய் வந்ததுண்டா?",drug_allergy:"மருந்து அல்லது ஒவ்வாமை?",family_history:"குடும்பத்தில் நோய் வரலாறு?",personal_history:"தொழில் என்ன?",review_of_systems:"வேறு உறுப்புகளில் பிரச்சனை?",ayush_prakriti:"தோல் எப்படி?",ayush_vikriti:"இப்போது எப்படி?",ayush_agni:"பசி எப்படி?",ayush_koshtha:"மலம் எப்படி?",ayush_ahara_vihara:"என்ன சாப்பிடுவீர்கள்?",ayush_nidana:"என்ன மாற்றம்?",ayush_samprapti:"எப்போது அதிகரிக்கிறது?",ayush_sara:"தோல் முடி நகம்?",ayush_samhanana:"உடல் அமைப்பு?",ayush_satmya:"சகிப்புத்தன்மை?",ayush_pramana:"உயரம் எடை?",ayush_sattva:"மன நிலை?",ayush_ahara_shakti:"செரிமான திறன்?",ayush_vyayama_shakti:"உடற்பயிற்சி?",ayush_vaya:"வயதுக்கு ஏற்ப?",summary:"" },
