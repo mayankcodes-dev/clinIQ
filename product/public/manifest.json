@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "fullscreen",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "theme_color": "#0d9488",
   "orientation": "portrait",
   "categories": ["medical", "health"],
   "lang": "hi",
