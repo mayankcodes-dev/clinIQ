@@ -5,7 +5,7 @@
   "description": "AI-Powered Multilingual Clinical History Platform for Bharat — SIH 2026 PS 26047",
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "opennextjs-cloudflare build",
+    "build": "next build",
     "deploy": "opennextjs-cloudflare build && wrangler deploy",
     "start": "next start",
     "lint": "next lint",
