@@ -45,3 +45,8 @@ next-env.d.ts
 # Internal docs
 cliniq_engineering_handoff.md
 cliniq_logo.jpg
+
+# Brag video output
+brag-output*/
+.agents/
+skills-lock.json
