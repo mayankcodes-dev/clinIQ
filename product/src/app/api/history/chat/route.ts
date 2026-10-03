@@ -341,41 +341,57 @@ async function callGrok(systemPrompt: string, userPrompt: string): Promise<strin
   return callGeminiLegacy(systemPrompt, userPrompt);
 }
 
-// ── Gemini call helper — kept as fallback for questions + primary for summary ─
+// ── Gemini REST helper — works with AQ.* API keys (X-goog-api-key header) ────
+// The @google/genai SDK requires AIza... keys. Our key is AQ.* → REST only.
 
-async function callGeminiLegacy(systemPrompt: string, userPrompt: string): Promise<string | null> {
+async function callGeminiREST(systemPrompt: string, userPrompt: string): Promise<string | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
   const modelsToTry = [
-    process.env.GEMINI_MODEL,
+    process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
     "gemini-2.5-flash",
+    "gemini-1.5-flash-002",
     "gemini-1.5-flash",
   ].filter(Boolean) as string[];
 
   for (const model of modelsToTry) {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const timeoutMs = 15000;
-        const response: any = await Promise.race([
-          ai.models.generateContent({
-            model,
-            contents: [
-              { role: "user", parts: [{ text: systemPrompt }] },
-              { role: "model", parts: [{ text: "Understood. I will ask one contextual question at a time in the patient's language." }] },
-              { role: "user", parts: [{ text: userPrompt }] },
-            ],
-          }),
-          new Promise((_, reject) => setTimeout(() => reject(new Error("GEMINI_TIMEOUT")), timeoutMs)),
-        ]);
-        if (response?.text) return response.text.trim();
-        break;
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED")) {
-          if (attempt === 0) {
-            await new Promise((r) => setTimeout(r, 6000));
-            continue;
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-goog-api-key": apiKey,
+            },
+            signal: AbortSignal.timeout(15000),
+            body: JSON.stringify({
+              ...(systemPrompt ? { system_instruction: { parts: [{ text: systemPrompt }] } } : {}),
+              contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
+            }),
           }
+        );
+
+        if (res.status === 429) {
+          if (attempt === 0) { await new Promise((r) => setTimeout(r, 5000)); continue; }
+          break;
         }
+        if (!res.ok) {
+          console.warn(`[history/chat] Gemini REST ${model} error: ${res.status}`);
+          break;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data: any = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (text) return text;
+        break;
+      } catch (err) {
+        console.warn(`[history/chat] Gemini REST ${model} failed:`, err instanceof Error ? err.message : err);
+        if (attempt === 0) { await new Promise((r) => setTimeout(r, 2000)); continue; }
         break;
       }
     }
@@ -383,8 +399,11 @@ async function callGeminiLegacy(systemPrompt: string, userPrompt: string): Promi
   return null;
 }
 
-// Alias for summary generation — always uses Gemini
-const callGeminiForSummary = (prompt: string) => callGeminiLegacy("", prompt);
+// Keep same call sites working
+const callGeminiLegacy = callGeminiREST;
+const callGeminiForSummary = (prompt: string) => callGeminiREST("", prompt);
+
+
 
 
 // ── Fallback questions ────────────────────────────────────────────────────────
