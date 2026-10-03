@@ -548,9 +548,9 @@ export default function HistoryPage() {
       // Use empty string if stage not in instant map — AI response will fill it
       const instantQ = fb[forStage] ?? "";
 
-      // Show immediately — no wait for user (only if we have an instant fallback)
+      // Clear question to show spinner, then set AI question when ready
       setStage(forStage);
-      if (instantQ) setCurrentQuestion(instantQ);
+      setCurrentQuestion("");
       setAiLoading(true);
 
       // Then silently upgrade with AI-tailored question
@@ -740,34 +740,40 @@ export default function HistoryPage() {
         {/* AI Question bubble */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentQuestion}
+            key={aiLoading && !currentQuestion ? "loading" : currentQuestion}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="bg-brand-50 border border-brand-100 rounded-2xl p-4"
+            className="bg-brand-50 border border-brand-100 rounded-2xl p-4 min-h-[64px] flex items-center"
           >
-            <div className="flex items-start gap-3">
-              <button
-                onClick={() => voice.speak(currentQuestion)}
-                className="h-9 w-9 rounded-full bg-brand-600 flex items-center justify-center
-                           text-white text-sm shrink-0 hover:bg-brand-700 transition-colors"
-                title="Play audio"
-                disabled={aiLoading}
-              >
-                {voice.isSpeaking ? "⏸" : "🔊"}
-              </button>
-              <div className="flex-1 min-w-0">
+            {aiLoading && !currentQuestion ? (
+              /* Simple minimal 3-dot loader */
+              <div className="flex items-center gap-1.5 px-2">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-brand-400 inline-block animate-bounce"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 w-full">
+                <button
+                  onClick={() => voice.speak(currentQuestion)}
+                  className="h-9 w-9 rounded-full bg-brand-600 flex items-center justify-center
+                             text-white text-sm shrink-0 hover:bg-brand-700 transition-colors"
+                  title="Play audio"
+                  disabled={aiLoading}
+                >
+                  {voice.isSpeaking ? "⏸" : "🔊"}
+                </button>
                 <p className="text-lg font-bold text-neutral-900 leading-snug pt-1">
                   {currentQuestion}
                 </p>
-                {aiLoading && (
-                  <p className="text-xs text-brand-400 mt-1 animate-pulse">
-                    ✦ Personalising…
-                  </p>
-                )}
               </div>
-            </div>
+            )}
           </motion.div>
         </AnimatePresence>
 
