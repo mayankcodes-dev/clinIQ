@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     ],
   },
   icons: {
-    icon: "/logo.jpg",
-    shortcut: "/logo.jpg",
-    apple: "/logo.jpg",
+    icon: "/cliniq-logo.svg",
+    shortcut: "/cliniq-logo.svg",
+    apple: "/cliniq-logo.svg",
   },
 };
 
@@ -55,7 +55,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#2563eb",
+  themeColor: "#0d9488",
 };
 
 export default function RootLayout({
@@ -66,8 +66,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo.jpg" />
-        <link rel="apple-touch-icon" href="/logo.jpg" />
+        <link rel="icon" type="image/svg+xml" href="/cliniq-logo.svg" />
+        <link rel="apple-touch-icon" href="/cliniq-logo.svg" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="bg-white antialiased">

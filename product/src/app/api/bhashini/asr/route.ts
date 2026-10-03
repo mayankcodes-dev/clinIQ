@@ -1,12 +1,11 @@
-﻿// src/app/api/bhashini/asr/route.ts
+// src/app/api/bhashini/asr/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 const DHRUVA_ENDPOINT =
   process.env.BHASHINI_INFERENCE_URL ??
-  process.env.NEXT_PUBLIC_BHASHINI_INFERENCE_URL ??
   "https://dhruva-api.bhashini.gov.in/services/inference/pipeline";
-const API_KEY = process.env.BHASHINI_API_KEY ?? process.env.NEXT_PUBLIC_BHASHINI_API_KEY ?? "";
-const USER_ID = process.env.BHASHINI_USER_ID ?? process.env.NEXT_PUBLIC_BHASHINI_USER_ID ?? "";
+const API_KEY = process.env.BHASHINI_API_KEY ?? "";
+const USER_ID = process.env.BHASHINI_USER_ID ?? "";
 
 export async function POST(req: NextRequest) {
   try {

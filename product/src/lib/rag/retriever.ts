@@ -18,23 +18,22 @@ async function loadCache(): Promise<EmbeddedEntry[]> {
   if (_cacheLoadAttempted) return [];
   _cacheLoadAttempted = true;
 
-  // Dynamic import so this file is safe in edge/browser environments
+  // Use dynamic import() — bundled by esbuild at build time.
+  // Works in Cloudflare Workers AND Node.js (no fs.readFileSync needed).
+  // The JSON is committed to the repo and bundled into the Worker deployment.
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require("fs") as typeof import("fs");
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path") as typeof import("path");
-    const cachePath = path.join(process.cwd(), "src", "lib", "rag", "embeddings-cache.json");
-    if (!fs.existsSync(cachePath)) {
-      console.warn("[RAG] embeddings-cache.json not found. Run POST /api/rag/ingest to build it.");
-      return (_cache = []);
+    const mod = await import("../rag/embeddings-cache.json");
+    const data = (mod.default ?? mod) as EmbeddedEntry[];
+    _cache = Array.isArray(data) ? data : [];
+    if (_cache.length > 0) {
+      console.info(`[RAG] Loaded ${_cache.length} embedded entries from bundled cache`);
+    } else {
+      console.warn("[RAG] Embedded cache is empty. Run scripts/generate-embeddings.mjs to populate it.");
     }
-    const raw = fs.readFileSync(cachePath, "utf-8");
-    _cache = JSON.parse(raw) as EmbeddedEntry[];
-    console.info(`[RAG] Loaded ${_cache.length} embedded entries from cache`);
     return _cache;
-  } catch (err) {
-    console.error("[RAG] Failed to load embeddings cache:", err);
+  } catch {
+    // Cache JSON not committed yet — run the generate script first
+    console.warn("[RAG] embeddings-cache.json not found in bundle. Falling back to keyword search.");
     return (_cache = []);
   }
 }

@@ -1,8 +1,11 @@
 // src/app/api/session/save/route.ts
 // Saves a complete patient session to Neon DB at the end of the kiosk flow
 // Called from summary/page.tsx when patient taps "Submit to Doctor"
+// Requires a valid patient session token (issued at OTP verify) in Authorization header.
 
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+import { z } from "zod";
 import { db, sessions, patients, historyRecords, scannedDocs, consents } from "@/lib/db";
 
 // Inline cuid if package not available
@@ -10,9 +13,72 @@ function cuid() {
   return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 }
 
+// ── Zod schema — validates shape and bounds on incoming payload ──────────────
+const SaveSessionSchema = z.object({
+  lang: z.string().max(10).optional(),
+  mode: z.string().max(20).optional(),
+  patient: z.object({
+    name: z.string().max(200).nullish(),
+    gender: z.string().max(20).nullish(),
+    yearOfBirth: z.string().max(4).nullish(),
+    abhaNumber: z.string().max(50).nullish(),
+    mobile: z.string().max(15).nullish(),
+  }).optional(),
+  consent: z.object({
+    dataCapture: z.boolean().optional(),
+    doctorShare: z.boolean().optional(),
+    abhaLink: z.boolean().optional(),
+    audioRecording: z.boolean().optional(),
+  }).optional(),
+  history: z.object({
+    messages: z.array(z.any()).max(500).optional(),
+    summary: z.record(z.string(), z.any()).nullish(),
+  }).optional(),
+  docs: z.array(z.record(z.string(), z.any())).max(20).optional(),
+});
+
 export async function POST(req: NextRequest) {
+  // ── Patient session token auth ─────────────────────────────────────────────
+  const authHeader = req.headers.get("authorization");
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (authHeader?.startsWith("Bearer ")) {
+    // Verify the token
+    const patientToken = authHeader.slice(7);
+    const dotIdx = patientToken.lastIndexOf(".");
+    if (dotIdx === -1) {
+      return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
+    }
+    const payloadB64 = patientToken.slice(0, dotIdx);
+    const tokenSig = patientToken.slice(dotIdx + 1);
+    const secret = process.env.NEXTAUTH_SECRET ?? process.env.APP_SECRET ?? "ClinIQ-dev-otp-salt";
+    const payload = Buffer.from(payloadB64, "base64").toString();
+    const expectedSig = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+    try {
+      if (!crypto.timingSafeEqual(Buffer.from(tokenSig, "hex"), Buffer.from(expectedSig, "hex"))) {
+        return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
+    }
+  } else if (isProduction) {
+    // In production, always require a token
+    return NextResponse.json({ error: "Patient session token required" }, { status: 401 });
+  } else {
+    // Dev: log warning but allow anonymous/guest sessions to save
+    console.warn("[session/save] ⚠️  No patient token (dev mode) — allowing anonymous save");
+  }
+
   try {
-    const body = await req.json();
+    // ── Validate request body ────────────────────────────────────────────────
+    const rawBody = await req.json();
+    const parseResult = SaveSessionSchema.safeParse(rawBody);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Invalid request body", details: parseResult.error.flatten() },
+        { status: 400 }
+      );
+    }
     const {
       lang,
       mode,
@@ -20,7 +86,7 @@ export async function POST(req: NextRequest) {
       consent: consentData,
       history,
       docs,
-    } = body;
+    } = parseResult.data;
 
     const sessionId = cuid();
     const patientId = cuid();

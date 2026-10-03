@@ -8,6 +8,13 @@
       "when": 1789169559425,
       "tag": "0000_simple_amphibian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791007280910,
+      "tag": "0001_clear_wallow",
+      "breakpoints": true
     }
   ]
 }

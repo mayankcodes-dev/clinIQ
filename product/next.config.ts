@@ -6,20 +6,19 @@ const nextConfig: NextConfig = {
   // Do NOT enable by default — causes PageNotFoundError with workspace root
   // detection when a package-lock.json exists in a parent directory.
   ...(process.env.NEXT_OUTPUT === "standalone" ? { output: "standalone" } : {}),
-  // Skip type errors during `next build` in Phase 0.
-  // Run `npm run typecheck` separately for strict checking.
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
-  // Skip ESLint errors during build (run `npm run lint` separately)
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
+  // Fix: multiple package-lock.json files confuse Next.js workspace root detection
+  outputFileTracingRoot: require("path").join(__dirname, "./"),
   images: {
     remotePatterns: [],
   },
-  // Node.js built-ins used in RAG retriever (fs) and ABDM crypto — keep server-side only
-  serverExternalPackages: ["fs", "path", "crypto"],
+  // crypto kept server-side for ABDM HMAC signing
+  serverExternalPackages: ["crypto"],
   // Security headers
   async headers() {
     return [

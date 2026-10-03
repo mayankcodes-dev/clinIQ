@@ -867,26 +867,6 @@ export default function HistoryPage() {
       />
 
       <KioskBody className="space-y-4">
-        {/* Stage badge */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {(STAGES as Stage[]).map((s: Stage, i: number) => (
-            <span
-              key={s}
-              className={cn(
-                "shrink-0 text-xs px-2.5 py-1 rounded-full font-semibold transition-all",
-                i < stageIndex
-                  ? "bg-brand-600 text-white"
-                  : i === stageIndex
-                  ? "bg-secondary-500 text-white"
-                  : "bg-neutral-100 text-neutral-400"
-              )}
-            >
-              {i < stageIndex ? "✓" : i + 1} {getStageLabels(lang)[s as Stage]}
-            </span>
-          ))}
-
-        </div>
-
         {/* Circular Progress Indicator */}
         <CircularProgress current={stageIndex + 1} total={STAGES.length} />
 
@@ -894,9 +874,10 @@ export default function HistoryPage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             className="bg-brand-50 border border-brand-100 rounded-2xl p-4"
           >
             {aiLoading ? (

@@ -234,7 +234,13 @@ export default function SummaryPage() {
 
       await fetch("/api/session/save", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Patient session token from OTP verify — required by /api/session/save
+          ...(sessionStorage.getItem("mk_patient_token")
+            ? { Authorization: `Bearer ${sessionStorage.getItem("mk_patient_token")}` }
+            : {}),
+        },
         body: JSON.stringify({
           lang,
           mode: sessionStorage.getItem("mk_mode") ?? "combined",

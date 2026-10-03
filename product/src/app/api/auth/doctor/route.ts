@@ -32,9 +32,13 @@ function safeCompare(a: string, b: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  // Warn at runtime (not build time) when DOCTOR_PIN not configured in prod
-  if (process.env.NODE_ENV === "production" && !process.env.DOCTOR_PIN) {
-    console.error("[doctor-auth] CRITICAL: DOCTOR_PIN env var is not set in production!");
+  // Fail-fast if DOCTOR_PIN is not configured — never fall back to a default
+  if (!process.env.DOCTOR_PIN) {
+    console.error("[doctor-auth] CRITICAL: DOCTOR_PIN env var is not set. Doctor authentication is disabled.");
+    return NextResponse.json(
+      { error: "Doctor authentication is not configured. Contact the system administrator." },
+      { status: 503 }
+    );
   }
 
   try {
@@ -57,7 +61,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const correctPin = process.env.DOCTOR_PIN ?? "1234";
+    const correctPin = process.env.DOCTOR_PIN!; // guaranteed set by fail-fast check above
     const isCorrect = safeCompare(pin, correctPin);
 
     if (!isCorrect) {

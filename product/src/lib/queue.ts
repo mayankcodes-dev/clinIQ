@@ -3,6 +3,7 @@
 // Production upgrade: swap Map for Vercel KV (Redis) — same interface
 
 export interface QueuePatient {
+  id?: string;             // DB row id — needed for PATCH /api/queue/note
   token: string;           // e.g. "A-042"
   tokenIndex: number;      // 1-based sequential number
   lang: string;
@@ -14,6 +15,7 @@ export interface QueuePatient {
   redFlags: string[];
   ayushNote?: string;
   hasDocuments: boolean;
+  doctorNotes?: string;    // persisted doctor annotations
   submittedAt: string;     // ISO timestamp
   status: "waiting" | "calling" | "in_consultation" | "done";
 }

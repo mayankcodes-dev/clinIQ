@@ -90,6 +90,7 @@ export const queueEntries = pgTable("queue_entries", {
   hasDocuments:   boolean("has_documents").notNull().default(false),
   status:         text("status").notNull().default("waiting"),
   // "waiting" | "calling" | "in_consultation" | "done"
+  doctorNotes:    text("doctor_notes"),                         // persisted doctor annotations
   submittedAt:    timestamp("submitted_at").defaultNow().notNull(),
   updatedAt:      timestamp("updated_at").defaultNow().notNull(),
 });
@@ -100,7 +101,7 @@ export const queueEntries = pgTable("queue_entries", {
 export const otpSessions = pgTable("otp_sessions", {
   id:         text("id").primaryKey(),             // random UUID = session token
   mobile:     text("mobile").notNull(),             // 10-digit number, no country code
-  otp:        text("otp").notNull(),                // 6-digit plaintext (demo); hash in prod
+  otp:        text("otp").notNull(),                // HMAC-SHA256 hash of the 6-digit OTP — plaintext never stored
   expiresAt:  timestamp("expires_at").notNull(),    // created_at + 5 min
   attempts:   integer("attempts").notNull().default(0),
   createdAt:  timestamp("created_at").defaultNow().notNull(),

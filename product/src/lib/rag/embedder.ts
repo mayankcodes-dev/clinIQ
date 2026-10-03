@@ -24,16 +24,31 @@ export async function embedText(text: string): Promise<number[]> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set — cannot generate embeddings");
 
-  const genai = new GoogleGenAI({ apiKey });
-  const result = await genai.models.embedContent({
-    model: "text-embedding-004",
-    contents: text,
-  });
+  // Use REST API directly — more reliable across key formats (AIza..., AQ.Ab8..., etc.)
+  const res = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:embedContent",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        model: "models/gemini-embedding-2",
+        content: { parts: [{ text }] },
+      }),
+      signal: AbortSignal.timeout(15_000),
+    }
+  );
 
-  const values = result.embeddings?.[0]?.values;
-  if (!values || values.length === 0) {
-    throw new Error("Gemini embedding returned empty vector");
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(`Gemini embedding error ${res.status}: ${err.slice(0, 200)}`);
   }
+
+  const data = await res.json() as { embedding: { values: number[] } };
+  const values = data?.embedding?.values;
+  if (!values?.length) throw new Error("Gemini embedding returned empty vector");
   return values;
 }
 

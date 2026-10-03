@@ -138,6 +138,10 @@ export default function LoginPage() {
           return;
         }
         profile = data.profile;
+        // Store the patient session token for /api/session/save auth
+        if (data.patientToken) {
+          sessionStorage.setItem("mk_patient_token", data.patientToken);
+        }
       } else {
         const res = await fetch("/api/abdm", {
           method: "POST",

@@ -18,8 +18,11 @@ import { eq, lt } from "drizzle-orm";
 // Hash OTPs before storing in DB — prevents plaintext credential exposure if DB
 // is ever compromised. Uses HMAC-SHA256 with the app secret as salt.
 function hashOtp(otp: string): string {
-  const secret = process.env.NEXTAUTH_SECRET ?? "ClinIQ-otp-salt";
-  return crypto.createHmac("sha256", secret).update(otp).digest("hex");
+  const secret = process.env.NEXTAUTH_SECRET ?? process.env.APP_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error("NEXTAUTH_SECRET or APP_SECRET must be set in production");
+  }
+  return crypto.createHmac("sha256", secret ?? "ClinIQ-dev-otp-salt").update(otp).digest("hex");
 }
 
 // ── Twilio SMS ────────────────────────────────────────────────────────────────
@@ -174,7 +177,10 @@ export async function POST(req: NextRequest) {
         txnId: newTxnId,
         masked: maskedMobile,
         expiresInSeconds: 300,
-        ...(twilioOk ? {} : { devOtp: "0000", devNote: `SMS not delivered (${twilioError}). Use code 0000 to continue.` }),
+        ...(twilioOk ? {} : {
+          // In dev only: show a note that SMS failed. In production, fail loudly.
+          ...(process.env.NODE_ENV !== "production" ? { devNote: `SMS not delivered (${twilioError}). In dev, check Neon DB otp_sessions for the OTP hash to test.` } : { error: `SMS delivery failed: ${twilioError}` }),
+        }),
       });
     }
 
@@ -204,8 +210,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Compare hashes — 0000 universal bypass checked before hashing
-      const isUniversalBypass = otp === "0000";
+      // Constant-time hash comparison — no universal bypass in any environment
       const otpHash = hashOtp(otp);
       const hashesMatch = (() => {
         try {
@@ -216,7 +221,7 @@ export async function POST(req: NextRequest) {
         } catch { return false; }
       })();
 
-      if (!isUniversalBypass && !hashesMatch) {
+      if (!hashesMatch) {
         await db.update(otpSessions)
           .set({ attempts: newAttempts })
           .where(eq(otpSessions.id, txnId))
@@ -234,8 +239,14 @@ export async function POST(req: NextRequest) {
 
       const abhaProfile = await lookupABHAByMobile(verifiedMobile, otp);
 
+      // Create a short-lived patient session token for the save endpoint
+      const patientSessionPayload = `patient:${verifiedMobile}:${Date.now()}`;
+      const tokenSecret = process.env.NEXTAUTH_SECRET ?? process.env.APP_SECRET ?? "ClinIQ-dev-otp-salt";
+      const patientToken = `${Buffer.from(patientSessionPayload).toString("base64")}.${crypto.createHmac("sha256", tokenSecret).update(patientSessionPayload).digest("hex")}`;
+
       return NextResponse.json({
         success: true,
+        patientToken,
         profile: {
           mobile:      verifiedMobile,
           name:        abhaProfile?.name ?? "Verified Patient",

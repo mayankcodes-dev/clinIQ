@@ -206,7 +206,7 @@ function buildSystemPrompt(
     ? `\n\n--- CLINICAL KNOWLEDGE (use this to guide relevant follow-up) ---\n${ragContext}\n--- END CLINICAL KNOWLEDGE ---`
     : "";
 
-  return `You are ClinIQ — an empathetic clinical history-taking AI assistant deployed at Indian government hospitals and kiosks.
+  return `You are ClinIQ — an empathetic clinical history-taking AI assistant for Indian clinics, hospitals, and healthcare providers.
 
 CORE ROLE: Gather medical history from patients BEFORE they see the doctor. You are NOT diagnosing — only listening and asking follow-up questions.
 
@@ -317,7 +317,7 @@ async function callGrok(systemPrompt: string, userPrompt: string): Promise<strin
       }
 
       if (!response.ok) {
-        console.warn(`[history/chat] Groq API error: ${response.status}`);
+        console.warn(`[history/chat] Grok (xAI) API error: ${response.status}`);
         break;
       }
 
@@ -327,7 +327,7 @@ async function callGrok(systemPrompt: string, userPrompt: string): Promise<strin
       if (text) return text;
       break;
     } catch (err) {
-      console.warn("[history/chat] Groq call failed:", err instanceof Error ? err.message : err);
+      console.warn("[history/chat] Grok (xAI) call failed:", err instanceof Error ? err.message : err);
       if (attempt === 0) {
         await new Promise((r) => setTimeout(r, 2000));
         continue;
@@ -337,7 +337,7 @@ async function callGrok(systemPrompt: string, userPrompt: string): Promise<strin
   }
 
   // Fallback to Gemini if Grok fails
-  console.warn("[history/chat] Groq failed, falling back to Gemini for question generation");
+  console.warn("[history/chat] Grok (xAI) failed, falling back to Gemini for question generation");
   return callGeminiLegacy(systemPrompt, userPrompt);
 }
 

@@ -45,9 +45,10 @@ export default function DoctorDashboard() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [pollingOk, setPollingOk] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  // Doctor annotations keyed by token
+  // Doctor annotations keyed by queue entry id — persisted via PATCH /api/queue/note
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [editingNote, setEditingNote] = useState(false);
+  const [savingNote, setSavingNote] = useState(false);
 
   // ── SSE real-time connection ──────────────────────────────────
   const fetchQueue = useCallback(async () => {
@@ -114,6 +115,16 @@ export default function DoctorDashboard() {
       prev?.token === token ? { ...prev, status } : prev
     );
   }, [fetchQueue, sessionToken]);
+
+  // ── Select patient + pre-populate note from DB ───────────────
+  const handleSelectPatient = useCallback((p: QueuePatient) => {
+    setSelected(p);
+    setEditingNote(false);
+    // Pre-populate from persisted DB note so it survives page refresh
+    if (p.doctorNotes !== undefined) {
+      setNotes((prev) => ({ ...prev, [p.token]: p.doctorNotes ?? "" }));
+    }
+  }, []);
 
   // ── PIN screen ────────────────────────────────────────────────
   if (!authed) {
@@ -267,7 +278,7 @@ export default function DoctorDashboard() {
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              onClick={() => setSelected(p)}
+              onClick={() => handleSelectPatient(p)}
               className={cn(
                 "bg-secondary-50 border-2 border-secondary-300 rounded-2xl p-4",
                 "cursor-pointer hover:shadow-md transition-all",
@@ -292,7 +303,7 @@ export default function DoctorDashboard() {
             <motion.div
               key={p.token}
               layout
-              onClick={() => setSelected(p)}
+              onClick={() => handleSelectPatient(p)}
               className={cn(
                 "bg-brand-50 border-2 border-brand-200 rounded-2xl p-4",
                 "cursor-pointer hover:shadow-md transition-all",
@@ -323,7 +334,7 @@ export default function DoctorDashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: i * 0.04 }}
-                  onClick={() => setSelected(p)}
+                  onClick={() => handleSelectPatient(p)}
                   className={cn(
                     "bg-white border border-neutral-200 rounded-2xl p-4",
                     "cursor-pointer hover:border-brand-300 hover:shadow-sm transition-all",
@@ -516,11 +527,35 @@ export default function DoctorDashboard() {
                         📝 Doctor&apos;s Note / Annotation
                       </p>
                       <button
-                        onClick={() => setEditingNote((v) => !v)}
+                        onClick={async () => {
+                          if (editingNote && selected.id) {
+                            // Persist note on Done
+                            setSavingNote(true);
+                            try {
+                              await fetch("/api/queue/note", {
+                                method: "PATCH",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: sessionToken,
+                                },
+                                body: JSON.stringify({
+                                  id: selected.id,
+                                  note: notes[selected.token] ?? "",
+                                }),
+                              });
+                            } catch (e) {
+                              console.warn("[doctor] Failed to save note:", e);
+                            } finally {
+                              setSavingNote(false);
+                            }
+                          }
+                          setEditingNote((v) => !v);
+                        }}
+                        disabled={savingNote}
                         className="text-xs font-semibold text-amber-600 hover:text-amber-800
-                                   underline transition-colors"
+                                   underline transition-colors disabled:opacity-50"
                       >
-                        {editingNote ? "Done" : "Edit"}
+                        {savingNote ? "Saving…" : editingNote ? "Done" : "Edit"}
                       </button>
                     </div>
                     {editingNote ? (
@@ -627,7 +662,7 @@ export default function DoctorDashboard() {
                 {data.done.map((p) => (
                   <button
                     key={p.token}
-                    onClick={() => setSelected(p)}
+                    onClick={() => handleSelectPatient(p)}
                     className="bg-green-50 border border-green-200 text-green-800
                                font-bold text-sm px-3 py-1.5 rounded-xl
                                hover:bg-green-100 transition-colors"
