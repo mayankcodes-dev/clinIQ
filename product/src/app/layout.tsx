@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     ],
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/cliniq-logo.svg",
+    shortcut: "/cliniq-logo.svg",
     apple: "/cliniq-logo.svg",
   },
 };
@@ -66,7 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/cliniq-logo.svg" />
         <link rel="apple-touch-icon" href="/cliniq-logo.svg" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>

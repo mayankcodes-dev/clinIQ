@@ -11,7 +11,7 @@ import {
   AudioWave,
 } from "@/components/kiosk/KioskLayout";
 import { Button, Card } from "@/components/ui/primitives";
-import ClinIQLoader from "@/components/ClinIQLoader";
+
 import { cn } from "@/lib/utils";
 import { COMMON_SYMPTOMS } from "@/lib/constants";
 import { t } from "@/lib/translations";
@@ -545,11 +545,12 @@ export default function HistoryPage() {
         ur: { chief_complaint:"آج اہم مسئلہ؟",hpi:"کب سے؟",past_history:"پہلے بیماری؟",drug_allergy:"دوائی الرجی؟",family_history:"خاندان؟",personal_history:"کام؟",review_of_systems:"اعضاء؟",ayush_prakriti:"جلد؟",ayush_vikriti:"ابھی؟",ayush_agni:"بھوک؟",ayush_koshtha:"پیٹ؟",ayush_ahara_vihara:"کھانا؟",ayush_nidana:"کیا بدلا؟",ayush_samprapti:"کب؟",ayush_sara:"جلد بال؟",ayush_samhanana:"ساخت؟",ayush_satmya:"برداشت؟",ayush_pramana:"قد؟",ayush_sattva:"ذہن؟",ayush_ahara_shakti:"ہضم؟",ayush_vyayama_shakti:"ورزش؟",ayush_vaya:"عمر؟",summary:"" },
       };
       const fb = INSTANT[lang] ?? INSTANT["hi"];
-      const instantQ = fb[forStage] ?? fb["chief_complaint"] ?? "";
+      // Use empty string if stage not in instant map — AI response will fill it
+      const instantQ = fb[forStage] ?? "";
 
-      // Show immediately — no wait for user
+      // Show immediately — no wait for user (only if we have an instant fallback)
       setStage(forStage);
-      setCurrentQuestion(instantQ);
+      if (instantQ) setCurrentQuestion(instantQ);
       setAiLoading(true);
 
       // Then silently upgrade with AI-tailored question
@@ -658,6 +659,12 @@ export default function HistoryPage() {
     );
   }
 
+  // Clear selections when stage advances so old chips don't linger on new question
+  useEffect(() => {
+    setSelectedChips([]);
+    setPatientInput("");
+  }, [stage]);
+
   const canSubmit = selectedChips.length > 0 || patientInput.trim().length > 1;
   const chips = (TOUCH_OPTIONS_L10N[lang] ?? TOUCH_OPTIONS_L10N["hi"])[stage] ?? COMMON_SYMPTOMS.slice(0, 8).map((s) => s.labelHi);
 
@@ -740,25 +747,27 @@ export default function HistoryPage() {
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="bg-brand-50 border border-brand-100 rounded-2xl p-4"
           >
-            {aiLoading ? (
-              <div className="flex items-center gap-3">
-                <ClinIQLoader />
-              </div>
-            ) : (
-              <div className="flex items-start gap-3">
-                <button
-                  onClick={() => voice.speak(currentQuestion)}
-                  className="h-9 w-9 rounded-full bg-brand-600 flex items-center justify-center
-                             text-white text-sm shrink-0 hover:bg-brand-700 transition-colors"
-                  title="Play audio"
-                >
-                  {voice.isSpeaking ? "⏸" : "🔊"}
-                </button>
+            <div className="flex items-start gap-3">
+              <button
+                onClick={() => voice.speak(currentQuestion)}
+                className="h-9 w-9 rounded-full bg-brand-600 flex items-center justify-center
+                           text-white text-sm shrink-0 hover:bg-brand-700 transition-colors"
+                title="Play audio"
+                disabled={aiLoading}
+              >
+                {voice.isSpeaking ? "⏸" : "🔊"}
+              </button>
+              <div className="flex-1 min-w-0">
                 <p className="text-lg font-bold text-neutral-900 leading-snug pt-1">
                   {currentQuestion}
                 </p>
+                {aiLoading && (
+                  <p className="text-xs text-brand-400 mt-1 animate-pulse">
+                    ✦ Personalising…
+                  </p>
+                )}
               </div>
-            )}
+            </div>
           </motion.div>
         </AnimatePresence>
 
