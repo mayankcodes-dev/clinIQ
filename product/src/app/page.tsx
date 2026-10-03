@@ -1,102 +1,95 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { PRIMARY_LANGUAGES, LANGUAGES, type Language } from "@/lib/constants";
 
-// 13 Tier-1 Indian languages — code matches mk_lang sessionStorage key
-const LANGUAGES = [
-  { code: "hi", name: "हिन्दी",        english: "Hindi",      script: "देवनागरी" },
-  { code: "en", name: "English",        english: "English",    script: "Latin" },
-  { code: "bn", name: "বাংলা",          english: "Bengali",    script: "বাংলা" },
-  { code: "te", name: "తెలుగు",         english: "Telugu",     script: "తెలుగు" },
-  { code: "mr", name: "मराठी",          english: "Marathi",    script: "देवनागरी" },
-  { code: "ta", name: "தமிழ்",          english: "Tamil",      script: "தமிழ்" },
-  { code: "gu", name: "ગુજરાતી",        english: "Gujarati",   script: "ગુજરાતી" },
-  { code: "kn", name: "ಕನ್ನಡ",          english: "Kannada",    script: "ಕನ್ನಡ" },
-  { code: "ml", name: "മലയാളം",         english: "Malayalam",  script: "മലയാളം" },
-  { code: "pa", name: "ਪੰਜਾਬੀ",         english: "Punjabi",    script: "ਗੁਰਮੁਖੀ" },
-  { code: "or", name: "ଓଡ଼ିଆ",          english: "Odia",       script: "ଓଡ଼ିଆ" },
-  { code: "ur", name: "اردو",           english: "Urdu",       script: "نستعلیق" },
-  { code: "as", name: "অসমীয়া",        english: "Assamese",   script: "অসমীয়া" },
-];
-
-export default function LanguageSelect() {
+export default function LanguageSelectionPage() {
   const router = useRouter();
+  const [showAll, setShowAll] = useState(false);
 
-  function selectLanguage(code: string) {
-    sessionStorage.setItem("mk_lang", code);
+  const displayLanguages = showAll ? LANGUAGES : PRIMARY_LANGUAGES;
+
+  function handleSelect(lang: Language) {
+    sessionStorage.setItem("mk_lang", lang.code);
+    sessionStorage.setItem("mk_lang_name", lang.nameEn);
     router.push("/patient/consent");
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-teal-50 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-white/80 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/cliniq-logo.svg"
-            alt="ClinIQ"
-            width={100}
-            height={32}
-            className="h-8 w-auto"
-          />
-        </div>
-        <p className="text-xs text-neutral-400 font-medium">AI Clinical History Platform</p>
+    <main className="min-h-dvh bg-white flex flex-col">
+      {/* Logo + Hero */}
+      <div className="flex flex-col items-center pt-10 pb-4 px-6">
+        <Image
+          src="/cliniq-logo.svg"
+          alt="ClinIQ"
+          width={120}
+          height={40}
+          className="h-10 w-auto"
+          priority
+        />
+        <p className="mt-3 text-neutral-400 text-sm">AI Clinical History Platform</p>
       </div>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 max-w-2xl mx-auto w-full">
-        {/* Title */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl font-black text-neutral-900 mb-2">
-            अपनी भाषा चुनें
-          </h1>
-          <p className="text-neutral-500 text-base font-medium">
-            Choose your language · ਭਾਸ਼ਾ ਚੁਣੋ · மொழியை தேர்வு செய்யவும்
-          </p>
-        </motion.div>
+      {/* Heading */}
+      <div className="text-center px-6 mb-5">
+        <h2 className="text-2xl font-bold text-neutral-900">अपनी भाषा चुनें</h2>
+        <p className="text-neutral-400 mt-0.5 text-sm">Choose Your Language</p>
+      </div>
 
-        {/* Language grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full">
-          {LANGUAGES.map((lang, i) => (
-            <motion.button
+      {/* Grid */}
+      <div className="flex-1 px-5 pb-6 max-w-lg w-full mx-auto">
+        <div className="grid grid-cols-3 gap-2.5">
+          {displayLanguages.map((lang) => (
+            <button
               key={lang.code}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25, delay: i * 0.03 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => selectLanguage(lang.code)}
-              className="group relative flex flex-col items-center justify-center gap-1 
-                         bg-white border-2 border-neutral-200 rounded-2xl p-4 
-                         hover:border-brand-400 hover:bg-brand-50 hover:shadow-md
-                         transition-all duration-150 min-h-[88px]"
+              onClick={() => handleSelect(lang)}
+              dir={lang.rtl ? "rtl" : "ltr"}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1",
+                "rounded-2xl border-2 border-neutral-200 bg-white p-3.5",
+                "min-h-[82px] cursor-pointer select-none",
+                "hover:border-brand-400 hover:bg-brand-50 hover:shadow-sm",
+                "active:scale-95 transition-all duration-150",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600"
+              )}
             >
-              <span className="text-2xl font-black text-neutral-900 group-hover:text-brand-700 transition-colors leading-none">
+              <span
+                className={cn(
+                  "font-bold text-neutral-900 leading-tight",
+                  lang.code === "en" ? "text-base" : "text-lg"
+                )}
+              >
                 {lang.name}
               </span>
-              <span className="text-xs font-semibold text-neutral-400 group-hover:text-brand-500 transition-colors">
-                {lang.english}
-              </span>
-            </motion.button>
+              <span className="text-[11px] text-neutral-400">{lang.nameEn}</span>
+            </button>
           ))}
         </div>
 
-        {/* Footer note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-xs text-neutral-400 text-center mt-8"
+        <button
+          onClick={() => setShowAll((v) => !v)}
+          className="w-full mt-4 py-2.5 rounded-xl border border-neutral-200
+                     text-brand-600 font-semibold text-sm
+                     hover:bg-brand-50 hover:border-brand-300 transition-colors"
         >
-          🔒 आपका डेटा सुरक्षित है · Your data is protected
-        </motion.p>
+          {showAll
+            ? "↑ प्रमुख भाषाएं / Show Main Languages"
+            : "+ सभी 22 भाषाएं / All 22 Languages"}
+        </button>
       </div>
-    </div>
+
+      {/* Footer */}
+      <div className="border-t border-neutral-100 py-3 px-6 flex items-center
+                      justify-center gap-5 text-xs text-neutral-300">
+        <span>🔒 Data Protected</span>
+        <span>·</span>
+        <span>🇮🇳 Made for Bharat</span>
+        <span>·</span>
+        <span>DPDP 2023</span>
+      </div>
+    </main>
   );
 }
