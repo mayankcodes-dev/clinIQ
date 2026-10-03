@@ -2,18 +2,16 @@
 
 // src/hooks/useVoiceSession.ts
 // 3-layer voice pipeline:
-//   Layer 1: Bhashini Dhruva (IndicConformer ASR + IndicTTS) — primary when key available
+//   Layer 1: ElevenLabs Multilingual v2 (primary TTS) + Bhashini ASR — via server proxy
 //   Layer 2: Browser Web Speech API (Chrome) — fallback (10/13 languages)
 //   Layer 3: Silent mode — touch-only when both unavailable
 //
-// To enable Bhashini: set NEXT_PUBLIC_BHASHINI_USER_ID + NEXT_PUBLIC_BHASHINI_API_KEY in .env.local
-// Hook interface stays identical — swap is transparent to UI.
+// All API keys are server-side. No NEXT_PUBLIC_ credentials in the browser bundle.
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
   isBhashiniConfigured,
   bhashiniASR,
-  playAudioBuffer,
 } from "@/lib/bhashini";
 
 export type VoiceState =
@@ -50,16 +48,33 @@ const WEB_SPEECH_LANGS: Record<string, { bcp47: string; supported: boolean }> = 
 };
 
 // ── MediaRecorder for Bhashini (captures raw audio) ──────────────
+// Tries MIME types in order of quality/compat. Falls back to browser default.
 class BhashiniRecorder {
   private mediaRecorder: MediaRecorder | null = null;
   private chunks: Blob[] = [];
   private stream: MediaStream | null = null;
 
+  static getBestMimeType(): string {
+    const types = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/ogg;codecs=opus",
+      "audio/ogg",
+      "audio/mp4",
+    ];
+    for (const t of types) {
+      if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) return t;
+    }
+    return ""; // browser default
+  }
+
   async start(): Promise<void> {
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.mediaRecorder = new MediaRecorder(this.stream, {
-      mimeType: "audio/webm;codecs=opus",
-    });
+    const mimeType = BhashiniRecorder.getBestMimeType();
+    this.mediaRecorder = new MediaRecorder(
+      this.stream,
+      mimeType ? { mimeType } : undefined
+    );
     this.chunks = [];
     this.mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.chunks.push(e.data);
@@ -70,16 +85,29 @@ class BhashiniRecorder {
   stop(): Promise<Blob> {
     return new Promise((resolve) => {
       if (!this.mediaRecorder) {
+        this.releaseStream();
         resolve(new Blob([], { type: "audio/webm" }));
         return;
       }
+      const mimeType = this.mediaRecorder.mimeType || "audio/webm";
       this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.chunks, { type: "audio/webm" });
-        this.stream?.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(this.chunks, { type: mimeType });
+        this.releaseStream();
         resolve(blob);
       };
-      this.mediaRecorder.stop();
+      if (this.mediaRecorder.state !== "inactive") {
+        this.mediaRecorder.stop();
+      } else {
+        this.releaseStream();
+        resolve(new Blob(this.chunks, { type: mimeType }));
+      }
     });
+  }
+
+  /** Release all mic tracks so the browser mic indicator turns off */
+  private releaseStream(): void {
+    this.stream?.getTracks().forEach((t) => t.stop());
+    this.stream = null;
   }
 }
 
@@ -97,6 +125,9 @@ export function useVoiceSession({
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const recorderRef = useRef<BhashiniRecorder | null>(null);
+  // Track the live AudioContext so speak() can kill it on every new call
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
   const webSpeechInfo = WEB_SPEECH_LANGS[lang] ?? { bcp47: "hi-IN", supported: false };
 
@@ -116,41 +147,82 @@ export function useVoiceSession({
     };
   }, [lang, webSpeechInfo.supported]);
 
+  /** Stop and close any AudioContext that is currently playing */
+  const killActiveAudio = useCallback(() => {
+    try { audioSourceRef.current?.stop(); } catch { /* already stopped */ }
+    audioSourceRef.current = null;
+    try { audioCtxRef.current?.close(); } catch { /* already closed */ }
+    audioCtxRef.current = null;
+  }, []);
+
   // ────────────────────────────────────────────────────────────────
-  // SPEAK — Bhashini TTS primary, SpeechSynthesis fallback
+  // SPEAK — ElevenLabs/Bhashini TTS primary, SpeechSynthesis fallback
+  //
+  // KEY BEHAVIOUR: every call to speak() IMMEDIATELY kills any audio
+  // still playing from the previous question. Old audio can never bleed
+  // into a new question — the transition is instant and clean.
   // ────────────────────────────────────────────────────────────────
   const speak = useCallback(
     async (text: string, onEnd?: () => void) => {
       if (!text) { onEnd?.(); return; }
+
+      // Kill whatever is playing from the previous question instantly
       synthRef.current?.cancel();
+      killActiveAudio();
       setState("speaking");
       setIsSpeaking(true);
 
-      // ── Server-side Bhashini TTS (API key stays on server) ───────
+      // ── Server-side TTS (ElevenLabs primary → Bhashini fallback) ─
       if (engine === "bhashini") {
         try {
           const res = await fetch("/api/bhashini/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text, lang, gender: "female" }),
+            signal: AbortSignal.timeout(12_000),
           });
           if (res.ok) {
             const { audioBase64 } = await res.json();
             if (audioBase64) {
-              // Decode base64 → ArrayBuffer
               const binaryStr = atob(audioBase64);
               const bytes = new Uint8Array(binaryStr.length);
               for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
-              await playAudioBuffer(bytes.buffer, () => {
-                setIsSpeaking(false);
-                setState("idle");
-                onEnd?.();
-              });
+
+              // Create a cancellable AudioContext — stored in ref for killActiveAudio()
+              const audioCtx = new AudioContext();
+              audioCtxRef.current = audioCtx;
+              let decoded: AudioBuffer;
+              try {
+                decoded = await audioCtx.decodeAudioData(bytes.buffer);
+              } catch {
+                audioCtx.close().catch(() => {});
+                if (audioCtxRef.current === audioCtx) audioCtxRef.current = null;
+                throw new Error("Audio decode failed");
+              }
+
+              const source = audioCtx.createBufferSource();
+              audioSourceRef.current = source;
+              source.buffer = decoded;
+              source.connect(audioCtx.destination);
+              source.onended = () => {
+                // Guard: only fire onEnd if we are still the active source.
+                // If killActiveAudio() ran first, audioSourceRef.current is null.
+                if (audioSourceRef.current === source) {
+                  audioSourceRef.current = null;
+                  audioCtxRef.current = null;
+                  setIsSpeaking(false);
+                  setState("idle");
+                  onEnd?.();
+                }
+                audioCtx.close().catch(() => {});
+              };
+              source.start(0);
               return;
             }
           }
         } catch (e) {
-          console.warn("[Voice] Bhashini TTS server proxy failed, falling back:", e);
+          console.warn("[Voice] TTS server proxy failed, falling back to Web Speech:", e);
+          killActiveAudio();
         }
       }
 
@@ -167,14 +239,15 @@ export function useVoiceSession({
       utter.onerror = () => { setIsSpeaking(false); setState("idle"); onEnd?.(); };
       synthRef.current.speak(utter);
     },
-    [engine, lang, webSpeechInfo.bcp47]
+    [engine, lang, webSpeechInfo.bcp47, killActiveAudio]
   );
 
   const stopSpeaking = useCallback(() => {
     synthRef.current?.cancel();
+    killActiveAudio();
     setIsSpeaking(false);
     setState("idle");
-  }, []);
+  }, [killActiveAudio]);
 
   // ────────────────────────────────────────────────────────────────
   // START LISTENING — Bhashini ASR primary, Web Speech fallback
@@ -306,6 +379,7 @@ export function useVoiceSession({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ audioBase64, mimeType: blob.type || "audio/webm", lang }),
+          signal: AbortSignal.timeout(12_000),
         });
         if (res.ok) {
           const { transcript: text } = await res.json();
@@ -343,3 +417,6 @@ export function useVoiceSession({
     webSpeechSupported: webSpeechInfo.supported,
   };
 }
+
+// Keep isBhashiniConfigured exported for any legacy imports
+export { isBhashiniConfigured };
