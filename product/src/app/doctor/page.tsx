@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { QueuePatient } from "@/lib/queue";
@@ -35,6 +36,7 @@ const STATUS_LABEL: Record<QueuePatient["status"], string> = {
 
 // ── Doctor auth — PIN verified server-side (never in client bundle) ──
 export default function DoctorDashboard() {
+  const router = useRouter();
   const [authed, setAuthed] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
@@ -260,6 +262,17 @@ export default function DoctorDashboard() {
                 </span>
               ))}
             </div>
+
+            {/* Analytics link */}
+            <button
+              onClick={() => {
+                sessionStorage.setItem("dk_session_token", sessionToken);
+                router.push("/doctor/analytics");
+              }}
+              className="px-4 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-bold rounded-xl transition-colors"
+            >
+              📊 Analytics
+            </button>
           </div>
         </div>
       </div>

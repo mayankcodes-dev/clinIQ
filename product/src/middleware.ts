@@ -84,6 +84,6 @@ export const config = {
     // API routes
     "/api/:path*",
     // All pages except static files and Next.js internals
-    "/((?!_next/static|_next/image|favicon.ico|logo.jpg|manifest.json|sw.js).*)",
+    "/((?!_next/static|_next/image|favicon.ico|favicon.svg|cliniq-logo.svg|logo.jpg|manifest.json|sw.js).*)",
   ],
 };

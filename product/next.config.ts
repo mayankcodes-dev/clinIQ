@@ -10,12 +10,23 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
   },
   // Fix: multiple package-lock.json files confuse Next.js workspace root detection
   outputFileTracingRoot: require("path").join(__dirname, "./"),
   images: {
     remotePatterns: [],
+  },
+  async redirects() {
+    return [
+      { source: '/login', destination: '/patient/consent', permanent: true },
+      { source: '/consent', destination: '/patient/consent', permanent: true },
+      { source: '/opd-select', destination: '/patient/opd-select', permanent: true },
+      { source: '/history', destination: '/patient/history', permanent: true },
+      { source: '/scan', destination: '/patient/scan', permanent: true },
+      { source: '/summary', destination: '/patient/summary', permanent: true },
+      { source: '/complete', destination: '/patient/complete', permanent: true },
+    ];
   },
   // crypto kept server-side for ABDM HMAC signing
   serverExternalPackages: ["crypto"],

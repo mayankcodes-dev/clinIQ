@@ -236,11 +236,7 @@ export default function SummaryPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Patient session token from OTP verify — required by /api/session/save
-          ...(sessionStorage.getItem("mk_patient_token")
-            ? { Authorization: `Bearer ${sessionStorage.getItem("mk_patient_token")}` }
-            : {}),
-        },
+          },
         body: JSON.stringify({
           lang,
           mode: sessionStorage.getItem("mk_mode") ?? "combined",
@@ -256,7 +252,7 @@ export default function SummaryPage() {
     }
 
     await new Promise((r) => setTimeout(r, 400));
-    router.push("/complete");
+    router.push("/patient/complete");
   }
 
   if (status === "generating") {
@@ -301,7 +297,7 @@ export default function SummaryPage() {
       <KioskHeader
         title={t(lang, "summaryReady")}
         subtitle="AI Clinical Intake Record"
-        onBack={() => router.push("/scan")}
+        onBack={() => router.push("/patient/scan")}
         progress={90}
         stepLabel="6 / 6"
       />
@@ -800,3 +796,7 @@ ${redFlagSection}${historySections}${ayushSection}${docsSection}${timelineSectio
     </KioskScreen>
   );
 }
+
+
+
+

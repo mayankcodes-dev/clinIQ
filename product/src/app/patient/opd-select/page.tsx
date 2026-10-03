@@ -165,12 +165,12 @@ export default function OPDSelectPage() {
   const handleNext = () => {
     if (mode) {
       sessionStorage.setItem("mk_mode", mode);
-      router.push("/history");
+      router.push("/patient/history");
     }
   };
 
   const handleBack = () => {
-    router.push("/consent");
+    router.push("/patient/consent");
   };
 
   const playAudioInstruction = () => {
@@ -294,3 +294,4 @@ export default function OPDSelectPage() {
     </KioskScreen>
   );
 }
+

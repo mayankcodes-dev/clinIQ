@@ -165,7 +165,7 @@ export default function ScanPage() {
   }
 
   function handleContinue() {
-    router.push("/summary");
+    router.push("/patient/summary");
   }
 
   // ════════════════════════════════════════════════════════════════
@@ -177,7 +177,7 @@ export default function ScanPage() {
         <KioskHeader
           title={t(lang, "uploadDocuments")}
           subtitle="Upload Documents"
-          onBack={() => router.push("/history")}
+          onBack={() => router.push("/patient/history")}
           progress={70}
           stepLabel="5 / 6"
         />
@@ -629,3 +629,4 @@ export default function ScanPage() {
 
   return null;
 }
+

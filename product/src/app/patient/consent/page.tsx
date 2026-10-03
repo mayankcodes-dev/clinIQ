@@ -32,7 +32,7 @@ const CONSENT_SPEECH: Record<string, string> = {
 interface ConsentItem {
   id: string;
   icon: string;
-  titleKey: "shareHistory" | "shareWithDoctor" | "saveToABHA" | "allowVoiceRecording";
+  titleKey: "shareHistory" | "shareWithDoctor" |  "allowVoiceRecording";
   titleEn: string;
   description: string;
   required: boolean;
@@ -57,15 +57,7 @@ const CONSENT_ITEMS: ConsentItem[] = [
       "The structured history summary will appear on the doctor's screen before consultation.",
     required: true,
   },
-  {
-    id: "abhaLink",
-    icon: "🔗",
-    titleKey: "saveToABHA",
-    titleEn: "Save to my ABHA health record",
-    description:
-      "Your history will be saved to your permanent Ayushman Bharat health account.",
-    required: false,
-  },
+  
   {
     id: "audioRecording",
     icon: "🔊",
@@ -83,7 +75,7 @@ export default function ConsentPage() {
   const [checked, setChecked] = useState<Record<string, boolean>>({
     dataCapture: false,
     doctorShare: false,
-    abhaLink: false,
+    
     audioRecording: false,
   });
 
@@ -112,7 +104,7 @@ export default function ConsentPage() {
   function handleProceed() {
     stop(); // stop audio when proceeding
     sessionStorage.setItem("mk_consent", JSON.stringify(checked));
-    router.push("/opd-select");
+    router.push("/patient/opd-select");
   }
 
   function handlePlayAudio() {
@@ -129,7 +121,7 @@ export default function ConsentPage() {
       <KioskHeader
         title={t(lang, "yourConsent")}
         subtitle="Your Consent"
-        onBack={() => router.push("/login")}
+        onBack={() => router.push("/patient/consent")}
         progress={15}
         stepLabel="2 / 7"
         rightSlot={
@@ -266,3 +258,5 @@ export default function ConsentPage() {
     </KioskScreen>
   );
 }
+
+

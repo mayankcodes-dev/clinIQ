@@ -52,146 +52,6 @@ const AYUSH_ONLY_STAGES: Stage[] = [
 ];
 
 
-// Multilingual stage labels
-function getStageLabels(lang: string): Record<Stage, string> {
-  const labels: Record<string, Partial<Record<Stage, string>>> = {
-    hi: {
-      chief_complaint: "मुख्य शिकायत", hpi: "वर्तमान बीमारी",
-      past_history: "पुराना इतिहास", drug_allergy: "दवा/एलर्जी",
-      family_history: "पारिवारिक इतिहास", personal_history: "व्यक्तिगत इतिहास",
-      review_of_systems: "सिस्टम समीक्षा",
-      ayush_prakriti: "प्रकृति", ayush_vikriti: "विकृति", ayush_agni: "अग्नि",
-      ayush_koshtha: "कोष्ठ", ayush_ahara_vihara: "आहार-विहार",
-      ayush_nidana: "निदान", ayush_samprapti: "सम्प्राप्ति",
-      ayush_sara: "सार", ayush_samhanana: "संहनन", ayush_satmya: "सात्म्य",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "सारांश",
-    },
-    en: {
-      chief_complaint: "Problem", hpi: "HPI",
-      symptom_duration: "Duration", symptom_modifiers: "Modifiers", medicines_taken: "Medicines",
-      allergies: "Allergies", past_surgeries: "Surgeries", habits: "Habits", family_disease_history: "Family Disease Hx",
-      past_history: "Past History", drug_allergy: "Drug/Allergy",
-      family_history: "Family Hx", personal_history: "Personal Hx",
-      review_of_systems: "Review of Systems",
-      ayush_prakriti: "Prakriti", ayush_vikriti: "Vikriti", ayush_agni: "Agni",
-      ayush_koshtha: "Koshtha", ayush_ahara_vihara: "Ahara-Vihara",
-      ayush_nidana: "Nidana", ayush_samprapti: "Samprapti",
-      ayush_sara: "Sara", ayush_samhanana: "Samhanana", ayush_satmya: "Satmya",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "Summary",
-    },
-    ta: {
-      chief_complaint: "பிரச்சினை", hpi: "நடப்பு நோய்",
-      past_history: "முன்வரலாறு", drug_allergy: "மருந்து/ஒவ்வாமை",
-      family_history: "குடும்ப வரலாறு", personal_history: "தனிப்பட்ட வரலாறு",
-      review_of_systems: "உறுப்பு பரிசோதனை",
-      ayush_prakriti: "பிரகிருதி", ayush_vikriti: "விகிருதி", ayush_agni: "அக்னி",
-      ayush_koshtha: "கோஷ்ட", ayush_ahara_vihara: "ஆகார-விஹார",
-      ayush_nidana: "நிதான", ayush_samprapti: "சம்ப்ராப்தி",
-      ayush_sara: "சாரம்", ayush_samhanana: "சம்ஹனனம்", ayush_satmya: "சாத்ம்யம்",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "சுருக்கம்",
-    },
-    te: {
-      chief_complaint: "సమస్య", hpi: "ప్రస్తుత అనారోగ్యం",
-      past_history: "గత చరిత్ర", drug_allergy: "మందు/అలర్జీ",
-      family_history: "కుటుంబ చరిత్ర", personal_history: "వ్యక్తిగత చరిత్ర",
-      review_of_systems: "అవయవ సమీక్ష",
-      ayush_prakriti: "ప్రకృతి", ayush_vikriti: "వికృతి", ayush_agni: "అగ్ని",
-      ayush_koshtha: "కోష్ఠ", ayush_ahara_vihara: "ఆహార-విహార",
-      ayush_nidana: "నిదాన", ayush_samprapti: "సంప్రాప్తి",
-      ayush_sara: "Sara", ayush_samhanana: "Samhanana", ayush_satmya: "Satmya", summary: "సారాంశం",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-    },
-    bn: {
-      chief_complaint: "সমস্যা", hpi: "বর্তমান অসুস্থতা",
-      past_history: "পূর্ব ইতিহাস", drug_allergy: "ওষুধ/অ্যালার্জি",
-      family_history: "পারিবারিক ইতিহাস", personal_history: "ব্যক্তিগত ইতিহাস",
-      review_of_systems: "সিস্টেম পর্যালোচনা",
-      ayush_prakriti: "প্রকৃতি", ayush_vikriti: "বিকৃতি", ayush_agni: "অগ্নি",
-      ayush_koshtha: "কোষ্ঠ", ayush_ahara_vihara: "আহার-বিহার",
-      ayush_nidana: "নিদান", ayush_samprapti: "সম্প্রাপ্তি",
-      ayush_sara: "সার", ayush_samhanana: "সংহনন", ayush_satmya: "সাত্ম্য",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "সারাংশ",
-    },
-    mr: {
-      chief_complaint: "समस्या", hpi: "सद्य आजार",
-      past_history: "जुनी माहिती", drug_allergy: "औषध/ॲलर्जी",
-      family_history: "कौटुंबिक इतिहास", personal_history: "वैयक्तिक इतिहास",
-      review_of_systems: "अवयव आढावा",
-      ayush_prakriti: "प्रकृती", ayush_vikriti: "विकृती", ayush_agni: "अग्नी",
-      ayush_koshtha: "कोष्ठ", ayush_ahara_vihara: "आहार-विहार",
-      ayush_nidana: "निदान", ayush_samprapti: "संप्राप्ती",
-      ayush_sara: "सार", ayush_samhanana: "संहनन", ayush_satmya: "सात्म्य",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "सारांश",
-    },
-    gu: {
-      chief_complaint: "સમસ્યા", hpi: "વર્તમાન બીમારી",
-      past_history: "જૂનો ઇતિહાસ", drug_allergy: "દવા/એલર્જી",
-      family_history: "કૌટુંબિક ઇતિહાસ", personal_history: "વ્યક્તિગત ઇતિહાસ",
-      review_of_systems: "પ્રણાલી સમીક્ષા",
-      ayush_prakriti: "પ્રકૃતિ", ayush_vikriti: "વિકૃતિ", ayush_agni: "અગ્નિ",
-      ayush_koshtha: "કોષ્ઠ", ayush_ahara_vihara: "આહાર-વિહાર",
-      ayush_nidana: "નિદાન", ayush_samprapti: "સંપ્રાપ્તિ",
-      ayush_sara: "સાર", ayush_samhanana: "સંહનન", ayush_satmya: "સાત્મ્ય",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "સારાંશ",
-    },
-    kn: {
-      chief_complaint: "ಸಮಸ್ಯೆ", hpi: "ಪ್ರಸ್ತುತ ಕಾಯಿಲೆ",
-      past_history: "ಹಿಂದಿನ ಇತಿಹಾಸ", drug_allergy: "ಔಷಧ/ಅಲರ್ಜಿ",
-      family_history: "ಕುಟುಂಬ ಇತಿಹಾಸ", personal_history: "ವ್ಯಕ್ತಿಗತ ಇತಿಹಾಸ",
-      review_of_systems: "ಅವಯವ ಸಮೀಕ್ಷೆ",
-      ayush_prakriti: "ಪ್ರಕೃತಿ", ayush_vikriti: "ವಿಕೃತಿ", ayush_agni: "ಅಗ್ನಿ",
-      ayush_koshtha: "ಕೋಷ್ಠ", ayush_ahara_vihara: "ಆಹಾರ-ವಿಹಾರ",
-      ayush_nidana: "ನಿದಾನ", ayush_samprapti: "ಸಂಪ್ರಾಪ್ತಿ",
-      ayush_sara: "ಸಾರ", ayush_samhanana: "ಸಂಹನನ", ayush_satmya: "ಸಾತ್ಮ್ಯ",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "ಸಾರಾಂಶ",
-    },
-    ml: {
-      chief_complaint: "പ്രശ്നം", hpi: "നിലവിലെ അസുഖം",
-      past_history: "മുൻ ചരിത്രം", drug_allergy: "മരുന്ന്/ആലർജി",
-      family_history: "കുടുംബ ചരിത്രം", personal_history: "വ്യക്തിഗത ചരിത്രം",
-      review_of_systems: "അവയവ അവലോകനം",
-      ayush_prakriti: "പ്രകൃതി", ayush_vikriti: "വികൃതി", ayush_agni: "അഗ്നി",
-      ayush_koshtha: "കോഷ്ഠ", ayush_ahara_vihara: "ആഹാര-വിഹാര",
-      ayush_nidana: "നിദാന", ayush_samprapti: "സംപ്രാപ്തി",
-      ayush_sara: "Sara", ayush_samhanana: "Samhanana", ayush_satmya: "Satmya", summary: "സംഗ്രഹം",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-    },
-    pa: {
-      chief_complaint: "ਸਮੱਸਿਆ", hpi: "ਵਰਤਮਾਨ ਬਿਮਾਰੀ",
-      past_history: "ਪੁਰਾਣਾ ਇਤਿਹਾਸ", drug_allergy: "ਦਵਾਈ/ਐਲਰਜੀ",
-      family_history: "ਪਰਿਵਾਰਕ ਇਤਿਹਾਸ", personal_history: "ਨਿੱਜੀ ਇਤਿਹਾਸ",
-      review_of_systems: "ਅੰਗ ਸਮੀਖਿਆ",
-      ayush_prakriti: "ਪ੍ਰਕਿਰਤੀ", ayush_vikriti: "ਵਿਕ੍ਰਿਤੀ", ayush_agni: "ਅਗਨੀ",
-      ayush_koshtha: "ਕੋਸ਼ਠ", ayush_ahara_vihara: "ਆਹਾਰ-ਵਿਹਾਰ",
-      ayush_nidana: "ਨਿਦਾਨ", ayush_samprapti: "ਸੰਪ੍ਰਾਪਤੀ",
-      ayush_sara: "ਸਾਰ-ਤੱਤ", ayush_samhanana: "ਸੰਹਨਨ", ayush_satmya: "ਸਾਤਮਯ",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "ਸਾਰ",
-    },
-    ur: {
-      chief_complaint: "مسئلہ", hpi: "موجودہ بیماری",
-      past_history: "سابقہ تاریخ", drug_allergy: "دوا/الرجی",
-      family_history: "خاندانی تاریخ", personal_history: "ذاتی تاریخ",
-      review_of_systems: "نظام کا جائزہ",
-      ayush_prakriti: "پرکرتی", ayush_vikriti: "وکرتی", ayush_agni: "اگنی",
-      ayush_koshtha: "کوشٹھ", ayush_ahara_vihara: "آہار-وہار",
-      ayush_nidana: "نیدان", ayush_samprapti: "سمپراپتی",
-      ayush_sara: "سار", ayush_samhanana: "سنہنن", ayush_satmya: "ساتمیہ",
-      ayush_pramana: "Pramana", ayush_sattva: "Sattva", ayush_ahara_shakti: "Ahara Shakti", ayush_vyayama_shakti: "Vyayama Shakti", ayush_vaya: "Vaya",
-      summary: "خلاصہ",
-    },
-  };
-  const chosen = labels[lang] ?? labels["hi"];
-  return { ...(labels["en"] as Record<Stage, string>), ...chosen } as Record<Stage, string>;
-}
-
 // ── Build summary from raw messages when Gemini is unavailable ───────────────
 // Extracts patient answers keyed by stage label and builds StructuredSummary
 function buildSummaryFromMessages(messages: ChatMessage[]): StructuredSummary {
@@ -787,7 +647,7 @@ export default function HistoryPage() {
   // ── Complete → go to scan page ───────────────────────────────
   useEffect(() => {
     if (isComplete && summary) {
-      setTimeout(() => router.push("/scan"), 1200);
+      setTimeout(() => router.push("/patient/scan"), 1200);
     }
   }, [isComplete, summary, router]);
 
@@ -835,7 +695,7 @@ export default function HistoryPage() {
       <KioskHeader
         title={t(lang, "uploadDocuments").replace("Upload", "").trim() || "इतिहास"}
         subtitle={`Medical History · Stage ${stageIndex + 1} / ${STAGES.length}`}
-        onBack={() => router.push("/consent")}
+        onBack={() => router.push("/patient/consent")}
         progress={progress}
         stepLabel={`${stageIndex + 1} / ${STAGES.length}`}
         rightSlot={
@@ -1028,3 +888,4 @@ export default function HistoryPage() {
     </KioskScreen>
   );
 }
+
