@@ -39,8 +39,8 @@ export const LANGUAGES: Language[] = [
   { code: "sd", name: "سنڌي",     nameEn: "Sindhi",      script: "Perso-Arabic", rtl: true, tier: 2 },
 ];
 
-/** Tier-1 languages shown on the primary language picker */
-export const PRIMARY_LANGUAGES = LANGUAGES.filter((l) => l.tier === 1);
+/** Tier-1 languages shown on the primary language picker — 12 for 3×4 grid symmetry */
+export const PRIMARY_LANGUAGES = LANGUAGES.filter((l) => l.tier === 1).slice(0, 12);
 
 export function getLanguage(code: string): Language | undefined {
   return LANGUAGES.find((l) => l.code === code);
