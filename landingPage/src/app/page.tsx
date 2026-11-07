@@ -75,11 +75,11 @@ export default function MaintenancePage() {
           }}
         >
           ClinIQ is currently undergoing a quick update.
-          We&apos;ll be back shortly — usually within the hour.
+          We&apos;ll be back shortly, usually within the hour.
         </p>
 
         <a
-          href="mailto:pilot@cliniq.health"
+          href="mailto:admin@mayankcodes.dev"
           style={{
             marginTop: 8,
             display: "inline-flex",
@@ -92,7 +92,7 @@ export default function MaintenancePage() {
             letterSpacing: "0.01em",
           }}
         >
-          Questions? pilot@cliniq.health
+          Questions? admin@mayankcodes.dev
         </a>
       </main>
 
