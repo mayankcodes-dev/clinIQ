@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ClinIQ — Pre-consultation AI that interviews patients",
+  title: "ClinIQ — Pre-consultation intelligence for care teams",
   description:
-    "Pre-consultation AI that interviews patients before the doctor does. ABDM certified. 22 Indian languages.",
+    "ClinIQ helps clinics and hospitals capture every patient story before the consultation begins.",
   metadataBase: new URL("https://cliniq.mayankcodes.dev"),
   icons: {
     icon: "/favicon.jpg",
     apple: "/favicon.jpg",
   },
   openGraph: {
-    title: "ClinIQ — Pre-consultation AI that interviews patients",
-    description: "Pre-consultation AI that interviews patients before the doctor does. ABDM certified. 22 Indian languages.",
+    title: "ClinIQ — Pre-consultation intelligence for care teams",
+    description: "ClinIQ helps clinics and hospitals capture every patient story before the consultation begins.",
     url: "https://cliniq.mayankcodes.dev",
     siteName: "ClinIQ",
     images: [{ url: "/favicon.jpg", width: 256, height: 256, alt: "ClinIQ" }],
