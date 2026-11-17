@@ -6,6 +6,7 @@ import type {
   InterviewTurn,
 } from "@/lib/sessionStore";
 import { retrieveClinicalContext } from "@/lib/rag/clinicalRetriever";
+import { singleFlight } from "@/lib/singleflight";
 
 export const runtime = "nodejs";
 
@@ -131,6 +132,8 @@ export interface InterviewRequest {
   responses?: Array<Partial<InterviewTurn> & { stage?: string; text?: string; response?: string }>;
   coveredSlots?: InterviewCategory[];
   patientContext?: string;
+  /** Session ID — used as dedup key for flight-shield SingleFlight */
+  sessionId?: string;
   /** Optional normalized English chief complaint supplied by a trusted client. */
   chiefComplaintEnglish?: string;
 }
@@ -352,21 +355,25 @@ Rules:
 
     let modelResponse: unknown;
     try {
-      const completion = await groqClient.chat.completions.create({
-        model: CLINIQ_MODELS.INTERVIEW_FAST,
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        max_tokens: 500,
-        messages: [
-          {
-            role: "system",
-            content: `You are a precise multilingual clinical intake question curator. Follow the requested JSON schema exactly. Ground relevant follow-up questions in the Indian clinical safety protocol context below while preserving the server-selected category.${ragSystemContext}`,
-          },
-          { role: "user", content: prompt },
-        ],
+      // Deduplicate concurrent interview requests for same session+category
+      // so rapid taps don't fire multiple parallel LLM calls.
+      const sfKey = `interview:${body.sessionId ?? "anon"}:${category}:${turns.length}`;
+      const content = await singleFlight(sfKey, async () => {
+        const completion = await groqClient.chat.completions.create({
+          model: CLINIQ_MODELS.INTERVIEW_FAST,
+          temperature: 0.2,
+          response_format: { type: "json_object" },
+          max_tokens: 500,
+          messages: [
+            {
+              role: "system",
+              content: `You are a precise multilingual clinical intake question curator. Follow the requested JSON schema exactly. Ground relevant follow-up questions in the Indian clinical safety protocol context below while preserving the server-selected category.${ragSystemContext}`,
+            },
+            { role: "user", content: prompt },
+          ],
+        });
+        return completion.choices[0]?.message?.content ?? null;
       });
-
-      const content = completion.choices[0]?.message?.content;
       modelResponse = typeof content === "string" ? JSON.parse(content) : null;
     } catch (error) {
       console.warn("[api/interview] Groq JSON generation failed; using deterministic response:", error);

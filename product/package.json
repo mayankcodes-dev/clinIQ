@@ -22,6 +22,7 @@
     "@types/qrcode": "^1.5.6",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
+    "flight-shield": "^3.0.1",
     "framer-motion": "^13.1.1",
     "groq-sdk": "^1.6.0",
     "lucide-react": "^1.37.0",

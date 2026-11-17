@@ -6,6 +6,7 @@ import type {
   InterviewTurn,
 } from "@/lib/sessionStore";
 import { retrieveClinicalContext } from "@/lib/rag/clinicalRetriever";
+import { singleFlight } from "@/lib/singleflight";
 
 export const runtime = "nodejs";
 
@@ -155,6 +156,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "NO_PATIENT_DATA" }, { status: 400 });
     }
 
+    // Deduplicate concurrent report requests for the same session via flight-shield.
+    const sfKey = `report:${body.sessionId ?? "anon"}:${interviewTurns.length}`;
+    const result = await singleFlight(sfKey, async () => {
+
     const language = body.language ?? "en";
     const chiefComplaintEnglish = getChiefComplaintEnglish(
       interviewTurns,
@@ -239,7 +244,7 @@ ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
 
     const raw = completion.choices[0]?.message?.content;
     if (typeof raw !== "string" || !raw.trim()) {
-      return NextResponse.json({ error: "REPORT_GENERATION_FAILED" }, { status: 502 });
+      throw new Error("REPORT_GENERATION_FAILED");
     }
 
     const parsed = JSON.parse(stripMarkdownFences(raw)) as unknown;
@@ -248,14 +253,17 @@ ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
       language
     );
 
-    return NextResponse.json({
+    return {
       report,
       metadata: {
         ragGrounded: true,
         retrievalMethod: [...new Set(clinicalContext.map((chunk) => chunk.retrievalMethod ?? "local"))],
         guidelineChunkIds: clinicalContext.map((chunk) => chunk.id),
       },
-    });
+    };
+    }); // end singleFlight
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("[api/report] generation failed:", error);
     return NextResponse.json({ error: "REPORT_GENERATION_FAILED" }, { status: 502 });
