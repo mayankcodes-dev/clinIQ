@@ -127,7 +127,7 @@ a    { color: inherit; }
 .mobile-nav a { color: var(--cliniq-slate); font-size: 13px; font-weight: 700; text-decoration: none; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   HERO — centred layout with animated multi-wave background
+   HERO — centred layout, top glow only (no wavy SVG layers)
 ══════════════════════════════════════════════════════════════════════════════ */
 .hero-section {
   position: relative;
@@ -137,44 +137,12 @@ a    { color: inherit; }
   padding: 0;
   display: flex; align-items: center;
   overflow: hidden;
-  background: #F0F9FF;
-}
-
-/* ── Animated wave canvas ── */
-.hero-wave-bg {
-  position: absolute; inset: 0; z-index: 0;
-  /* layered gradient that shifts hue */
+  /* top glow that animates through hues — the only bg effect */
+  animation: hero-bg-hue 14s ease-in-out infinite alternate;
   background:
     radial-gradient(ellipse 85% 60% at 50% 10%, rgba(224,242,254,1) 0%, transparent 60%),
     linear-gradient(180deg, #EFF6FF 0%, #F0F9FF 50%, #ECFDF5 100%);
-  animation: hero-bg-hue 14s ease-in-out infinite alternate;
 }
-
-/* three SVG wave layers, each animated at different speeds */
-.wave-svg {
-  position: absolute; left: 0; right: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-}
-.wave-svg path { transition: d 1s; }
-
-.wave-svg-1 {
-  bottom: 0; opacity: 0.55;
-  animation: wave-flow-1 9s ease-in-out infinite alternate;
-}
-.wave-svg-1 path { fill: rgba(2,132,199,0.12); }
-
-.wave-svg-2 {
-  bottom: 0; opacity: 0.4;
-  animation: wave-flow-2 12s ease-in-out infinite alternate;
-}
-.wave-svg-2 path { fill: rgba(13,148,136,0.10); }
-
-.wave-svg-3 {
-  bottom: 0; opacity: 0.28;
-  animation: wave-flow-3 7s ease-in-out infinite alternate;
-}
-.wave-svg-3 path { fill: rgba(14,165,233,0.14); }
 
 /* bottom wave that transitions into white section */
 .hero-bottom-wave {
@@ -467,21 +435,4 @@ a    { color: inherit; }
   100% { background:
            radial-gradient(ellipse 85% 60% at 50% 10%, rgba(224,242,254,1) 0%, transparent 60%),
            linear-gradient(180deg, #EFF6FF 0%, #F0F9FF 50%, #ECFDF5 100%); }
-}
-
-/* wave layer animations — morph the wave path positions */
-@keyframes wave-flow-1 {
-  0%   { transform: translateX(0) scaleY(1); }
-  50%  { transform: translateX(-3%) scaleY(1.1); }
-  100% { transform: translateX(3%) scaleY(0.9); }
-}
-@keyframes wave-flow-2 {
-  0%   { transform: translateX(0) scaleY(1); }
-  50%  { transform: translateX(4%) scaleY(0.85); }
-  100% { transform: translateX(-2%) scaleY(1.15); }
-}
-@keyframes wave-flow-3 {
-  0%   { transform: translateX(0) scaleY(1); }
-  50%  { transform: translateX(-5%) scaleY(1.2); }
-  100% { transform: translateX(2%) scaleY(0.8); }
 }

@@ -18,18 +18,19 @@ export function SiteFooter() {
     const update = () => {
       const rect     = footer.getBoundingClientRect();
       const vh       = window.innerHeight;
-      const progress = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+      // progress: 0 when footer top is at bottom of viewport, 1 when fully visible
+      const progress = Math.max(0, Math.min(1, (vh - rect.top) / vh));
 
       // email: slides up + fades in
-      const eTY   = (1 - progress) * 52;
-      const eOpac = Math.min(1, progress * 2.6);
+      const eTY   = (1 - progress) * 48;
+      const eOpac = Math.min(1, progress * 2.4);
       email.style.transform = `translateY(${eTY}px)`;
       email.style.opacity   = String(eOpac);
 
       // brand: slides up with slight delay
-      const bProgress = Math.max(0, (progress - 0.06) / 0.94);
-      const bTY   = (1 - bProgress) * 80;
-      const bOpac = Math.min(1, bProgress * 2.8);
+      const bProgress = Math.max(0, (progress - 0.05) / 0.95);
+      const bTY   = (1 - bProgress) * 72;
+      const bOpac = Math.min(1, bProgress * 2.6);
       brand.style.transform = `translateY(${bTY}px)`;
       brand.style.opacity   = String(bOpac);
 
@@ -53,20 +54,18 @@ export function SiteFooter() {
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        /* overflow visible so the giant brand doesn't clip */
         overflow: "hidden",
       }}
     >
-      {/* email — centred vertically, sits above the brand */}
+      {/* email — centred, sits above the brand */}
       <div
         ref={emailRef}
         style={{
           opacity: 0,
-          transform: "translateY(52px)",
+          transform: "translateY(48px)",
           willChange: "transform, opacity",
           textAlign: "center",
-          /* push email above centre so brand fills the bottom */
-          marginBottom: "clamp(20px, 4vw, 48px)",
+          marginBottom: "clamp(24px, 5vw, 60px)",
           position: "relative",
           zIndex: 2,
         }}
@@ -75,7 +74,7 @@ export function SiteFooter() {
           href="mailto:admin@mayankcodes.dev"
           style={{
             color: "rgba(255,255,255,0.5)",
-            fontSize: "clamp(13px, 1.3vw, 17px)",
+            fontSize: "clamp(14px, 1.4vw, 18px)",
             fontWeight: 400,
             letterSpacing: "0.01em",
             textDecoration: "none",
@@ -88,16 +87,16 @@ export function SiteFooter() {
         </a>
       </div>
 
-      {/* giant brand — absolutely anchored to bottom so it never clips */}
+      {/* giant brand — absolutely anchored to bottom so it fills width and never clips */}
       <div
         ref={brandRef}
-        aria-hidden="true"
+        aria-label="ClinIQ"
         style={{
           opacity: 0,
-          transform: "translateY(80px)",
+          transform: "translateY(72px)",
           willChange: "transform, opacity",
           position: "absolute",
-          bottom: 0,
+          bottom: "-0.1em",   /* sits flush with the footer floor */
           left: 0,
           right: 0,
           lineHeight: 1,
@@ -110,12 +109,13 @@ export function SiteFooter() {
           style={{
             display: "block",
             fontWeight: 900,
-            /* 
-              lineHeight 1 + bottom:0 anchors the text baseline to the footer base.
-              Use vw-based size; cap so it never overflows width.
-            */
-            fontSize: "clamp(4rem, 19.5vw, 100vw)",
-            lineHeight: 0.82,
+            /*
+             * vw-based so it fills the full viewport width.
+             * lineHeight 0.78 + bottom:-0.1em anchors the descender
+             * right at the footer edge — no clipping.
+             */
+            fontSize: "clamp(5rem, 22vw, 320px)",
+            lineHeight: 0.78,
             color: "#ffffff",
             letterSpacing: "-0.045em",
             whiteSpace: "nowrap",

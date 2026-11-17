@@ -71,17 +71,7 @@ function PageContent({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen
 
       {/* ── HERO ── */}
       <section id="hero" className="hero-section">
-        <div className="hero-wave-bg" aria-hidden="true">
-          <svg className="wave-svg wave-svg-1" viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,160 C240,240 480,80 720,160 C960,240 1200,80 1440,160 L1440,320 L0,320 Z" />
-          </svg>
-          <svg className="wave-svg wave-svg-2" viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,200 C200,120 440,280 720,200 C1000,120 1240,260 1440,180 L1440,320 L0,320 Z" />
-          </svg>
-          <svg className="wave-svg wave-svg-3" viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,240 C180,160 360,300 600,240 C840,180 1080,310 1440,220 L1440,320 L0,320 Z" />
-          </svg>
-        </div>
+        {/* top glow only — no wavy SVG layers */}
 
         <div className="page-container hero-center">
           <h1 className="hero-h1">
@@ -141,7 +131,7 @@ function PageContent({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen
       </section>
 
       {/* ── PILOT ── */}
-      <section id="pilot" className="pilot-section" style={{ borderRadius: "0 0 48px 48px" }}>
+      <section id="pilot" className="pilot-section">
         <div className="pilot-depth-blob pilot-blob-1" aria-hidden="true" />
         <div className="pilot-depth-blob pilot-blob-2" aria-hidden="true" />
         <div className="page-container pilot-center">
