@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic';
 // src/app/api/abdm/hip-callback/route.ts
 // ABDM gateway callback receiver for HIP (Health Information Provider) events.
 // ABDM pushes async notifications here for:

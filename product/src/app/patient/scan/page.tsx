@@ -12,7 +12,7 @@ import {
 import { Button, Card } from "@/components/ui/primitives";
 import ClinIQLoader from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
-import { Pill, FlaskConical, Building2, ScanLine, FileText as FileTextIcon, CheckCircle2, RefreshCw, AlertTriangle } from "lucide-react";
+import { Pill, FlaskConical, Building2, ScanLine, FileText as FileTextIcon, CheckCircle2, RefreshCw, AlertTriangle, Activity, BarChart2, ChevronRight, ArrowRight } from "lucide-react";
 import { t } from "@/lib/translations";
 import type { DocType, ExtractedDoc } from "@/app/api/scan/extract/route";
 
@@ -348,8 +348,8 @@ export default function ScanPage() {
 
           {extractError && (
             <p className="text-sm text-red-600 text-center bg-red-50
-                           rounded-xl px-4 py-2 border border-red-200">
-              ⚠️ {extractError}
+                           rounded-xl px-4 py-2 border border-red-200 flex items-center gap-2">
+              <AlertTriangle size={16} className="text-red-500 shrink-0" /> {extractError}
             </p>
           )}
         </KioskBody>
@@ -399,7 +399,7 @@ export default function ScanPage() {
                 transition={{ delay: i * 0.6 }}
                 className="flex items-center gap-2 text-sm text-neutral-500"
               >
-                <span className="text-brand-500">✓</span> {step}
+                <CheckCircle2 size={14} className="text-brand-500 shrink-0" /> {step}
               </motion.div>
             ))}
           </div>
@@ -456,7 +456,7 @@ export default function ScanPage() {
               ? "bg-secondary-50 border-secondary-200 text-secondary-800"
               : "bg-red-50 border-red-200 text-red-800"
           )}>
-            {extracted.confidence === "high" ? "✅" : extracted.confidence === "medium" ? "⚠️" : "❌"}
+            {extracted.confidence === "high" ? <CheckCircle2 size={16} className="text-green-700 shrink-0" /> : extracted.confidence === "medium" ? <AlertTriangle size={16} className="text-amber-600 shrink-0" /> : <AlertTriangle size={16} className="text-red-600 shrink-0" />}
             <span>
               AI Confidence: {extracted.confidence}
               {extracted.confidence === "low" && " — handwriting unclear, verify manually"}
@@ -505,7 +505,7 @@ export default function ScanPage() {
                           : lv.flag === "L" ? "bg-blue-100 text-blue-700"
                           : "bg-green-100 text-green-700"
                         )}>
-                          {lv.flag === "H" ? "⬆ HIGH" : lv.flag === "L" ? "⬇ LOW" : "✓ NORMAL"}
+                          {lv.flag === "H" ? "HIGH" : lv.flag === "L" ? "LOW" : "NORMAL"}
                         </span>
                       )}
                     </div>
@@ -519,7 +519,7 @@ export default function ScanPage() {
           {extracted.diagnoses?.length > 0 && (
             <Card className="p-4">
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-2">
-                🏷️ Diagnoses
+                <Activity size={12} className="inline mr-1 text-neutral-400" /> Diagnoses ({extracted.diagnoses.length})
               </p>
               <div className="flex flex-wrap gap-2">
                 {extracted.diagnoses.map((d, i) => (
@@ -536,7 +536,7 @@ export default function ScanPage() {
           {Object.values(extracted.vitals ?? {}).some(Boolean) && (
             <Card className="p-4">
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-2">
-                📊 Vitals
+                <BarChart2 size={12} className="inline mr-1 text-neutral-400" /> Vitals
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {Object.entries(extracted.vitals ?? {}).filter(([, v]) => v).map(([k, v]) => (
@@ -564,7 +564,8 @@ export default function ScanPage() {
 
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleConfirm}>
-            ✅ Confirm &amp; Save
+            <CheckCircle2 size={18} className="inline-block mr-1.5 text-white align-middle shrink-0" />
+            Confirm &amp; Save
           </Button>
           <Button variant="ghost" size="lg" fullWidth onClick={() => setStep("capture")}>
             <RefreshCw size={16} className="inline-block mr-1.5 align-middle" /> Retake Photo
@@ -584,9 +585,9 @@ export default function ScanPage() {
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-6xl"
+            className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center"
           >
-            ✅
+            <CheckCircle2 size={48} className="text-green-600" strokeWidth={1.5} />
           </motion.div>
           <div className="text-center space-y-1">
             <h2 className="text-xl font-bold text-neutral-900">
@@ -618,10 +619,10 @@ export default function ScanPage() {
 
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleContinue}>
-            → Summary देखें · View Summary
+            <ArrowRight size={18} className="inline-block mr-1.5 align-middle" /> Summary देखें · View Summary
           </Button>
           <Button variant="outline" size="lg" fullWidth onClick={handleAddAnother}>
-            ➕ और दस्तावेज़ · Add Another Document
+            <ChevronRight size={16} className="inline-block mr-1 align-middle" /> और दस्तावेज़ · Add Another Document
           </Button>
         </KioskFooter>
       </KioskScreen>

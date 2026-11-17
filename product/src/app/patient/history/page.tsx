@@ -1,8 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mic, MicOff, Volume2, PauseCircle, Hand,
+  CheckCircle2, ChevronRight, AlertTriangle, X,
+} from "lucide-react";
 import {
   KioskHeader,
   KioskScreen,
@@ -404,45 +408,49 @@ const TOUCH_OPTIONS_L10N: Record<string, Partial<Record<Stage, string[]>>> = {
 
 function CircularProgress({ current, total }: { current: number; total: number }) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-  const r = 32; // radius
-  const stroke = 5;
+  const r = 28;
+  const stroke = 4;
   const normalizedR = r - stroke;
   const circumference = 2 * Math.PI * normalizedR;
   const offset = circumference - (pct / 100) * circumference;
 
   return (
-    <div className="flex items-center gap-4 px-4 py-3 bg-blue-50 rounded-2xl mb-4">
-      {/* Circular ring */}
-      <div className="relative flex-shrink-0" style={{ width: 72, height: 72 }}>
-        <svg width="72" height="72" viewBox="0 0 72 72" className="-rotate-90">
-          <circle cx="36" cy="36" r={normalizedR} stroke="#e2e8f0" strokeWidth={stroke} fill="none" />
+    <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl mb-2">
+      {/* Circular ring — compact */}
+      <div className="relative shrink-0" style={{ width: 60, height: 60 }}>
+        <svg width="60" height="60" viewBox="0 0 60 60" className="-rotate-90">
+          <circle cx="30" cy="30" r={normalizedR} stroke="#e2e8f0" strokeWidth={stroke} fill="none" />
           <circle
-            cx="36" cy="36" r={normalizedR}
-            stroke="#1a365d"
+            cx="30" cy="30" r={normalizedR}
+            stroke="#0d9488"
             strokeWidth={stroke}
             fill="none"
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
-            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+            style={{ transition: "stroke-dashoffset 0.5s ease" }}
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold" style={{ color: '#1a365d' }}>{pct}%</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-xs font-bold text-teal-700 leading-none">{pct}%</span>
         </div>
       </div>
-      {/* Right side: label + bar */}
+
+      {/* Right: stage label + bar */}
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between text-xs font-semibold mb-1.5" style={{ color: '#1a365d' }}>
-          <span>{current} / {total} questions</span>
-          <span>{pct}%</span>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs font-semibold text-slate-600">
+            Stage {current} of {total}
+          </span>
+          <span className="text-xs font-bold text-teal-700">{pct}%</span>
         </div>
-        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${pct}%`, backgroundColor: '#1a365d' }}
+            style={{ width: `${pct}%`, background: "linear-gradient(90deg, #0d9488, #0891b2)" }}
           />
         </div>
+        <p className="text-[10px] text-slate-400 mt-1.5">Medical history intake in progress</p>
       </div>
     </div>
   );
@@ -668,27 +676,35 @@ export default function HistoryPage() {
   const canSubmit = selectedChips.length > 0 || patientInput.trim().length > 1;
   const chips = (TOUCH_OPTIONS_L10N[lang] ?? TOUCH_OPTIONS_L10N["hi"])[stage] ?? COMMON_SYMPTOMS.slice(0, 8).map((s) => s.labelHi);
 
-  // ── Complete screen ──────────────────────────────────────────
   if (isComplete) {
     return (
       <KioskScreen>
-        <KioskBody className="flex flex-col items-center justify-center gap-4 py-16">
+        <KioskBody className="flex flex-col items-center justify-center gap-6 py-16">
+          {/* Branded completion — teal medical cross on dark card */}
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
+            initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-6xl"
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="flex flex-col items-center gap-4"
           >
-            ✅
+            <div className="h-20 w-20 rounded-2xl bg-teal-600 flex items-center justify-center shadow-lg shadow-teal-200">
+              <svg viewBox="0 0 24 24" fill="none" width="36" height="36" aria-hidden="true">
+                <rect x="10" y="3" width="4" height="18" rx="1.5" fill="white" />
+                <rect x="3" y="10" width="18" height="4" rx="1.5" fill="white" />
+              </svg>
+            </div>
           </motion.div>
-          <h2 className="text-xl font-bold text-neutral-900 text-center">
-            {t(lang, "historyComplete")}
-          </h2>
-          <p className="text-sm text-neutral-400 text-center">
-            History complete — moving to documents...
-          </p>
-          <div className="flex gap-1.5 mt-2">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl font-bold text-neutral-900">
+              {t(lang, "historyComplete")}
+            </h2>
+            <p className="text-sm text-neutral-400">
+              History complete — moving to documents...
+            </p>
+          </div>
+          <div className="flex gap-1.5 mt-1">
             {[0, 1, 2].map((i) => (
-              <span key={i} className="h-2 w-2 rounded-full bg-brand-500 animate-bounce"
+              <span key={i} className="h-2 w-2 rounded-full bg-teal-500 animate-bounce"
                 style={{ animationDelay: `${i * 150}ms` }} />
             ))}
           </div>
@@ -710,24 +726,24 @@ export default function HistoryPage() {
             <button
               onClick={() => setInputMode("voice")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
                 inputMode === "voice"
                   ? "bg-brand-600 text-white"
                   : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
               )}
             >
-              🎙️ {t(lang, "voiceMode")}
+              <Mic size={13} /> {t(lang, "voiceMode")}
             </button>
             <button
               onClick={() => setInputMode("touch")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
                 inputMode === "touch"
                   ? "bg-secondary-500 text-white"
                   : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
               )}
             >
-              👆 {t(lang, "touchMode")}
+              <Hand size={13} /> {t(lang, "touchMode")}
             </button>
           </div>
         }
@@ -745,7 +761,7 @@ export default function HistoryPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="bg-brand-50 border border-brand-100 rounded-2xl p-4 min-h-[64px] flex items-center"
+            className="bg-slate-900 rounded-2xl p-4 min-h-[72px] flex items-center shadow-sm"
           >
             {aiLoading && !currentQuestion ? (
               /* Simple minimal 3-dot loader */
@@ -762,14 +778,16 @@ export default function HistoryPage() {
               <div className="flex items-start gap-3 w-full">
                 <button
                   onClick={() => voice.speak(currentQuestion)}
-                  className="h-9 w-9 rounded-full bg-brand-600 flex items-center justify-center
-                             text-white text-sm shrink-0 hover:bg-brand-700 transition-colors"
+                  className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center
+                             text-white shrink-0 hover:bg-white/20 transition-colors border border-white/20"
                   title="Play audio"
                   disabled={aiLoading}
                 >
-                  {voice.isSpeaking ? "⏸" : "🔊"}
+                  {voice.isSpeaking
+                    ? <PauseCircle size={18} />
+                    : <Volume2 size={18} />}
                 </button>
-                <p className="text-lg font-bold text-neutral-900 leading-snug pt-1">
+                <p className="text-base font-semibold text-white leading-snug pt-1.5">
                   {currentQuestion}
                 </p>
               </div>
@@ -785,14 +803,16 @@ export default function HistoryPage() {
               whileTap={{ scale: 0.92 }}
               onClick={voice.isListening ? voice.stopListening : voice.startListening}
               className={cn(
-                "h-24 w-24 rounded-full flex items-center justify-center text-4xl",
+                "h-24 w-24 rounded-full flex items-center justify-center",
                 "shadow-lg transition-all duration-200",
                 voice.isListening
                   ? "bg-red-500 text-white animate-pulse"
                   : "bg-brand-600 text-white hover:bg-brand-700"
               )}
             >
-              {voice.isListening ? "⏹" : "🎙️"}
+              {voice.isListening
+                ? <MicOff size={36} />
+                : <Mic size={36} />}
             </motion.button>
 
             <p className="text-sm font-semibold text-neutral-500">
@@ -829,16 +849,18 @@ export default function HistoryPage() {
 
             {voiceError && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 flex items-start gap-2">
-                <span className="text-base shrink-0 mt-0.5">⚠️</span>
+                <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <p className="text-xs text-amber-800 font-semibold leading-snug">{voiceError}</p>
                   <p className="text-[10px] text-amber-600 mt-0.5">Use the touch chips or text box below to answer.</p>
                 </div>
                 <button
                   onClick={() => setVoiceError("")}
-                  className="ml-auto text-amber-400 hover:text-amber-600 text-sm shrink-0"
+                  className="ml-auto text-amber-400 hover:text-amber-600 shrink-0"
                   aria-label="Dismiss"
-                >✕</button>
+                >
+                  <X size={14} />
+                </button>
               </div>
             )}
 
@@ -895,9 +917,17 @@ export default function HistoryPage() {
           loading={aiLoading}
           onClick={handleSubmit}
         >
-          {stageIndex >= STAGES.length - 1
-            ? `✅ ${t(lang, "done")}`
-            : `${t(lang, "next")} →`}
+          {stageIndex >= STAGES.length - 1 ? (
+            <span className="flex items-center gap-2 justify-center">
+              <CheckCircle2 size={18} />
+              {t(lang, "done")}
+            </span>
+          ) : (
+            <span className="flex items-center gap-2 justify-center">
+              {t(lang, "next")}
+              <ChevronRight size={18} />
+            </span>
+          )}
         </Button>
       </KioskFooter>
     </KioskScreen>

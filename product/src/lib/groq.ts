@@ -23,10 +23,10 @@ export const groqClient = new Groq({
 });
 
 export const CLINIQ_MODELS = {
-  // llama-3.3-70b-versatile was deprecated on Groq — use current equivalent
-  INTERVIEW_FAST: "llama-3.1-70b-versatile",
+  // llama-3.1-70b-versatile decommissioned Nov 2026 → llama-3.3-70b-specdec
+  INTERVIEW_FAST: "llama-3.3-70b-specdec",
   INSTANT_UTILITY: "llama-3.1-8b-instant",
   SPEECH_TO_TEXT: "whisper-large-v3-turbo",
-  // llama-4-scout deprecated — vision tasks fall through to Gemini anyway
+  // Vision OCR falls through to Gemini; keep for text tasks
   DOCUMENT_VISION: "llama-3.2-11b-vision-preview",
 } as const;
