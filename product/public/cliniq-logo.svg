@@ -1,6 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
-  <text x="4" y="46" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="48" fill="#1a365d">Clin</text>
-  <text x="108" y="46" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="48" fill="#0d9488">IQ</text>
-  <circle cx="186" cy="12" r="8" stroke="#0d9488" stroke-width="3" fill="none"/>
-  <path d="M183 12 L186 15 L192 9" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Teal background circle -->
+  <circle cx="24" cy="24" r="24" fill="#0d9488"/>
+  <!-- Medical cross — vertical bar -->
+  <rect x="20" y="10" width="8" height="28" rx="3" fill="white"/>
+  <!-- Medical cross — horizontal bar -->
+  <rect x="10" y="20" width="28" height="8" rx="3" fill="white"/>
+  <!-- IQ badge dot -->
+  <circle cx="37" cy="37" r="9" fill="#1a365d"/>
+  <text x="37" y="41" font-family="Inter,system-ui,sans-serif" font-size="8" font-weight="800" fill="white" text-anchor="middle">IQ</text>
 </svg>

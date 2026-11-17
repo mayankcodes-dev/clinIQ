@@ -1,9 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import {
   KioskHeader,
   KioskScreen,
@@ -13,16 +12,18 @@ import {
 import { Button, Card } from "@/components/ui/primitives";
 import ClinIQLoader from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
+import { Pill, FlaskConical, Building2, ScanLine, FileText as FileTextIcon, CheckCircle2, RefreshCw, AlertTriangle } from "lucide-react";
 import { t } from "@/lib/translations";
 import type { DocType, ExtractedDoc } from "@/app/api/scan/extract/route";
 
 // ── Document type options ────────────────────────────────────────
-const DOC_TYPES: { id: DocType; icon: string; hi: string; en: string }[] = [
-  { id: "prescription",      icon: "💊", hi: "पर्चा / नुस्खा",  en: "Prescription" },
-  { id: "lab_report",        icon: "🧪", hi: "जाँच रिपोर्ट",    en: "Lab Report" },
-  { id: "discharge_summary", icon: "🏥", hi: "छुट्टी का सारांश", en: "Discharge Summary" },
-  { id: "xray_report",       icon: "🩻", hi: "X-Ray / रेडियोलॉजी", en: "X-Ray / Radiology" },
-  { id: "other",             icon: "📄", hi: "अन्य दस्तावेज़",   en: "Other Document" },
+type DocIcon = React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
+const DOC_TYPES: { id: DocType; Icon: DocIcon; hi: string; en: string }[] = [
+  { id: "prescription",      Icon: Pill,         hi: "पर्चा / नुस्खा",    en: "Prescription" },
+  { id: "lab_report",        Icon: FlaskConical,  hi: "जाँच रिपोर्ट",      en: "Lab Report" },
+  { id: "discharge_summary", Icon: Building2,     hi: "छुट्टी का सारांश",  en: "Discharge Summary" },
+  { id: "xray_report",       Icon: ScanLine,      hi: "X-Ray / रेडियोलॉजी", en: "X-Ray / Radiology" },
+  { id: "other",             Icon: FileTextIcon,  hi: "अन्य दस्तावेज़",    en: "Other Document" },
 ];
 
 type ScanStep = "select_type" | "capture" | "processing" | "review" | "done";
@@ -205,7 +206,7 @@ export default function ScanPage() {
                     : "border-neutral-200 bg-white hover:border-brand-200"
                 )}
               >
-                <span className="text-3xl shrink-0">{dt.icon}</span>
+                <dt.Icon size={28} className="shrink-0 text-brand-700" strokeWidth={1.5} />
                 <div>
                   <p className="font-bold text-neutral-900">{dt.hi}</p>
                   <p className="text-xs text-neutral-400">{dt.en}</p>
@@ -228,7 +229,7 @@ export default function ScanPage() {
               </p>
               {scannedDocs.map((d, i) => (
                 <p key={i} className="text-xs text-green-700 mt-0.5">
-                  {DOC_TYPES.find((dt) => dt.id === d.docType)?.icon}{" "}
+                  {(() => { const dt = DOC_TYPES.find((dt) => dt.id === d.docType); return dt ? <dt.Icon size={12} className="inline mr-1 text-green-700" /> : null; })()}
                   {DOC_TYPES.find((dt) => dt.id === d.docType)?.en}
                   {d.confidence === "low" && " ⚠️ low confidence"}
                 </p>
@@ -315,7 +316,7 @@ export default function ScanPage() {
               {capturedMime === "application/pdf" ? (
                 <div className="p-8 flex flex-col items-center justify-center text-center bg-white">
                   <div className="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl mb-3 shadow-inner">
-                    📄
+                    <FileTextIcon size={28} className="text-red-500" />
                   </div>
                   <p className="font-bold text-neutral-800 text-base max-w-xs truncate">
                     {fileName || "Medical Document (PDF)"}
@@ -337,7 +338,7 @@ export default function ScanPage() {
 
           <div className="w-full bg-brand-50 rounded-xl p-3 text-center">
             <p className="text-sm font-semibold text-brand-900">
-              {DOC_TYPES.find((d) => d.id === selectedType)?.icon}{" "}
+              {(() => { const d = DOC_TYPES.find((d) => d.id === selectedType); return d ? <d.Icon size={16} className="inline mr-1.5 text-brand-700" /> : null; })()}
               {DOC_TYPES.find((d) => d.id === selectedType)?.hi}
             </p>
             <p className="text-xs text-brand-600">
@@ -356,7 +357,7 @@ export default function ScanPage() {
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleExtract}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/cliniq-logo.svg" alt="ClinIQ" className="h-5 w-5 rounded-full object-cover inline-block mr-1.5 align-middle" />
+            <CheckCircle2 size={18} className="inline-block mr-1.5 text-white align-middle shrink-0" />
             ClinIQ से पढ़ें · Extract with ClinIQ AI
           </Button>
           <Button
@@ -365,7 +366,7 @@ export default function ScanPage() {
             fullWidth
             onClick={() => { setCapturedImage(null); setImagePreview(null); setStep("select_type"); }}
           >
-            🔄 दूसरी फोटो लें · Retake
+            <RefreshCw size={16} className="inline-block mr-1.5 align-middle" /> दूसरी फोटो लें · Retake
           </Button>
         </KioskFooter>
       </KioskScreen>
@@ -430,7 +431,7 @@ export default function ScanPage() {
           >
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cliniq-logo.svg" alt="ClinIQ" className="h-8 w-8 rounded-lg object-cover" />
+              <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><rect x="10" y="3" width="4" height="18" rx="1.5" fill="white"/><rect x="3" y="10" width="18" height="4" rx="1.5" fill="white"/></svg>
             </div>
             <div className="flex-1">
               <p className="font-bold text-sm leading-tight">
@@ -466,7 +467,7 @@ export default function ScanPage() {
           {extracted.medications?.length > 0 && (
             <Card className="p-4">
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-2">
-                💊 Medications ({extracted.medications.length})
+                <Pill size={12} className="inline mr-1 text-neutral-400" /> Medications ({extracted.medications.length})
               </p>
               <div className="space-y-2">
                 {extracted.medications.map((med, i) => (
@@ -485,7 +486,7 @@ export default function ScanPage() {
           {extracted.labValues?.length > 0 && (
             <Card className="p-4">
               <p className="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-2">
-                🧪 Lab Values ({extracted.labValues.length})
+                <FlaskConical size={12} className="inline mr-1 text-neutral-400" /> Lab Values ({extracted.labValues.length})
               </p>
               <div className="space-y-1.5">
                 {extracted.labValues.map((lv, i) => (
@@ -566,7 +567,7 @@ export default function ScanPage() {
             ✅ Confirm &amp; Save
           </Button>
           <Button variant="ghost" size="lg" fullWidth onClick={() => setStep("capture")}>
-            🔄 Retake Photo
+            <RefreshCw size={16} className="inline-block mr-1.5 align-middle" /> Retake Photo
           </Button>
         </KioskFooter>
       </KioskScreen>
@@ -599,7 +600,7 @@ export default function ScanPage() {
             {scannedDocs.map((d, i) => (
               <div key={i} className="flex items-center gap-3 bg-green-50
                                        border border-green-200 rounded-xl px-4 py-3">
-                <span className="text-xl">{DOC_TYPES.find((dt) => dt.id === d.docType)?.icon}</span>
+                {(() => { const dt = DOC_TYPES.find((dt) => dt.id === d.docType); return dt ? <dt.Icon size={20} className="text-green-700 shrink-0" /> : null; })()}
                 <div>
                   <p className="font-semibold text-green-900 text-sm">
                     {DOC_TYPES.find((dt) => dt.id === d.docType)?.en}

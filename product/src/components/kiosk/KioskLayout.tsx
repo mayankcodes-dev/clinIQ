@@ -1,8 +1,7 @@
-"use client";
+﻿"use client";
 
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 // ─── KioskHeader ────────────────────────────────────────────────
@@ -179,7 +178,7 @@ export function KioskFooter({
   );
 }
 
-// ─── ClinIQLogo ───────────────────────────────────────────────
+// ─── ClinIQLogo ───────────────────────────────────────────────────────────
 export function ClinIQLogo({
   size = "md",
   className,
@@ -189,27 +188,28 @@ export function ClinIQLogo({
   className?: string;
   showText?: boolean;
 }) {
-  const imgSizes = { sm: 36, md: 48, lg: 72 };
+  const iconDim = { sm: 28, md: 34, lg: 44 };
   const textSizes = { sm: "text-lg", md: "text-xl", lg: "text-3xl" };
+  const dim = iconDim[size];
 
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
-      <Image
-        src="/cliniq-logo.svg"
-        alt="ClinIQ"
-        width={imgSizes[size]}
-        height={imgSizes[size]}
-        className="rounded-full border border-brand-100 shadow-sm"
-      />
+    <div className={cn("flex items-center gap-2", className)}>
+      {/* Medical cross icon mark */}
+      <div
+        className="flex items-center justify-center rounded-lg bg-teal-600 text-white shrink-0"
+        style={{ width: dim, height: dim }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" width={Math.round(dim * 0.55)} height={Math.round(dim * 0.55)}>
+          <rect x="10" y="3" width="4" height="18" rx="1.5" fill="white" />
+          <rect x="3" y="10" width="18" height="4" rx="1.5" fill="white" />
+        </svg>
+      </div>
+      {/* Wordmark */}
       {showText && (
-        <div className="leading-none">
-          <span className={cn("font-extrabold text-brand-700", textSizes[size])}>
-            Medi
-          </span>
-          <span className={cn("font-extrabold text-secondary-500", textSizes[size])}>
-            Kiosk
-          </span>
-        </div>
+        <span className={cn("font-extrabold leading-none", textSizes[size])}>
+          <span className="text-slate-800">Clin</span>
+          <span className="text-teal-600">IQ</span>
+        </span>
       )}
     </div>
   );

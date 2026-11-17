@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 interface LoaderCopy {
   heading: string;
@@ -80,22 +81,8 @@ export default function InterQuestionLoader({
   return (
     <div className="bg-[#f4f5f7] rounded-3xl p-4 sm:p-8 flex items-center justify-center min-h-[420px]">
       <div className="max-w-[540px] w-full min-h-[360px] bg-white border border-slate-200/90 rounded-[24px] shadow-[0_2px_12px_rgba(15,23,42,0.03)] px-8 py-16 flex flex-col items-center justify-center text-center">
-        <div className="w-14 h-14 rounded-full bg-emerald-500/15 p-1.5 mb-6">
-          <div className="w-full h-full rounded-full bg-[#22c55e] text-white flex items-center justify-center">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M5 12.5 9.5 17 19 7.5" />
-            </svg>
-          </div>
+        <div className="w-14 h-14 flex items-center justify-center mb-6">
+          <CheckCircle2 size={56} className="text-emerald-500" strokeWidth={1.5} />
         </div>
 
         <h2 className="text-xl sm:text-[22px] font-semibold text-slate-900 mb-3">

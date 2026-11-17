@@ -2,44 +2,35 @@
 // Next.js App Router built-in loading UI —
 // shown automatically as a Suspense fallback during page transitions.
 
-import Image from "next/image";
-
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white gap-6">
-      {/* Logo */}
-      <div className="relative">
-        <Image
-          src="/cliniq-logo.svg"
-          alt="ClinIQ"
-          width={96}
-          height={96}
-          className="rounded-full border-2 border-blue-100 shadow-sm"
-          priority
-        />
-        {/* Spinning ring around logo */}
-        <span
-          className="absolute inset-0 rounded-full border-4 border-transparent
-                     border-t-blue-600 border-r-orange-400 animate-spin"
-          style={{ animationDuration: "900ms" }}
-        />
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white gap-5">
+      {/* Icon mark */}
+      <div
+        className="flex items-center justify-center rounded-2xl bg-teal-600 text-white shadow-lg"
+        style={{ width: 64, height: 64 }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
+          <rect x="10" y="3" width="4" height="18" rx="1.5" fill="white" />
+          <rect x="3" y="10" width="18" height="4" rx="1.5" fill="white" />
+        </svg>
       </div>
 
       {/* Wordmark */}
       <div className="text-center">
         <p className="text-2xl font-extrabold">
-          <span className="text-blue-700">Medi</span>
-          <span className="text-orange-500">Kiosk</span>
+          <span className="text-slate-800">Clin</span>
+          <span className="text-teal-600">IQ</span>
         </p>
-        <p className="text-sm text-neutral-400 mt-1">AI Clinical History Platform</p>
+        <p className="text-sm text-slate-400 mt-1">AI Clinical History Platform</p>
       </div>
 
-      {/* Dot-pulse loader */}
+      {/* Pulse dots */}
       <div className="flex items-center gap-2">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="h-2.5 w-2.5 rounded-full bg-blue-500 animate-bounce"
+            className="h-2 w-2 rounded-full bg-teal-500 animate-bounce"
             style={{ animationDelay: `${i * 150}ms`, animationDuration: "700ms" }}
           />
         ))}
