@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # ClinIQ
 
@@ -88,6 +88,7 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 > Items actively scoped but not yet in production:
 - **ABHA Integration** — live ABDM sandbox linking; patient H&P auto-linked to Ayushman Bharat Health Account
 - **Nurse Dashboard** — vitals entry (BP, SpO₂, weight, temperature) pre-consultation; merged into H&P
+- **Expanded Language Coverage** — currently live across **11 Indian languages** (Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, English); next: Odia, Assamese, Maithili
 
 ---
 
@@ -308,7 +309,7 @@ docker run -p 3000:3000 --env-file .env.local cliniq
 
 ## License
 
-MIT © 2026 Team ClinIQ
+MIT © 2026 Mayank
 
 > *ClinIQ is an AI-assisted pre-consultation intake tool. It is NOT a diagnostic device.  
 > All generated reports are for physician review only and do not constitute a clinical diagnosis.*
