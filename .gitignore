@@ -57,3 +57,16 @@ DEMO_SCRIPT.md
 *.zip
 *.tar.gz
 landingPage.zip
+
+# AI / Agent files (Antigravity, Gemini, etc.)
+.gemini/
+*.agy
+brain/
+**/.system_generated/
+**/media_*.png
+**/media_*.jpg
+**/media_*.ts
+*.report.md
+*.analysis.md
+RESEARCH*.md
+CONTEXT*.md
