@@ -252,7 +252,8 @@ export default function SummaryPage() {
     }
 
     await new Promise((r) => setTimeout(r, 400));
-    router.push("/patient/complete");
+    // Go to /report to generate H&P and show WhatsApp share before queue
+    router.push("/report");
   }
 
   if (status === "generating") {
@@ -307,7 +308,7 @@ export default function SummaryPage() {
         <div className="bg-brand-700 text-white rounded-2xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.jpg" alt="ClinIQ" className="h-10 w-10 rounded-xl object-cover shrink-0 border-2 border-brand-500" />
+            <img src="/cliniq-logo.svg" alt="ClinIQ" className="h-10 w-10 rounded-xl object-cover shrink-0 border-2 border-brand-500" />
             <div>
               <p className="text-xs text-brand-200 font-medium uppercase tracking-wide">ClinIQ</p>
               <p className="font-bold text-base leading-tight">AI Clinical Intake Record</p>
@@ -562,7 +563,7 @@ export default function SummaryPage() {
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-brand-600 uppercase tracking-widest flex items-center gap-1.5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.jpg" alt="" className="h-4 w-4 rounded-full object-cover" />
+              <img src="/cliniq-logo.svg" alt="" className="h-4 w-4 rounded-full object-cover" />
               AI Generated Summary (For Physician)
             </p>
             <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-semibold">DRAFT</span>

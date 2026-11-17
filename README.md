@@ -1,214 +1,323 @@
-# ClinIQ — AI Clinical History Kiosk
+<div align="center">
 
-> **AI-powered multilingual clinical history-taking platform for Indian hospitals and AYUSH clinics.**
-> Captures structured patient history through natural voice conversation and guided touchscreen interaction — in 22 Indian languages — before the patient enters the consultation room.
+# ClinIQ — AI-Powered Multilingual Clinical History Kiosk
 
-![Next.js](https://img.shields.io/badge/Next.js_15-black?logo=next.js) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white) ![Gemini](https://img.shields.io/badge/Gemini_AI-4285F4?logo=google&logoColor=white) ![Groq](https://img.shields.io/badge/Groq-F55036?logoColor=white) ![Bhashini](https://img.shields.io/badge/Bhashini-138808?logoColor=white)
+**Smart India Hackathon 2026 · Problem Statement PS 26047**
+*Ministry of Health and Family Welfare · Category: MedTech / BioTech / HealthTech*
 
-🔗 **[Live Demo →](https://cliniq.mayankcodes.dev)** &nbsp; 📂 **[Source Code →](https://github.com/mayankcodes-dev/clinIQ)**
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=nextdotjs)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4.x-38BDF8?logo=tailwindcss)](https://tailwindcss.com)
+[![Neon Postgres](https://img.shields.io/badge/Neon-Postgres-00E5BF?logo=postgresql)](https://neon.tech)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+> ClinIQ replaces the paper OPD form with a voice-first, multilingual AI kiosk.  
+> Patients answer questions in their own language — Hindi, Tamil, Bengali and 8 more.  
+> The doctor receives a structured, one-page History & Physical before the patient even walks in.
+
+</div>
 
 ---
 
 ## The Problem
 
-Indian OPDs see 4,000–10,000 patients daily with 2–5 minute consultations. Doctors spend most of that time *asking* history instead of *examining and counselling*. AYUSH practitioners face even more complexity — Dashavidha Pariksha requires 10+ constitutional parameters that are impossible to capture manually under time pressure.
+Every day across India, millions of patients fill out paper OPD forms in a language they barely read, hand them to an overwhelmed doctor, and lose critical medical context in translation.
 
-**ClinIQ solves this by conducting the entire clinical history interview autonomously, in the patient''s own language, before they enter the consultation room.**
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Patient Kiosk UI                       │
-│  Next.js App Router · React 19 · Tailwind CSS · PWA      │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-        ┌───────────────┼───────────────┐
-        ▼               ▼               ▼
-┌──────────────┐ ┌─────────────┐ ┌──────────────────┐
-│  Groq AI     │ │ Gemini AI   │ │  Bhashini API    │
-│  Conversation│ │ Summary +   │ │  ASR + TTS       │
-│  Engine      │ │ Vision OCR  │ │  22 Indian Langs │
-└──────────────┘ └─────────────┘ └──────────────────┘
-                        │
-        ┌───────────────┴───────────────┐
-        ▼                               ▼
-┌──────────────────────┐  ┌────────────────────────┐
-│  Neon Serverless DB  │  │  ABDM / FHIR R4 API    │
-└──────────────────────┘  └────────────────────────┘
-```
+- **Doctors spend 6–8 minutes per patient** just collecting history that could be captured automatically.
+- **Non-literate and rural patients** cannot fill forms in English or even their own script.
+- **Chronic patients** (diabetics, hypertensives) miss follow-ups because no one reminds them.
+- **Paper records** are lost, undated, and invisible to the next specialist.
 
 ---
 
-## Four Modules
+## The Solution
 
-### Module A — Conversational Multimodal History Engine
-- **Adaptive AI interviewer** using Groq''s ultra-fast inference — branches questions based on symptoms (SOCRATES framework)
-- **Dual-mode input**: Natural voice via **Bhashini ASR** + guided touchscreen chips
-- **Text-to-speech** via **Bhashini TTS** — question read aloud automatically in patient''s language on every page load
-- **22 Indian languages** including all 8th Schedule languages
-- **AYUSH Dashavidha Pariksha**: All 10 constitutional parameters (Prakriti, Vikriti, Sara, Samhanana, Satmya, Pramana, Sattva, Ahara Shakti, Vyayama Shakti, Vaya)
-- **Red-flag detection**: Cardiac, stroke, breathing, bleeding, and psychiatric emergencies flagged in real-time
-- **Triple-fallback AI**: Groq → Gemini → Offline deterministic questions (never breaks the interview)
+ClinIQ is a **touchscreen + voice kiosk** placed at OPD reception. In under 4 minutes:
 
-### Module B — Medical Document Digitization & Intelligence
-- **Gemini Vision OCR** for handwritten prescriptions, printed lab reports, and discharge summaries
-- **Intelligent extraction**: Medications with dosages, lab values with reference ranges, diagnoses
-- **Multi-pass extraction** with OCR dosage normalization (`5OOmg` → `500mg`)
-- **Abnormal-value highlighting**: ⬆ HIGH (red), ⬇ LOW (blue), ✓ NORMAL (green)
-- **Chronological timeline** organization by document date
-
-### Module C — Structured History Summary Generator
-- **Standard clinical format**: Chief Complaint → HPI → PMHx → Drug/Allergy → Family → Personal → ROS
-- **AI-generated narrative summary** with ICD-10 code suggestions
-- **Professional A4 print-ready report** with DRAFT watermark
-- **AYUSH section** with all Dashavidha Pariksha parameters
-
-### Module D — Consent, Privacy & ABDM Integration
-- **ABHA ID / Aadhaar OTP / Mobile OTP** — patients authenticate with any method
-- **ABDM consent framework** — compliant with Digital Personal Data Protection Act 2023
-- **Granular consent toggles** with Bhashini TTS audio explanation in patient''s language
-- **FHIR R4 API** resource generation for hospital HIS integration
-- **Session termination**: All PII cleared after the kiosk session ends
+1. Patient taps their language and OPD department.
+2. The kiosk **speaks** each question using Bhashini / ElevenLabs TTS.
+3. Patient **speaks or taps** their answer.
+4. AI structures the answers into a clinical **History & Physical (H&P)** document — in medical English — for the doctor.
+5. Patient receives a **token number**. Doctor receives the full structured summary before the consultation begins.
 
 ---
 
-## Bhashini Integration
+## Key Features
 
-[Bhashini](https://bhashini.gov.in) is India''s National Language Translation Mission — a Government of India initiative for Indian language AI services.
+### 🗣️ Voice-First, 11-Language Support
+- Full intake interview conducted via text-to-speech in **Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and English**.
+- Powered by **Bhashini Dhruva** (government-certified ASR/TTS) with ElevenLabs as premium fallback.
+- Touch-chip quick-select for semi-literate patients — tap common answers, no typing needed.
 
-| Service | Usage in ClinIQ |
-|---------|-------------------|
-| **ASR (Speech-to-Text)** | Converts patient''s spoken words to text in real-time across 22 Indian languages with 10s timeout |
-| **TTS (Text-to-Speech)** | Reads every question and instruction aloud automatically — critical for low-literacy and elderly patients |
+### 🧠 AI Clinical Interview Engine
+- Groq LLaMA models drive a structured, adaptive interview across **7 clinical stages**: Chief Complaint → HPI → Past History → Drug & Allergy → Family History → Personal History → Review of Systems.
+- **AYUSH mode** extends the interview with full **Dashavidha Pariksha** (10-fold Ayurvedic examination) — Prakriti, Vikriti, Agni, Koshtha, Ahara-Vihara, and more.
+- Interview questions are dynamically generated based on previous answers — no rigid scripted trees.
+- Deterministic fallback for all stages when LLM is unavailable — kiosk **never breaks**.
 
-Bhashini is used because it is purpose-built for Indian languages, government-backed, and directly integrated with the ABDM ecosystem.
+### 📄 AI-Generated History & Physical (H&P) Report
+- Gemini 2.5 Flash and Groq LLaMA jointly produce a **physician-grade H&P** in medical English:
+  - `CHIEF COMPLAINT` · `HISTORY OF PRESENT ILLNESS` · `PAST MEDICAL HISTORY`
+  - `MEDICATIONS` · `ALLERGIES` · `FAMILY AND SOCIAL HISTORY` · `REVIEW OF SYSTEMS`
+  - `🚨 RED FLAGS` (highlighted in red) · `ASSESSMENT — DIFFERENTIAL CONSIDERATIONS` · `ICD-10 SUGGESTIONS`
+- Report is **single-page**, Georgia serif, clean white — resembles a real hospital H&P note.
+- **Print / Save as PDF** with one click.
+- **WhatsApp Share** — full H&P pre-filled as a WhatsApp message for teleconsultation or referral.
 
----
+### 📸 OCR Document Scan
+- Patient uploads previous prescriptions, lab reports, discharge summaries, X-ray reports.
+- **Gemini Vision** extracts medications, diagnoses, lab values, doctor names, and dates.
+- Extracted data is merged into the final H&P — lab values appear in `KEY LABORATORY FINDINGS`.
 
-## ABDM / ABHA Integration
+### 🏥 Live Doctor Queue (B2B Feature 1)
+- Each submitted intake auto-generates a **token number** (A-001, A-002 …) stored in Neon Postgres.
+- Doctor dashboard shows the live queue: patient name, chief complaint, severity, ICD-10 suggestion, wait time.
+- Tokens persist across server restarts (Neon DB) — no in-memory loss on cold starts.
+- Graceful mock fallback — if DB is unreachable, patient still gets a token and flow never breaks.
 
-[ABDM (Ayushman Bharat Digital Mission)](https://abdm.gov.in) is India''s national digital health infrastructure.
+### 💊 Prescription Builder (B2B Feature 2)
+- Doctor fills name, Rx, dosage, advice on a digital form in the dashboard.
+- Generates a **printable prescription** with clinic letterhead.
+- One-click **WhatsApp to Patient** — sends the prescription text as a pre-filled WhatsApp message to the patient's mobile.
 
-| Feature | Details |
-|---------|---------|
-| **ABHA ID Login** | Patients authenticate with their 14-digit Ayushman Bharat Health Account ID |
-| **Aadhaar OTP Auth** | Biometric-backed authentication via Aadhaar OTP |
-| **Mobile OTP** | SMS OTP via Twilio — HMAC-SHA256 hashed, 60s rate-limited, auto-cleared on session end |
-| **ABDM Consent** | Granular per-purpose consent per ABDM Health Data Management Policy |
-| **FHIR R4** | Clinical summary exported as FHIR R4 resources for HIS integration |
-| **DPDP Compliance** | Session data deleted when the kiosk session ends — no PII persisted on device |
+### 📊 Chronic-Care Recall & ROI Dashboard (B2B Feature 3)
+- Auto-detects **chronic conditions** (Diabetes E11, Hypertension I10, Hypothyroidism E03, Asthma J45, Osteoarthritis M15–M19) from completed H&P reports using ICD-10 keyword matching.
+- **ROI Telemetry Panel** shows live:
+  - `Doctor Hours Saved` — `intakes × 6.5 min / 60`
+  - `Chronic Patients Identified` — count of tagged chronic cases
+  - `Projected Monthly Revenue Lift` — `chronicPatients × ₹500` (avg OPD fee)
+  - `Avg Intake Latency` — time per patient in minutes
+- **30-Day Smart Recall Table** — lists chronic patients with condition tag, follow-up date, and a **"Send WhatsApp Recall"** button that generates a personalized reminder in the patient's preferred language.
+
+### 🔐 ABHA Integration (Sandbox)
+- Full **Ayushman Bharat Health Account (ABHA)** OTP verification flow via ABDM sandbox.
+- Dev mock mode when ABDM credentials are absent — kiosk works fully without ABHA for pilots.
+- Session token signed with HMAC-SHA256 — patient data requests authenticated server-side.
+
+### 🌐 Offline-Ready PWA
+- Service worker (`/public/sw.js`) caches static assets — kiosk works on slow or intermittent clinic Wi-Fi.
+- `manifest.json` for Add to Home Screen on Android tablets.
+
+### 🧬 Clinical RAG (Hybrid Retrieval)
+- Local knowledge base of 50+ Indian clinical protocols (RNTCP, NCD guidelines, AYUSH formulary).
+- Retrieves **red-flag symptoms** and **ICD-10 mappings** relevant to the chief complaint.
+- Injected as a protocol checklist into the report-generation prompt — grounding the AI in Indian clinical guidelines.
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Frontend** | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Framer Motion |
-| **AI — Conversation** | Groq API (ultra-fast LLM inference), Gemini Flash as fallback |
-| **AI — Summary & OCR** | Google Gemini 2.5 Flash (structured JSON + Vision OCR) |
-| **Speech** | Bhashini ASR (speech-to-text) + Bhashini TTS (text-to-speech) — 22 Indian languages |
-| **Database** | Neon Serverless Postgres |
-| **Auth** | ABHA ID, Aadhaar OTP, Mobile OTP (Twilio) |
-| **Interoperability** | FHIR R4 resource generation, ABDM consent framework |
-| **Deployment** | Vercel (Edge + Serverless) |
-| **PWA** | Service Worker, offline fallback questions |
-
----
-
-## Network Resilience
-
-Built for Indian hospital networks (intermittent WiFi, shared mobile data):
-
-- **AbortSignal timeouts**: Groq 12s, Gemini 15s, Bhashini ASR 10s, Bhashini TTS 8s
-- **Client-side `resilientFetch`** with automatic retries and exponential backoff
-- **Triple AI fallback**: Groq → Gemini → Offline static questions (11 languages, clinically vetted)
-- **Graceful degradation**: OCR returns low-confidence fallback instead of breaking the flow
-- **Non-blocking DB writes**: Session continues even if Neon write fails
-
----
-
-## Accessibility & Kiosk UX
-
-- **18px base font** for elderly/low-vision patients
-- **48px minimum tap targets** on all interactive elements; 96×96px microphone button
-- **Audio-first**: Every question and instruction read aloud via Bhashini TTS automatically
-- **Reduced-motion**: Respects `prefers-reduced-motion` system setting
-- **Safe-area insets**: Works on notched/curved kiosk displays
-- **WCAG AA** color contrast across all components
-
----
-
-## Getting Started
-
-```bash
-git clone https://github.com/mayankcodes-dev/clinIQ.git
-cd clinIQ/product
-npm install
-cp .env.example .env.local   # Fill in API keys
-npm run dev                   # http://localhost:3000
-```
-
-### Required Environment Variables
-
-| Variable | Purpose |
-|----------|---------|
-| `GEMINI_API_KEY` | Google Gemini — summary + Vision OCR |
-| `GROQ_API_KEY` | Groq — conversation engine |
-| `DATABASE_URL` | Neon Postgres connection string |
-| `BHASHINI_API_KEY` | Bhashini ASR/TTS |
-| `BHASHINI_USER_ID` | Bhashini user ID |
-| `TWILIO_ACCOUNT_SID` | Twilio SMS |
-| `TWILIO_AUTH_TOKEN` | Twilio auth |
-| `TWILIO_PHONE` | Twilio sender number |
-| `OTP_SECRET` | HMAC secret for OTP hashing |
-
----
-
-## Project Structure
-
-```
-ClinIQ/
-├── product/                    # Next.js application
-│   ├── src/app/
-│   │   ├── page.tsx             # Language selection (22 languages)
-│   │   ├── login/               # ABHA / Aadhaar / Mobile OTP auth
-│   │   ├── consent/             # ABDM consent with Bhashini TTS
-│   │   ├── opd-select/          # General OPD vs AYUSH OPD
-│   │   ├── history/             # Voice + touch clinical interview
-│   │   ├── scan/                # Document OCR & extraction
-│   │   ├── summary/             # AI summary + print report
-│   │   ├── doctor/              # Physician review dashboard
-│   │   └── api/
-│   │       ├── history/chat/    # Groq conversation engine
-│   │       ├── scan/extract/    # Gemini Vision OCR
-│   │       ├── bhashini/asr/    # Bhashini speech-to-text
-│   │       ├── bhashini/tts/    # Bhashini text-to-speech
-│   │       ├── auth/            # ABHA / OTP auth
-│   │       ├── fhir/            # FHIR R4 generation
-│   │       └── session/         # Neon DB persistence
-│   └── src/lib/
-│       ├── translations.ts      # 22 language strings
-│       ├── resilientFetch.ts    # Network retry utility
-│       └── constants.ts         # Language list, stages
-└── landingPage/                 # Public marketing site
-```
+|---|---|
+| **Framework** | Next.js 15.5 (App Router, React 19) |
+| **Language** | TypeScript 5.x (strict) |
+| **Styling** | Tailwind CSS v4, Framer Motion |
+| **LLM — Interview** | Groq LLaMA 3.1 70B + LLaMA 3.1 8B (fast) |
+| **LLM — Report / OCR** | Google Gemini 2.5 Flash (REST) |
+| **TTS / ASR** | Bhashini Dhruva (primary) · ElevenLabs (fallback) |
+| **Database** | Neon Postgres (serverless) + Drizzle ORM |
+| **Auth** | ABHA OTP via ABDM sandbox · HMAC-SHA256 session tokens |
+| **Deployment** | Cloudflare Pages (edge) · Docker (self-host) |
+| **Testing** | Vitest · 33 unit + integration tests |
 
 ---
 
 ## Patient Journey
 
 ```
-Language Select (22 langs)
-  → Login (ABHA / Aadhaar OTP / Mobile OTP)
-  → Consent (ABDM + DPDP 2023 + Bhashini audio)
-  → OPD Select (General / AYUSH)
-  → Clinical Interview (Voice + Touch, Bhashini ASR/TTS)
-  → Document Scan & OCR (Gemini Vision)
-  → AI Summary (Groq → Gemini)
-  → Doctor Review Dashboard
-  → Session Complete & PII Cleared
+Landing → Language Select → Consent → OPD Department Select
+    → Voice/Touch Interview (7 stages, ~4 min)
+        → Document Scan (optional — prescriptions, lab reports)
+            → Summary Review
+                → /report  ← H&P generated here (Gemini + Groq)
+                    → WhatsApp Share / Print PDF
+                        → Token Number  ← Doctor queue
+                            → Doctor Dashboard (live queue, H&P, Rx builder)
 ```
+
+---
+
+## Project Structure
+
+```
+medikiosk/
+├── product/                     ← Next.js application (the kiosk + dashboard)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── patient/         ← Patient-facing kiosk flow
+│   │   │   │   ├── consent/     ← DPDP Act consent screen
+│   │   │   │   ├── opd-select/  ← Department selection
+│   │   │   │   ├── history/     ← AI interview (voice + touch)
+│   │   │   │   ├── scan/        ← OCR document upload
+│   │   │   │   ├── summary/     ← Review before submit
+│   │   │   │   └── complete/    ← Token number display
+│   │   │   ├── report/          ← H&P report (doctor + patient view)
+│   │   │   ├── clinic/
+│   │   │   │   └── dashboard/   ← Doctor dashboard (queue, Rx, ROI)
+│   │   │   └── api/
+│   │   │       ├── interview/   ← Groq LLM interview engine
+│   │   │       ├── report/      ← Gemini H&P generator
+│   │   │       ├── scan/        ← Gemini Vision OCR
+│   │   │       ├── bhashini/    ← TTS + ASR endpoints
+│   │   │       ├── queue/       ← Neon queue CRUD
+│   │   │       └── auth/        ← ABHA OTP + doctor PIN
+│   │   ├── lib/
+│   │   │   ├── sessionStore.ts  ← Client-side session management
+│   │   │   ├── clinicQueueStore.ts ← In-memory clinic queue (B2B)
+│   │   │   ├── clinicAnalytics.ts  ← Chronic-care ROI calculator
+│   │   │   ├── groq.ts          ← Groq client + model config
+│   │   │   ├── buildSummary.ts  ← Fallback summary builder
+│   │   │   └── rag/             ← Clinical knowledge retrieval
+│   │   └── components/
+│   │       ├── kiosk/           ← KioskLayout, KioskHeader, etc.
+│   │       ├── clinic/          ← PrescriptionBuilder, dashboard cards
+│   │       ├── interview/       ← InterQuestionLoader animation
+│   │       └── ClinIQLoader.tsx ← EKG heartbeat loader
+│   ├── drizzle/                 ← DB migration SQL files
+│   └── public/                  ← Static assets, PWA manifest, sw.js
+└── landingPage/                 ← Marketing site (separate Next.js app)
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 20+
+- A [Neon](https://neon.tech) Postgres database (free tier works)
+- A [Groq](https://console.groq.com) API key (free tier works)
+- A [Google AI Studio](https://aistudio.google.com) Gemini API key (free)
+- Optional: Bhashini API credentials, ElevenLabs API key
+
+### 1. Clone
+
+```bash
+git clone https://github.com/mayankcodes-dev/medikiosk.git
+cd medikiosk/product
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local`:
+
+```env
+# LLM
+GROQ_API_KEY=gsk_...
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.5-flash
+
+# Database (Neon Postgres)
+DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+
+# Auth
+NEXTAUTH_SECRET=your-32-char-secret
+DOCTOR_PIN=1234
+
+# TTS/ASR (optional — app works without these in dev)
+ELEVENLABS_API_KEY=sk_...
+BHASHINI_USER_ID=...
+BHASHINI_API_KEY=...
+BHASHINI_INFERENCE_URL=https://dhruva-api.bhashini.gov.in/services/inference/pipeline
+
+# ABHA (optional — dev mock used when empty)
+ABDM_CLIENT_ID=
+ABDM_CLIENT_SECRET=
+```
+
+### 4. Push Database Schema
+
+```bash
+npx drizzle-kit push
+```
+
+### 5. Run Dev Server
+
+```bash
+npm run dev
+# → http://localhost:3000
+```
+
+### 6. Access Doctor Dashboard
+
+Navigate to `http://localhost:3000/clinic/dashboard`  
+Default doctor PIN: **1234** (set `DOCTOR_PIN` in env to change)
+
+---
+
+## Running Tests
+
+```bash
+npm test          # Vitest — 33 unit + integration tests
+npm run lint      # ESLint
+npx tsc --noEmit  # TypeScript strict check
+```
+
+---
+
+## Deployment
+
+### Cloudflare Pages (recommended)
+
+```bash
+npm run build     # Builds Next.js for Cloudflare Pages edge runtime
+```
+
+Set environment variables in Cloudflare Pages → Settings → Environment Variables.  
+See `wrangler.jsonc` and `open-next.config.ts` for Cloudflare-specific config.
+
+### Docker (self-hosted clinic)
+
+```bash
+docker build -t cliniq .
+docker run -p 3000:3000 --env-file .env.local cliniq
+```
+
+---
+
+## Security & Compliance
+
+- **DPDP Act 2023** — explicit informed consent before any data capture; consent stored per session.
+- **No plaintext secrets** — OTP hashed with HMAC-SHA256; session tokens signed; never stored in browser localStorage.
+- **Patient data isolation** — sessionStorage cleared on new session; no cross-patient data leakage.
+- **Input sanitisation** — all API routes strip control characters and enforce field length limits.
+- **Auth guards** — `/clinic/dashboard` and all queue mutation routes require a valid doctor PIN or patient token.
+- **`.env.local` gitignored** — real API keys never committed.
+
+---
+
+## Roadmap
+
+- [ ] FHIR R4 export (HL7 bundle per session)
+- [ ] ABHA production integration (live ABDM, not sandbox)
+- [ ] Multi-clinic SaaS mode (clinic subdomain routing)
+- [ ] Teleconsultation deep-link (Jio Health Hub / eSanjeevani)
+- [ ] Offline-first SQLite for areas with no connectivity
+- [ ] Nurse dashboard for vitals entry (BP, SpO₂, weight, temp)
+- [ ] Voice-only mode for blind / motor-impaired patients
+
+---
+
+## Team
+
+**Team ClinIQ** — Smart India Hackathon 2026  
+Problem Statement: PS 26047 · Category: MedTech / BioTech / HealthTech  
+Institution: [Your Institution Name]
+
+---
+
+## License
+
+MIT © 2026 Team ClinIQ
+
+> *This software is an AI-assisted pre-consultation intake tool. It is NOT a diagnostic device.  
+> All generated reports are for physician review only and do not constitute a clinical diagnosis.*

@@ -356,7 +356,7 @@ export default function ScanPage() {
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleExtract}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.jpg" alt="ClinIQ" className="h-5 w-5 rounded-full object-cover inline-block mr-1.5 align-middle" />
+            <img src="/cliniq-logo.svg" alt="ClinIQ" className="h-5 w-5 rounded-full object-cover inline-block mr-1.5 align-middle" />
             ClinIQ से पढ़ें · Extract with ClinIQ AI
           </Button>
           <Button
@@ -430,7 +430,7 @@ export default function ScanPage() {
           >
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.jpg" alt="ClinIQ" className="h-8 w-8 rounded-lg object-cover" />
+              <img src="/cliniq-logo.svg" alt="ClinIQ" className="h-8 w-8 rounded-lg object-cover" />
             </div>
             <div className="flex-1">
               <p className="font-bold text-sm leading-tight">

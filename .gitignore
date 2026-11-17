@@ -3,12 +3,13 @@ node_modules/
 .pnp
 .pnp.js
 
-# Next.js
+# Next.js build output
 .next/
 out/
 build/
+.open-next/
 
-# Environment variables
+# Environment variables — NEVER commit real secrets
 .env
 .env.local
 .env.development.local
@@ -29,44 +30,58 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# AI / Session context — keep out of git
-.ai/
-
-# TypeScript
+# TypeScript build artefacts
 *.tsbuildinfo
 next-env.d.ts
 
-# Vercel
+# Vercel / Cloudflare
 .vercel
+.wrangler/
 
-/proposal
-
-# Internal docs
-cliniq_engineering_handoff.md
-cliniq_logo.jpg
-DEMO_SCRIPT.md
-
-# Brag video output
-brag-output*/
+# AI / Agent context — keep out of git
+.ai/
 .agents/
+skills/
 skills-lock.json
-DEMO_SCRIPT.md
-
-# Archives
-*.zip
-*.tar.gz
-landingPage.zip
-
-# AI / Agent files (Antigravity, Gemini, etc.)
 .gemini/
 *.agy
 brain/
 **/.system_generated/
+
+# Media artefacts from AI agents
 **/media_*.png
 **/media_*.jpg
-**/media_*.ts
-*.report.md
-*.analysis.md
-RESEARCH*.md
-CONTEXT*.md
+
+# Internal pitch / proposal docs
+/proposal/
+cliniq_engineering_handoff.md
+cliniq_master_pitch.md
+DEMO_SCRIPT.md
+composition/
+composition-brief.md
+brag-plan.md
+brag-output*/
+share-copy.txt
+
+# Binary / video assets (too large for git)
+*.mp4
+brag.jpg
+who-are-we.png
+poster_s2.jpg
+cliniq_logo.jpg
+
+# Archives
+*.zip
+*.tar.gz
+
+# PDF clinical records — never push patient data
+*.pdf
+
+# Product-internal agent/AI docs (top-level README is the canonical one)
+product/README.md
+product/AGENTS.md
+product/CLAUDE.md
+product/medikiosk_engineering_plan.md
+product/CLOUDFLARE_ENV.md

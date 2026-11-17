@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.jpg",
+        url: "/cliniq-logo.svg",
         width: 512,
         height: 512,
         alt: "ClinIQ Logo",

@@ -195,7 +195,7 @@ export function ClinIQLogo({
   return (
     <div className={cn("flex items-center gap-2.5", className)}>
       <Image
-        src="/logo.jpg"
+        src="/cliniq-logo.svg"
         alt="ClinIQ"
         width={imgSizes[size]}
         height={imgSizes[size]}

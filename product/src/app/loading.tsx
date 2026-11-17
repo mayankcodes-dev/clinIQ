@@ -10,7 +10,7 @@ export default function Loading() {
       {/* Logo */}
       <div className="relative">
         <Image
-          src="/logo.jpg"
+          src="/cliniq-logo.svg"
           alt="ClinIQ"
           width={96}
           height={96}

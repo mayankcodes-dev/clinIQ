@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Standalone output for Docker edge deployment.
@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       { source: '/scan', destination: '/patient/scan', permanent: true },
       { source: '/summary', destination: '/patient/summary', permanent: true },
       { source: '/complete', destination: '/patient/complete', permanent: true },
+      { source: '/clinic', destination: '/clinic/dashboard', permanent: false },
+      { source: '/doctor/clinic', destination: '/clinic/dashboard', permanent: false },
     ];
   },
   // crypto kept server-side for ABDM HMAC signing
