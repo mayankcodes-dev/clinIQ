@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -225,13 +225,13 @@ export default function ScanPage() {
           {scannedDocs.length > 0 && (
             <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-xl">
               <p className="text-sm font-semibold text-green-800">
-                ✅ {scannedDocs.length} document{scannedDocs.length > 1 ? "s" : ""} scanned
+                <CheckCircle2 size={14} className="inline mr-1 text-green-700" /> {scannedDocs.length} document{scannedDocs.length > 1 ? "s" : ""} scanned
               </p>
               {scannedDocs.map((d, i) => (
                 <p key={i} className="text-xs text-green-700 mt-0.5">
                   {(() => { const dt = DOC_TYPES.find((dt) => dt.id === d.docType); return dt ? <dt.Icon size={12} className="inline mr-1 text-green-700" /> : null; })()}
                   {DOC_TYPES.find((dt) => dt.id === d.docType)?.en}
-                  {d.confidence === "low" && " ⚠️ low confidence"}
+                  {d.confidence === "low" && <><AlertTriangle size={12} className="inline ml-1 text-amber-500" /> low confidence</>}
                 </p>
               ))}
             </div>
@@ -247,7 +247,7 @@ export default function ScanPage() {
                            bg-brand-600 text-white font-bold text-sm
                            active:scale-95 transition-all"
               >
-                <span className="text-2xl">📷</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                 <span>कैमरा / Camera</span>
               </button>
               <button
@@ -256,7 +256,7 @@ export default function ScanPage() {
                            bg-secondary-500 text-white font-bold text-sm
                            active:scale-95 transition-all"
               >
-                <span className="text-2xl">🖼️</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                 <span>गैलरी / Gallery</span>
               </button>
             </div>
@@ -267,7 +267,7 @@ export default function ScanPage() {
             fullWidth
             onClick={handleContinue}
           >
-            {scannedDocs.length > 0 ? "✅ Done — Continue to Summary" : "Skip — No Documents →"}
+            {scannedDocs.length > 0 ? <><CheckCircle2 size={16} className="inline mr-1 align-middle" /> Done — Continue to Summary</> : <>Skip — No Documents <ChevronRight size={16} className="inline ml-0.5 align-middle" /></>}
           </Button>
         </KioskFooter>
 

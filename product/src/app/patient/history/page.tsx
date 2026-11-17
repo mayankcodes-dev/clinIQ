@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -92,19 +92,19 @@ function buildSummaryFromMessages(messages: ChatMessage[]): StructuredSummary {
   const allText = messages.map((m) => m.text).join(" ").toLowerCase();
   const redFlags: string[] = [];
   if (/chest pain|سینہ درد|ਛਾਤੀ ਦਰਦ|흉통|सीने में दर्द|বুক ব্যথা|மார்பு வலி|ఛాతీ నొప్పి|छातीत दुखणे|છાતી દર્દ|ಎದೆ ನೋವು|നെഞ്ച് വേദന/.test(allText))
-    redFlags.push("🚨 EMERGENCY: Chest pain — possible cardiac event");
+    redFlags.push("EMERGENCY: Chest pain — possible cardiac event");
   if (/stroke|facial droop|paralysis|लकवा|পক্ষাঘাত|चेहरा टेढ़ा|slurred speech|sudden headache/.test(allText))
-    redFlags.push("🚨 EMERGENCY: Stroke symptoms — immediate triage");
+    redFlags.push("EMERGENCY: Stroke symptoms — immediate triage");
   if (/breathless|breath|dyspn[oe]a|सांस|শ্বাসকষ্ট|மூச்சு|శ్వాస/.test(allText))
-    redFlags.push("⚠️ URGENT: Breathing difficulty — assess urgently");
+    redFlags.push("URGENT: Breathing difficulty — assess urgently");
   if (/blood|खून|bleeding|রক্ত|இரத்தம்|రక్తం/.test(allText))
-    redFlags.push("⚠️ Bleeding reported — assess volume and urgency");
+    redFlags.push("Bleeding reported — assess volume and urgency");
   if (/unconscious|seizure|convulsion|बेहोश|অচেতন|மயக்கம்|మూర్ఛ|بے ہوش/.test(allText))
-    redFlags.push("🚨 EMERGENCY: Altered consciousness — immediate triage");
+    redFlags.push("EMERGENCY: Altered consciousness — immediate triage");
   if (/high fever|104|105|तेज़ बुखार|উচ্চ জ্বর|تیز بخار/.test(allText))
-    redFlags.push("⚠️ High fever — assess for infection");
+    redFlags.push("High fever — assess for infection");
   if (/suicid|self.harm|आत्महत्या/.test(allText))
-    redFlags.push("🚨 EMERGENCY: Self-harm risk — psychiatric consultation");
+    redFlags.push("EMERGENCY: Self-harm risk — psychiatric consultation");
 
   const ayushHasData = [prakriti, vikriti, agni, koshtha, ahara, nidana, samprapti, sara, samhanana, satmya, pramana, sattva, aharaShakti, vyayamaShakti, vaya]
     .some((v) => v !== "Not reported");
