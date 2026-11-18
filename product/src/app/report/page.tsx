@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/primitives";
 import {
   SessionStore,
+  messagesFromLegacy,
   type ClinIQClinicalReport,
 } from "@/lib/sessionStore";
 import { publishPatientToClinicQueue } from "@/lib/clinicQueueStore";
@@ -160,10 +161,19 @@ export default function ReportPage() {
         return;
       }
 
+      let turns = session.turns ?? [];
+      if (turns.length === 0) {
+        const legacyHistory = readObject("mk_history");
+        if (Array.isArray(legacyHistory.messages)) {
+          turns = messagesFromLegacy(legacyHistory.messages);
+        }
+      }
+
       const hydratedSession = SessionStore.updateSession({
         language: storedLanguage,
         mode: ayushMode ? "ayush" : "allopathic",
         ayushMode,
+        turns: turns.length ? turns : session.turns,
         patient,
         scannedDocuments: storedDocuments,
       });

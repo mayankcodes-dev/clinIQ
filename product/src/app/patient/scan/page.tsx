@@ -14,6 +14,7 @@ import ClinIQLoader from "@/components/ClinIQLoader";
 import { cn } from "@/lib/utils";
 import { Pill, FlaskConical, Building2, ScanLine, FileText as FileTextIcon, CheckCircle2, RefreshCw, AlertTriangle, Activity, BarChart2, ChevronRight, ArrowRight } from "lucide-react";
 import { t } from "@/lib/translations";
+import { SessionStore } from "@/lib/sessionStore";
 import type { DocType, ExtractedDoc } from "@/app/api/scan/extract/route";
 
 // ── Document type options ────────────────────────────────────────
@@ -151,6 +152,11 @@ export default function ScanPage() {
     const updated = [...scannedDocs, extracted];
     setScannedDocs(updated);
     sessionStorage.setItem("mk_docs", JSON.stringify(updated));
+    try {
+      SessionStore.updateSession({
+        scannedDocuments: updated as unknown as Array<Record<string, unknown>>,
+      });
+    } catch { /**/ }
 
     // Reset for potential next doc
     setCapturedImage(null);

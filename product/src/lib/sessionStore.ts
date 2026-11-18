@@ -180,7 +180,7 @@ function turnsFromLegacy(value: unknown): InterviewTurn[] {
   return turns;
 }
 
-function messagesFromLegacy(value: unknown): InterviewTurn[] {
+export function messagesFromLegacy(value: unknown): InterviewTurn[] {
   if (!Array.isArray(value)) return [];
 
   const turns: InterviewTurn[] = [];
@@ -292,48 +292,71 @@ function writeSession(storage: Storage, session: ClinIQPatientSession): void {
 
 function readOrMigrate(storage: Storage): ClinIQPatientSession {
   const active = normalizeSession(readJson(storage, ACTIVE_SESSION_KEY));
-  // A previous mount bug could leave an empty active object behind while the
-  // real answers still live under one of the legacy keys. Only treat the
-  // active record as authoritative once it contains interview turns.
-  if (active?.turns.length) {
-    return active;
-  }
-
   let migrated: ClinIQPatientSession | null = null;
-  for (const key of LEGACY_SESSION_KEYS) {
-    const value = readJson(storage, key);
-    if (key === "medikiosk_session") {
-      migrated = normalizeSession(value);
-    } else {
-      const turns = turnsFromLegacy(value);
-      if (turns.length > 0) {
-        migrated = normalizeSession({
-          ...(migrated ?? {}),
-          turns,
-        });
-      }
+
+  // Check mk_history first if active has no turns
+  if (!active?.turns.length) {
+    const mkHistory = readJson(storage, "mk_history");
+    if (mkHistory) {
+      migrated = normalizeSession(mkHistory);
     }
-
-    if (migrated?.turns.length) break;
   }
 
-  const session = migrated?.turns.length
-    ? active
-      ? {
-          ...active,
-          turns: migrated.turns,
-          patient: active.patient ?? migrated.patient,
-          summary: active.summary ?? migrated.summary,
-          updatedAt: Date.now(),
+  // Check legacy session keys if still no turns
+  if (!active?.turns.length && !migrated?.turns.length) {
+    for (const key of LEGACY_SESSION_KEYS) {
+      const value = readJson(storage, key);
+      if (key === "medikiosk_session") {
+        migrated = normalizeSession(value);
+      } else {
+        const turns = turnsFromLegacy(value);
+        if (turns.length > 0) {
+          migrated = normalizeSession({
+            ...(migrated ?? {}),
+            turns,
+          });
         }
-      : migrated
-    : active ?? createEmptySession();
-  writeSession(storage, session);
-
-  for (const key of LEGACY_SESSION_KEYS) {
-    storage.removeItem(key);
+      }
+      if (migrated?.turns.length) break;
+    }
   }
 
+  // Hydrate supplementary fields from individual sessionStorage keys if missing
+  const patientRaw = readJson(storage, "mk_patient") as Record<string, unknown> | null;
+  const docsRaw = readJson(storage, "mk_docs") as Array<Record<string, unknown>> | null;
+  const langRaw = storage.getItem("mk_lang");
+  const modeRaw = storage.getItem("mk_mode");
+  const clinicId = storage.getItem("mk_clinic_id") ?? undefined;
+  const tokenRaw = storage.getItem("mk_token_number");
+  const tokenNumber = tokenRaw ? parseInt(tokenRaw, 10) : undefined;
+
+  const turns = active?.turns?.length ? active.turns : (migrated?.turns ?? []);
+  const patient = active?.patient ?? patientRaw ?? migrated?.patient;
+  const summary = active?.summary ?? migrated?.summary;
+  const scannedDocs = (active?.scannedDocuments && active.scannedDocuments.length > 0)
+    ? active.scannedDocuments
+    : (Array.isArray(docsRaw) && docsRaw.length > 0 ? docsRaw : migrated?.scannedDocuments);
+
+  const session: ClinIQPatientSession = {
+    sessionId: active?.sessionId ?? migrated?.sessionId ?? createSessionId(),
+    language: active?.language || langRaw || migrated?.language || "hi",
+    mode: (modeRaw === "ayush" || active?.mode === "ayush" || migrated?.mode === "ayush") ? "ayush" : "allopathic",
+    ayushMode: modeRaw === "ayush" || active?.ayushMode || migrated?.ayushMode || false,
+    turns,
+    patient,
+    summary,
+    scannedDocuments: scannedDocs,
+    generatedReport: active?.generatedReport ?? migrated?.generatedReport,
+    startedAt: active?.startedAt ?? migrated?.startedAt ?? Date.now(),
+    updatedAt: Date.now(),
+    clinicId: active?.clinicId ?? clinicId,
+    tokenNumber: active?.tokenNumber ?? tokenNumber,
+    patientName: active?.patientName ?? (typeof patient?.name === "string" ? patient.name : undefined),
+    patientAge: active?.patientAge ?? (patient && (patient.age || patient.patientAge) ? String(patient.age ?? patient.patientAge) : undefined),
+    patientGender: active?.patientGender ?? (typeof patient?.gender === "string" ? patient.gender : undefined),
+  };
+
+  writeSession(storage, session);
   return session;
 }
 

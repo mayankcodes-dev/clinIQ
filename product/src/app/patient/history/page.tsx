@@ -21,6 +21,7 @@ import { COMMON_SYMPTOMS } from "@/lib/constants";
 import { t } from "@/lib/translations";
 import { useVoiceSession } from "@/hooks/useVoiceSession";
 import { resilientFetch } from "@/lib/resilientFetch";
+import { SessionStore, messagesFromLegacy } from "@/lib/sessionStore";
 import type { ChatMessage, StructuredSummary, InterviewMode } from "@/app/api/history/chat/route";
 
 type Stage =
@@ -601,6 +602,20 @@ export default function HistoryPage() {
     setPatientInput("");
     setSelectedChips([]);
 
+    // Persist answer turns to SessionStore and mk_history incrementally
+    try {
+      SessionStore.updateSession({
+        language: lang,
+        mode: interviewMode,
+        ayushMode: interviewMode === "ayush",
+        turns: messagesFromLegacy(newMessages),
+      });
+      sessionStorage.setItem("mk_history", JSON.stringify({
+        messages: newMessages,
+        summary: null,
+      }));
+    } catch { /**/ }
+
     const nextStage = STAGES[stageIndex + 1] ?? "summary";
 
     if (nextStage === "summary" || stageIndex >= STAGES.length - 1) {
@@ -620,11 +635,18 @@ export default function HistoryPage() {
         if (data.structuredSummary) {
           setSummary(data.structuredSummary);
           setIsComplete(true);
-          // Save to sessionStorage for summary page
+          // Save to sessionStorage and SessionStore for summary and report pages
           sessionStorage.setItem("mk_history", JSON.stringify({
             messages: newMessages,
             summary: data.structuredSummary,
           }));
+          SessionStore.updateSession({
+            language: lang,
+            mode: interviewMode,
+            ayushMode: interviewMode === "ayush",
+            turns: messagesFromLegacy(newMessages),
+            summary: data.structuredSummary as unknown as Record<string, unknown>,
+          });
         } else {
           // Gemini returned no summary — build one from raw messages
           const built = buildSummaryFromMessages(newMessages);
@@ -634,6 +656,13 @@ export default function HistoryPage() {
             messages: newMessages,
             summary: built,
           }));
+          SessionStore.updateSession({
+            language: lang,
+            mode: interviewMode,
+            ayushMode: interviewMode === "ayush",
+            turns: messagesFromLegacy(newMessages),
+            summary: built as unknown as Record<string, unknown>,
+          });
         }
       } catch {
         // Gemini quota hit or network error — build summary directly from patient answers
@@ -644,6 +673,13 @@ export default function HistoryPage() {
           messages: newMessages,
           summary: built,
         }));
+        SessionStore.updateSession({
+          language: lang,
+          mode: interviewMode,
+          ayushMode: interviewMode === "ayush",
+          turns: messagesFromLegacy(newMessages),
+          summary: built as unknown as Record<string, unknown>,
+        });
       } finally {
         setAiLoading(false);
       }

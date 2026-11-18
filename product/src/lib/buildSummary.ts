@@ -46,69 +46,69 @@ export function buildSummaryFromMessages(messages: ChatSummaryMessage[]): Struct
 
   // ------ EMERGENCY: Cardiac ------
   if (
-    /chest pain|------------ --------- ------------|------------ --------- ------------|------------------ ---------|--------------- ------------------|--------------- ---------------|------------------ ---------------|--------------------- ------------------|------------ ------------|------------------------------|---------- ------ ------/.test(
+    /chest pain|سینہ درد|ਛਾਤੀ ਦਰਦ|흉통|सीने में दर्द|बुक दर्द|বুক ব্যথা|மார்பு வலி|ఛాతీ నొప్పి|छातीत दुखणे|છાતી દર્દ|ಎದೆ ನೋವು|നെഞ്ച് വേദന/.test(
       allText
     )
   ) {
-    redFlags.push("---- EMERGENCY: Chest pain - possible cardiac event, urgent triage required");
+    redFlags.push("EMERGENCY: Chest pain - possible cardiac event, urgent triage required");
   }
-  if (/palpitation|---------------|------------------------|---------------------|------------/.test(allText)) {
-    redFlags.push("------ Palpitations reported - cardiac evaluation recommended");
+  if (/palpitation|घबराहट|বুকে ধড়ফড়|படபடப்பு|గుండె దడ|ધબકારા/.test(allText)) {
+    redFlags.push("Palpitations reported - cardiac evaluation recommended");
   }
 
   // ------ EMERGENCY: Stroke (FAST) ------
   if (
-    /stroke|facial droop|face drooping|------------|---------------------------|------------------------|arm weakness|------------------|slurred speech|------------ ---------------------------|sudden headache|--------------- ---------------------|paralysis|---------------------/.test(
+    /stroke|facial droop|face drooping|लकवा|পক্ষাঘাত|चेहरा टेढ़ा|arm weakness|slurred speech|sudden headache|paralysis/.test(
       allText
     )
   ) {
-    redFlags.push("---- EMERGENCY: Stroke symptoms (FAST) - immediate neurological triage");
+    redFlags.push("EMERGENCY: Stroke symptoms (FAST) - immediate neurological triage");
   }
 
   // ------ URGENT: Breathing ------
   if (
-    /breathless|breath|dyspn[oe]a|------------ ---------------|------------------------------------------|--------------- ------------------------|------ ---------------|---------------------------------|wheezing|asthma attack/.test(
+    /breathless|breath|dyspn[oe]a|सांस|শ্বাসকষ্ট|மூச்சு|శ్వాస|दम फूलना|wheezing|asthma attack/.test(
       allText
     )
   ) {
-    redFlags.push("------ URGENT: Breathing difficulty - assess SpO2 and respiratory status");
+    redFlags.push("URGENT: Breathing difficulty - assess SpO2 and respiratory status");
   }
 
   // ------ EMERGENCY: Bleeding ------
   if (
-    /blood|---------|bleeding|------------|---------------------|---------------|---------------------------|hematemesis|melena|hematuria/.test(
+    /blood|खून|bleeding|রক্ত|இரத்தம்|రక్తం|hematemesis|melena|hematuria/.test(
       allText
     )
   ) {
-    redFlags.push("---- Bleeding reported - assess volume and urgency");
+    redFlags.push("Bleeding reported - assess volume and urgency");
   }
 
   // ------ EMERGENCY: Consciousness ------
   if (
-    /unconscious|seizure|convulsion|---------------|------------------|---------------------|---------------|---------------|fitting|fainting|---------------/.test(
+    /unconscious|seizure|convulsion|बेहोश|অচেতন|மயக்கம்|మూర్ఛ|بے ہوش|fitting|fainting/.test(
       allText
     )
   ) {
-    redFlags.push("---- EMERGENCY: Altered consciousness / seizure - immediate triage");
+    redFlags.push("EMERGENCY: Altered consciousness / seizure - immediate triage");
   }
 
   // ------ High fever ------
   if (
-    /high fever|104|105|--------- ---------------|------------ ---------------------------|------------------------ ---------------|--------- ---------|--------------- ---------/.test(
+    /high fever|104|105|तेज़ बुखार|উচ্চ জ্বর|تیز بخার/.test(
       allText
     )
   ) {
-    redFlags.push("------ High fever reported - assess for infection source and hydration");
+    redFlags.push("High fever reported - assess for infection source and hydration");
   }
 
   // ------ Suicidal ideation ------
-  if (/suicid|self.harm|---------------------------|--------- ------------ ------ ---------------|--------- ------------/.test(allText)) {
-    redFlags.push("---- EMERGENCY: Self-harm risk - immediate psychiatric consultation");
+  if (/suicid|self.harm|आत्महत्या|خودکشی/.test(allText)) {
+    redFlags.push("EMERGENCY: Self-harm risk - immediate psychiatric consultation");
   }
 
   // ------ Severe abdominal pain ------
-  if (/severe.*abdomen|severe.*stomach|--------- --------- --------- ------------|------------------------ ---------------------------------/.test(allText)) {
-    redFlags.push("------ Severe abdominal pain - assess for surgical emergency");
+  if (/severe.*abdomen|severe.*stomach|पेट में तेज दर्द|পেটে তীব্র ব্যথা/.test(allText)) {
+    redFlags.push("Severe abdominal pain - assess for surgical emergency");
   }
 
   const hasAyush = [

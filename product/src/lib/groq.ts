@@ -23,9 +23,9 @@ export const groqClient = new Groq({
 });
 
 export const CLINIQ_MODELS = {
-  // llama-3.1-70b-versatile decommissioned Nov 2026 → llama-3.3-70b-specdec
-  INTERVIEW_FAST: "llama-3.3-70b-specdec",
-  INSTANT_UTILITY: "llama-3.1-8b-instant",
+  // Groq models active 2026: openai/gpt-oss-120b for high-quality clinical synthesis
+  INTERVIEW_FAST: "openai/gpt-oss-120b",
+  INSTANT_UTILITY: "openai/gpt-oss-20b",
   SPEECH_TO_TEXT: "whisper-large-v3-turbo",
   // Vision OCR falls through to Gemini; keep for text tasks
   DOCUMENT_VISION: "llama-3.2-11b-vision-preview",
