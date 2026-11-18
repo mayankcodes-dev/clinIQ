@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,9 @@ import { Button, Card } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 import { t } from "@/lib/translations";
 import { usePageSpeaker } from "@/hooks/usePageSpeaker";
+import {
+  Mic, Stethoscope, Volume2, Lock, Check, VolumeX,
+} from "lucide-react";
 
 // Localized spoken intro for the consent page — in the patient's language
 const CONSENT_SPEECH: Record<string, string> = {
@@ -31,8 +34,8 @@ const CONSENT_SPEECH: Record<string, string> = {
 
 interface ConsentItem {
   id: string;
-  icon: string;
-  titleKey: "shareHistory" | "shareWithDoctor" |  "allowVoiceRecording";
+  Icon: React.ComponentType<{ className?: string }>;
+  titleKey: "shareHistory" | "shareWithDoctor" | "allowVoiceRecording";
   titleEn: string;
   description: string;
   required: boolean;
@@ -41,7 +44,7 @@ interface ConsentItem {
 const CONSENT_ITEMS: ConsentItem[] = [
   {
     id: "dataCapture",
-    icon: "🎙️",
+    Icon: Mic,
     titleKey: "shareHistory",
     titleEn: "Share my medical history for this visit",
     description:
@@ -50,7 +53,7 @@ const CONSENT_ITEMS: ConsentItem[] = [
   },
   {
     id: "doctorShare",
-    icon: "👨‍⚕️",
+    Icon: Stethoscope,
     titleKey: "shareWithDoctor",
     titleEn: "Share summary with my doctor today",
     description:
@@ -60,7 +63,7 @@ const CONSENT_ITEMS: ConsentItem[] = [
   
   {
     id: "audioRecording",
-    icon: "🔊",
+    Icon: Volume2,
     titleKey: "allowVoiceRecording",
     titleEn: "Allow voice recording",
     description:
@@ -136,9 +139,9 @@ export default function ConsentPage() {
             )}
           >
             {isSpeaking ? (
-              <span>🔊 {lang === "hi" ? "चल रहा है..." : lang === "pa" ? "ਚੱਲ ਰਿਹਾ ਹੈ..." : "Playing..."}</span>
+              <span className="flex items-center gap-1.5"><VolumeX className="h-4 w-4" /> Stop</span>
             ) : (
-              <>{lang === "hi" ? "🔊 सुनें" : lang === "pa" ? "🔊 ਸੁਣੋ" : lang === "bn" ? "🔊 শুনুন" : lang === "ta" ? "🔊 கேளுங்கள்" : lang === "te" ? "🔊 వినండి" : lang === "mr" ? "🔊 ऐका" : lang === "gu" ? "🔊 સાંભળો" : lang === "kn" ? "🔊 ಕೇಳಿ" : lang === "ml" ? "🔊 കേൾക്കുക" : "🔊 Listen"}</>
+              <span className="flex items-center gap-1.5"><Volume2 className="h-4 w-4" /> Listen</span>
             )}
           </button>
         }
@@ -149,7 +152,7 @@ export default function ConsentPage() {
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="bg-brand-50 rounded-2xl border border-brand-100 p-4">
             <div className="flex gap-3 items-start">
-              <span className="text-xl shrink-0">🔒</span>
+              <Lock className="h-5 w-5 shrink-0 text-brand-600" />
               <div>
                 <p className="font-semibold text-brand-900 text-sm">
                   {t(lang, "dataProtected")}
@@ -205,7 +208,7 @@ export default function ConsentPage() {
                   )}
                 </div>
 
-                <span className="text-xl shrink-0">{item.icon}</span>
+                <item.Icon className="h-6 w-6 shrink-0 text-brand-600" />
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -247,7 +250,7 @@ export default function ConsentPage() {
           disabled={!requiredChecked}
           onClick={handleProceed}
         >
-          ✅ &nbsp;{t(lang, "agreeAndContinue")}
+          {t(lang, "agreeAndContinue")}
         </Button>
         {!requiredChecked && (
           <p className="text-center text-xs text-neutral-400 mt-2">

@@ -7,6 +7,9 @@ import { t } from "@/lib/translations";
 import { KioskScreen, KioskBody } from "@/components/kiosk/KioskLayout";
 import { Button } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
+import {
+  AlertTriangle, Armchair, Bell, ClipboardList, Leaf, CheckCircle,
+} from "lucide-react";
 
 interface TokenInfo {
   token: string;
@@ -15,9 +18,6 @@ interface TokenInfo {
   estimatedWaitMins: number;
 }
 
-const SEV_ICON: Record<string, string> = {
-  mild: "🟢", moderate: "🟡", severe: "🔴", "very severe": "🔴",
-};
 
 export default function CompletePage() {
   const router = useRouter();
@@ -136,7 +136,7 @@ export default function CompletePage() {
     return (
       <KioskScreen>
         <KioskBody className="flex flex-col items-center justify-center gap-4 py-16">
-          <div className="text-5xl">⚠️</div>
+          <AlertTriangle className="h-12 w-12 text-amber-500" />
           <p className="text-base font-bold text-neutral-900 text-center">{error}</p>
           <Button variant="primary" size="lg" onClick={() => router.push("/")}>
             नया सत्र शुरू करें · New Session
@@ -159,9 +159,9 @@ export default function CompletePage() {
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 18 }}
           className="h-20 w-20 rounded-full bg-green-500 flex items-center justify-center
-                     text-white text-4xl shadow-lg"
+                     text-white shadow-lg"
         >
-          ✓
+          <CheckCircle className="h-10 w-10" />
         </motion.div>
 
         <motion.div
@@ -217,9 +217,9 @@ export default function CompletePage() {
           className="w-full space-y-2.5"
         >
           {[
-            { icon: "🪑", hi: "बैठ जाएं और अपना टोकन याद रखें", en: "Take a seat and remember your token" },
-            { icon: "📢", hi: "डॉक्टर आपको टोकन नंबर से बुलाएंगे", en: "Doctor will call your token number" },
-            { icon: "📋", hi: "डॉक्टर के पास आपका सारांश पहले से पहुंच गया है", en: "Your medical history is already with the doctor" },
+            { Icon: Armchair,     hi: "बैठ जाएं और अपना टोकन याद रखें", en: "Take a seat and remember your token" },
+            { Icon: Bell,         hi: "डॉक्टर आपको टोकन नंबर से बुलाएंगे", en: "Doctor will call your token number" },
+            { Icon: ClipboardList, hi: "डॉक्टर के पास आपका सारांश पहले से पहुंच गया है", en: "Your medical history is already with the doctor" },
           ].map((item, i) => (
             <motion.div
               key={i}
@@ -229,7 +229,7 @@ export default function CompletePage() {
               className="flex items-start gap-3 bg-white rounded-2xl
                          border border-neutral-100 px-4 py-3 shadow-sm"
             >
-              <span className="text-2xl shrink-0">{item.icon}</span>
+              <item.Icon className="h-5 w-5 shrink-0 text-brand-600 mt-0.5" />
               <div>
                 <p className="font-semibold text-neutral-900 text-sm">{item.hi}</p>
                 <p className="text-xs text-neutral-400">{item.en}</p>
@@ -241,7 +241,7 @@ export default function CompletePage() {
         {/* AYUSH branding strip */}
         <div className="w-full bg-green-50 border border-green-100 rounded-2xl
                         px-4 py-3 flex items-center gap-3">
-          <span className="text-2xl">🌿</span>
+          <Leaf className="h-5 w-5 shrink-0 text-green-600" />
           <div>
             <p className="text-xs font-bold text-green-800">AYUSH Health Record</p>
             <p className="text-xs text-green-600">
