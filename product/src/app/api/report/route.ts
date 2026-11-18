@@ -197,6 +197,19 @@ ${uniqueRagICD10Mappings.map((mapping) => `  - ${mapping.code} -- ${mapping.desc
     const systemPrompt = `You are ClinIQ's physician-facing clinical documentation engine.
 Generate a concise, structured SOAP-style pre-consultation note from the supplied patient interview and scanned OCR data.
 
+INTERVIEW TURN CATEGORY GUIDE (use to map each turn to the correct SOAP section):
+- chief_complaint -> chiefComplaint
+- hpi_opqrst, symptom_duration, symptom_modifiers -> historyOfPresentIllness (onset, quality, radiation, severity, timing, modifiers)
+- associated_symptoms, review_of_systems -> reviewOfSystems
+- past_history, past_surgeries -> pastMedicalHistory
+- medications_allergies, drug_allergy, allergies, medicines_taken -> medications and allergies lists
+- habits (smoking, alcohol, tobacco, diet, exercise) -> familyAndSocialHistory social section
+- family_history, family_disease_history -> familyAndSocialHistory family section
+- personal_history -> familyAndSocialHistory personal/social section
+- ayush_prakriti, ayush_vikriti, ayush_agni, ayush_koshtha, ayush_ahara_vihara, ayush_nidana,
+  ayush_samprapti, ayush_sara, ayush_samhanana, ayush_satmya, ayush_pramana, ayush_sattva,
+  ayush_ahara_shakti, ayush_vyayama_shakti, ayush_vaya -> incorporate into relevant clinical sections when AYUSH mode is enabled
+
 LANGUAGE AND SAFETY RULES:
 - The physician-facing fields chiefComplaint, historyOfPresentIllness, pastMedicalHistory, medications, allergies, familyAndSocialHistory, reviewOfSystems, keyLabFindings, redFlags, differentialConsiderations, and icd10Suggestions MUST be written in professional medical English.
 - Do not copy Hindi, Bengali, Tamil, Telugu, or any other patient-language text into those physician-facing fields. Translate patient answers into professional medical English.
@@ -235,7 +248,7 @@ ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
       model: CLINIQ_MODELS.INTERVIEW_FAST,
       temperature: 0.1,
       response_format: { type: "json_object" },
-      max_tokens: 1_500,
+      max_tokens: 3_000,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: sourcePrompt },

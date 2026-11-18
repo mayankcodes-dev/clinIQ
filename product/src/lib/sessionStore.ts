@@ -12,8 +12,28 @@ export type InterviewCategory =
   | "hpi_opqrst"
   | "associated_symptoms"
   | "past_history"
+  | "past_surgeries"
   | "medications_allergies"
-  | "ayush_prakriti";
+  | "habits"
+  | "family_history"
+  | "family_disease_history"
+  | "personal_history"
+  | "review_of_systems"
+  | "ayush_prakriti"
+  | "ayush_vikriti"
+  | "ayush_agni"
+  | "ayush_koshtha"
+  | "ayush_ahara_vihara"
+  | "ayush_nidana"
+  | "ayush_samprapti"
+  | "ayush_sara"
+  | "ayush_samhanana"
+  | "ayush_satmya"
+  | "ayush_pramana"
+  | "ayush_sattva"
+  | "ayush_ahara_shakti"
+  | "ayush_vyayama_shakti"
+  | "ayush_vaya";
 
 export type InterviewInputType =
   | "single_select"
@@ -109,10 +129,11 @@ function asString(value: unknown, fallback = ""): string {
 function normalizeCategory(value: unknown): InterviewCategory {
   const category = asString(value);
 
+  // Allopathic aliases
   if (category === "hpi" || category === "symptom_duration" || category === "symptom_modifiers") {
     return "hpi_opqrst";
   }
-  if (category === "review_of_systems" || category === "associated") {
+  if (category === "associated" || category === "associated_symptoms") {
     return "associated_symptoms";
   }
   if (
@@ -123,19 +144,41 @@ function normalizeCategory(value: unknown): InterviewCategory {
     return "medications_allergies";
   }
 
+  // All valid InterviewCategory values — covers every Stage used by history/page.tsx
   const validCategories: InterviewCategory[] = [
     "chief_complaint",
     "hpi_opqrst",
     "associated_symptoms",
     "past_history",
+    "past_surgeries",
     "medications_allergies",
+    "habits",
+    "family_history",
+    "family_disease_history",
+    "personal_history",
+    "review_of_systems",
     "ayush_prakriti",
+    "ayush_vikriti",
+    "ayush_agni",
+    "ayush_koshtha",
+    "ayush_ahara_vihara",
+    "ayush_nidana",
+    "ayush_samprapti",
+    "ayush_sara",
+    "ayush_samhanana",
+    "ayush_satmya",
+    "ayush_pramana",
+    "ayush_sattva",
+    "ayush_ahara_shakti",
+    "ayush_vyayama_shakti",
+    "ayush_vaya",
   ];
 
   return validCategories.includes(category as InterviewCategory)
     ? (category as InterviewCategory)
     : "chief_complaint";
 }
+
 
 function normalizeTurn(value: unknown, index: number): InterviewTurn | null {
   if (!value || typeof value !== "object") return null;

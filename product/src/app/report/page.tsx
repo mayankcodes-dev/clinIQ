@@ -7,6 +7,7 @@ import {
   KioskScreen,
 } from "@/components/kiosk/KioskLayout";
 import { Button } from "@/components/ui/primitives";
+import { FileText, AlertTriangle, ClipboardX } from "lucide-react";
 import {
   SessionStore,
   messagesFromLegacy,
@@ -99,7 +100,7 @@ function buildShareText(report: ClinIQClinicalReport, name: string, age: string,
   ];
 
   if (listValue(report.redFlags).length > 0) {
-    lines.push(``, `*?? RED FLAGS*`, listValue(report.redFlags).join("; "));
+    lines.push(``, `*[RED FLAGS]*`, listValue(report.redFlags).join("; "));
   }
 
   if (listValue(report.differentialConsiderations).length > 0) {
@@ -114,7 +115,7 @@ function LoadingReport() {
   return (
     <KioskScreen>
       <KioskBody className="flex flex-col items-center justify-center gap-5 py-20">
-        <ClinIQLoader message="Structuring clinical report from your interview--" />
+        <ClinIQLoader message="Structuring clinical report from your interview..." />
       </KioskBody>
     </KioskScreen>
   );
@@ -267,7 +268,7 @@ export default function ReportPage() {
     return (
       <KioskScreen>
         <KioskBody className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-          <div className="text-5xl">??</div>
+          <ClipboardX className="h-14 w-14 text-slate-400" />
           <h2 className="text-xl font-bold text-slate-900">No patient data found</h2>
           <p className="max-w-sm text-sm text-slate-500">
             Complete an interview or scan a medical document before opening the
@@ -285,18 +286,11 @@ export default function ReportPage() {
     return (
       <KioskScreen>
         <KioskBody className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-          <svg
-            className="h-12 w-12 text-red-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth="2" />
-            <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2" strokeLinecap="round" />
-            <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <h2 className="text-xl font-bold text-slate-900">Report unavailable</h2>
-          <p className="text-sm text-slate-500">{error || "REPORT_GENERATION_FAILED"}</p>
+          <AlertTriangle className="h-12 w-12 text-red-500" />
+          <h2 className="text-xl font-bold text-slate-900">Report could not be created</h2>
+          <p className="max-w-sm text-sm text-slate-500">
+            Something went wrong while generating your report. Please go back and try again.
+          </p>
           <Button onClick={() => router.push("/patient/summary")}>
             Return to summary
           </Button>
@@ -453,7 +447,7 @@ export default function ReportPage() {
 
           {/* RED FLAGS */}
           {redFlags.length > 0 && (
-            <HpSection title="?? RED FLAGS" urgent>
+            <HpSection title="RED FLAGS" urgent>
               <ul
                 style={{
                   margin: 0,
@@ -465,7 +459,12 @@ export default function ReportPage() {
                 }}
               >
                 {redFlags.map((f, i) => (
-                  <li key={i}>{f}</li>
+                  <li key={i}>
+                    <AlertTriangle
+                      style={{ display: "inline", width: 12, height: 12, marginRight: 4, verticalAlign: "middle" }}
+                    />
+                    {f}
+                  </li>
                 ))}
               </ul>
             </HpSection>
