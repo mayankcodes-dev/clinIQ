@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle, Armchair, Bell, ClipboardList, Leaf, CheckCircle,
+  RefreshCw,
 } from "lucide-react";
 
 interface TokenInfo {
@@ -270,7 +271,7 @@ export default function CompletePage() {
             router.push("/");
           }}
         >
-          🔄 {t(lang, "newPatient")}
+          <RefreshCw className="h-4 w-4 mr-1.5" /> {t(lang, "newPatient")}
         </Button>
       </KioskBody>
     </KioskScreen>
@@ -279,16 +280,16 @@ export default function CompletePage() {
 
 // ── WhatsApp Share Button ───────────────────────────────────────────────────
 // Reads the generated H&P from SessionStore and builds a WhatsApp deep-link.
+// Falls back to summary data if full report is not yet generated.
 function WhatsAppShareButton({ lang }: { lang: string }) {
   const SESSION_KEY = "cliniq_active_patient_session_v1";
 
-  function buildWhatsAppText(): string | null {
+  function buildWhatsAppText(): string {
     try {
       const raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      const session = JSON.parse(raw) as Record<string, unknown>;
+      const session = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
       const report = session.generatedReport as Record<string, unknown> | undefined;
-      if (!report) return null;
+      const summary = session.summary as Record<string, unknown> | undefined;
 
       const name = (session.patientName as string) ??
         ((session.patient as Record<string, unknown>)?.name as string) ?? "Patient";
@@ -297,41 +298,57 @@ function WhatsAppShareButton({ lang }: { lang: string }) {
         ((session.patient as Record<string, unknown>)?.gender as string) ?? "";
       const language = (session.language as string) ?? lang;
 
+      // Use report if available, else fall back to summary
+      const chiefComplaint =
+        (report?.chiefComplaint as string) ??
+        (summary?.chiefComplaint as string) ??
+        "Not recorded";
+      const hpi =
+        (report?.historyOfPresentIllness as string) ??
+        (summary?.hpi as string) ?? "";
+      const pastHistory =
+        (report?.pastMedicalHistory as string) ??
+        (summary?.pastHistory as string) ?? "";
+
       const lines = [
         `*ClinIQ — History & Physical*`,
         `Patient: ${name}${age ? ` | Age: ${age}` : ""}${gender ? ` | Sex: ${gender}` : ""}`,
         `Date: ${new Date().toLocaleDateString("en-IN")} | Language: ${language.toUpperCase()}`,
         ``,
         `*CHIEF COMPLAINT*`,
-        (report.chiefComplaint as string) ?? "Not recorded",
-        ``,
-        `*HISTORY OF PRESENT ILLNESS*`,
-        (report.historyOfPresentIllness as string) ?? "Not recorded",
-        ``,
-        `*PAST MEDICAL HISTORY*`,
-        (report.pastMedicalHistory as string) ?? "Not reported",
-        ``,
-        `*MEDICATIONS*`,
-        Array.isArray(report.medications) && (report.medications as string[]).length > 0
-          ? (report.medications as string[]).join(", ")
-          : "None reported",
-        ``,
-        `*ALLERGIES*`,
-        Array.isArray(report.allergies) && (report.allergies as string[]).length > 0
-          ? (report.allergies as string[]).join(", ")
-          : "NKDA",
+        chiefComplaint,
       ];
 
-      const redFlags = Array.isArray(report.redFlags) ? (report.redFlags as string[]) : [];
-      if (redFlags.length > 0) {
-        lines.push(``, `*🚨 RED FLAGS*`, redFlags.join("; "));
+      if (hpi) { lines.push(``, `*HISTORY OF PRESENT ILLNESS*`, hpi); }
+      if (pastHistory && pastHistory !== "Not reported") {
+        lines.push(``, `*PAST MEDICAL HISTORY*`, pastHistory);
       }
 
-      const icd10s = Array.isArray(report.icd10Suggestions)
-        ? (report.icd10Suggestions as string[])
-        : [];
-      if (icd10s.length > 0) {
-        lines.push(``, `*ICD-10*`, icd10s.join(", "));
+      if (report) {
+        lines.push(
+          ``,
+          `*MEDICATIONS*`,
+          Array.isArray(report.medications) && (report.medications as string[]).length > 0
+            ? (report.medications as string[]).join(", ")
+            : "None reported",
+          ``,
+          `*ALLERGIES*`,
+          Array.isArray(report.allergies) && (report.allergies as string[]).length > 0
+            ? (report.allergies as string[]).join(", ")
+            : "NKDA",
+        );
+
+        const redFlags = Array.isArray(report.redFlags) ? (report.redFlags as string[]) : [];
+        if (redFlags.length > 0) {
+          lines.push(``, `*RED FLAGS*`, redFlags.join("; "));
+        }
+
+        const icd10s = Array.isArray(report.icd10Suggestions)
+          ? (report.icd10Suggestions as string[])
+          : [];
+        if (icd10s.length > 0) {
+          lines.push(``, `*ICD-10*`, icd10s.join(", "));
+        }
       }
 
       lines.push(
@@ -340,13 +357,11 @@ function WhatsAppShareButton({ lang }: { lang: string }) {
       );
       return lines.join("\n");
     } catch {
-      return null;
+      return `*ClinIQ Patient Record*\nShared from ClinIQ AI kiosk.\n_For physician review only._`;
     }
   }
 
   const text = buildWhatsAppText();
-  if (!text) return null;
-
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
 
   return (

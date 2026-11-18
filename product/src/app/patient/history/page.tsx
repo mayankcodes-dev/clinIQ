@@ -559,7 +559,11 @@ export default function HistoryPage() {
 
       // Clear question to show spinner, then set AI question when ready
       setStage(forStage);
-      setCurrentQuestion("");
+      if (instantQ) {
+        setCurrentQuestion(instantQ);  // show fallback instantly — no blank box
+      } else {
+        setCurrentQuestion("");
+      }
       setAiLoading(true);
 
       // Then silently upgrade with AI-tailored question

@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { PRIMARY_LANGUAGES, LANGUAGES, type Language } from "@/lib/constants";
+import { ClinIQLogo } from "@/components/kiosk/KioskLayout";
+import { Lock, Globe } from "lucide-react";
 
 export default function LanguageSelectionPage() {
   const router = useRouter();
@@ -19,8 +21,11 @@ export default function LanguageSelectionPage() {
 
   return (
     <main className="min-h-dvh bg-white flex flex-col">
-      {/* Heading */}
-      <div className="text-center px-6 pt-12 pb-5">
+      {/* Logo + Heading */}
+      <div className="text-center px-6 pt-10 pb-5">
+        <div className="flex justify-center mb-3">
+          <ClinIQLogo size="lg" />
+        </div>
         <h2 className="text-2xl font-bold text-neutral-900">अपनी भाषा चुनें</h2>
         <p className="text-neutral-400 mt-0.5 text-sm">Choose Your Language</p>
       </div>
@@ -69,10 +74,12 @@ export default function LanguageSelectionPage() {
 
       {/* Footer */}
       <div className="border-t border-neutral-100 py-3 px-6 flex items-center
-                      justify-center gap-5 text-xs text-neutral-300">
-        <span>🔒 Data Protected</span>
+                      justify-center gap-4 text-xs text-neutral-300">
+        <Lock size={11} className="shrink-0" />
+        <span>Data Protected</span>
         <span>·</span>
-        <span>🇮🇳 Made for Bharat</span>
+        <Globe size={11} className="shrink-0" />
+        <span>Made for Bharat</span>
         <span>·</span>
         <span>DPDP 2023</span>
       </div>
