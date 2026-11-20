@@ -1,0 +1,10 @@
+{
+  "name": "cliniq-root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ClinIQ monorepo root — Cloudflare Pages build proxy",
+  "scripts": {
+    "pages:build": "npm ci --prefix product && npm run pages:build --prefix product",
+    "build": "npm ci --prefix product && npm run build --prefix product"
+  }
+}
