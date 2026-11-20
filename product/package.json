@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "pages:build": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
-    "deploy": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion && wrangler deploy",
+    "pages:build": "opennextjs-cloudflare build",
+    "deploy": "opennextjs-cloudflare build && wrangler deploy",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -35,7 +35,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.20.7",
+    "@opennextjs/cloudflare": "^1.18.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -52,6 +52,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "undici": "^7.29.1",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "wrangler": "^4.166.0"
   }
 }
