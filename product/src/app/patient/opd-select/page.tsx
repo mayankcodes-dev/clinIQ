@@ -13,6 +13,7 @@ import { Button, Card } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 import { t, getLangName } from "@/lib/translations";
 import { usePageSpeaker } from "@/hooks/usePageSpeaker";
+import { Stethoscope, Leaf, Volume2, StopCircle } from "lucide-react";
 
 type OPDMode = "allopathic" | "ayush";
 
@@ -198,7 +199,9 @@ export default function OPDSelectPage() {
             onClick={isSpeaking ? stop : playAudioInstruction}
             className="rounded-full gap-2 px-4"
           >
-            <span className="text-xl">{isSpeaking ? "⏹" : "🔊"}</span>
+            {isSpeaking
+              ? <StopCircle className="h-5 w-5" />
+              : <Volume2 className="h-5 w-5" />}
             {getLocalText(lang, "listenBtn")}
           </Button>
         }
@@ -221,10 +224,10 @@ export default function OPDSelectPage() {
             )}
           >
             <div className={cn(
-              "w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-2",
-              mode === "allopathic" ? "bg-brand-100 text-brand-600" : "bg-neutral-100"
+              "w-20 h-20 rounded-full flex items-center justify-center mb-2",
+              mode === "allopathic" ? "bg-brand-100 text-brand-600" : "bg-neutral-100 text-neutral-500"
             )}>
-              🏥
+              <Stethoscope className="h-10 w-10" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-neutral-900 mb-1">
@@ -250,10 +253,10 @@ export default function OPDSelectPage() {
             )}
           >
             <div className={cn(
-              "w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-2",
-              mode === "ayush" ? "bg-brand-100 text-brand-600" : "bg-neutral-100"
+              "w-20 h-20 rounded-full flex items-center justify-center mb-2",
+              mode === "ayush" ? "bg-green-100 text-green-600" : "bg-neutral-100 text-neutral-500"
             )}>
-              🌿
+              <Leaf className="h-10 w-10" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-neutral-900 mb-1">
