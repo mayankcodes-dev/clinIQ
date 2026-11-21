@@ -1,5 +1,5 @@
-// src/app/api/scan/extract/route.ts
-// Gemini Vision — extract structured data from medical documents
+﻿// src/app/api/scan/extract/route.ts
+// Gemini Vision â€” extract structured data from medical documents
 // Handles: prescriptions, lab reports, discharge summaries, X-rays, PDFs
 // Input: base64 image/pdf + document type
 // Output: structured JSON with medications, vitals, diagnoses, lab values
@@ -7,7 +7,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+// Lazy â€” created on first request so build-time import never fails
+let _ai: GoogleGenAI | null = null;
+function getAI(): GoogleGenAI {
+  if (_ai) return _ai;
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("GEMINI_API_KEY is not set in environment variables.");
+  _ai = new GoogleGenAI({ apiKey: key });
+  return _ai;
+}
 
 export type DocType =
   | "prescription"
@@ -151,7 +159,7 @@ function fixOcrDosage(dose: string): string {
     .replace(/^[Oo]+(\\d)/, (match) => match.replace(/[Oo]/g, "0"));
 }
 
-// ── Resilient JSON parser ─────────────────────────────────────────
+// â”€â”€ Resilient JSON parser â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function parseModelJson(raw: string): any {
   // 1. Try matching ```json ... ``` block
   const blockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
@@ -204,7 +212,7 @@ export async function POST(req: NextRequest) {
       cleanMime = "image/jpeg";
     }
 
-    // ── Server-side MIME allowlist ────────────────────────────────────────────
+    // â”€â”€ Server-side MIME allowlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Only accept specific medical document formats. Reject everything else.
     const ALLOWED_MIMES = new Set([
       "image/jpeg",
@@ -220,8 +228,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Basic size check on the base64 payload ────────────────────────────
-    // 100 MB raw ≈ ~136 MB base64. Reject obviously oversized payloads.
+    // â”€â”€ Basic size check on the base64 payload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // 100 MB raw â‰ˆ ~136 MB base64. Reject obviously oversized payloads.
     if (imageBase64.length > 140_000_000) {
       return NextResponse.json(
         { error: "File is too large. Maximum size is 100 MB." },
@@ -252,7 +260,7 @@ export async function POST(req: NextRequest) {
     let lastErr: any = null;
     for (const model of modelsToTry) {
       try {
-        response = await ai.models.generateContent({
+        response = await getAI().models.generateContent({
           model,
           contents: [{ role: "user", parts }],
         });
@@ -278,7 +286,7 @@ export async function POST(req: NextRequest) {
       extracted.vitals = extracted.vitals || {};
       extracted.confidence = extracted.confidence || "medium";
 
-      // ── Multi-pass extraction for low confidence ──
+      // â”€â”€ Multi-pass extraction for low confidence â”€â”€
       if (extracted.confidence === "low" && extracted.medications.length === 0 && extracted.labValues.length === 0) {
         console.log("[scan/extract] Confidence is low, attempting second pass with enhanced prompt.");
         const retryPrompt = `The previous extraction had low confidence. Please re-examine this document more carefully. Focus on:\n1. Any medication names (even partially readable)\n2. Any numerical values that could be lab results\n3. Any dates\n4. Doctor or hospital names\n${prompt}`;
@@ -298,7 +306,7 @@ export async function POST(req: NextRequest) {
         let retryResponse: any = null;
         for (const model of modelsToTry) {
           try {
-            retryResponse = await ai.models.generateContent({
+            retryResponse = await getAI().models.generateContent({
               model,
               contents: [{ role: "user", parts: retryParts }],
             });
@@ -328,7 +336,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // ── Apply Dosage Validation ──
+      // â”€â”€ Apply Dosage Validation â”€â”€
       extracted.medications = extracted.medications.map(med => ({
         ...med,
         dose: fixOcrDosage(med.dose)
@@ -357,3 +365,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
