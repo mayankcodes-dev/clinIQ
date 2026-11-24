@@ -59,7 +59,8 @@ export type TranslationKey =
   | "mobileOtpDesc"
   | "recommendedBadge"
   | "doYouHaveDocs"
-  | "historyComplete";
+  | "historyComplete"
+  | "medicalHistory";
 
 
 type Translations = Record<TranslationKey, string>;
@@ -124,6 +125,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "अनुशंसित",
     doYouHaveDocs: "क्या आपके पास कोई पुराना दस्तावेज़ है?",
     historyComplete: "इतिहास पूरा हुआ",
+    medicalHistory: "चिकित्सा इतिहास",
   },
 
   en: {
@@ -184,6 +186,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "Recommended",
     doYouHaveDocs: "Do you have any old documents?",
     historyComplete: "History Complete",
+    medicalHistory: "Medical History",
   },
 
   bn: {
@@ -244,6 +247,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "প্রস্তাবিত",
     doYouHaveDocs: "আপনার কাছে কোনো পুরানো নথি আছে কি?",
     historyComplete: "ইতিহাস সম্পন্ন",
+    medicalHistory: "চিকিৎসা ইতিহাস",
   },
 
   ta: {
@@ -304,6 +308,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "பரிந்துரைக்கப்பட்டது",
     doYouHaveDocs: "உங்களிடம் ஏதாவது பழைய ஆவணங்கள் உள்ளதா?",
     historyComplete: "வரலாறு முடிந்தது",
+    medicalHistory: "மருத்துவ வரலாறு",
   },
 
   te: {
@@ -364,6 +369,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "సిఫార్సు చేయబడింది",
     doYouHaveDocs: "మీ దగ్గర పాత పత్రాలు ఉన్నాయా?",
     historyComplete: "చరిత్ర పూర్తయింది",
+    medicalHistory: "వైద్య చరిత్ర",
   },
 
   mr: {
@@ -424,6 +430,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "शिफारस केलेले",
     doYouHaveDocs: "तुमच्याकडे कोणते जुने कागदपत्रे आहेत का?",
     historyComplete: "इतिहास पूर्ण झाला",
+    medicalHistory: "वैद्यकीय इतिहास",
   },
 
   gu: {
@@ -484,6 +491,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "ભલામણ",
     doYouHaveDocs: "શું તમારી પાસે કોઈ જૂના દસ્તાવેજ છે?",
     historyComplete: "ઇતિહાસ પૂર્ણ",
+    medicalHistory: "તબીબી ઇતિહાસ",
   },
 
   kn: {
@@ -544,6 +552,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "ಶಿಫಾರಸು",
     doYouHaveDocs: "ನಿಮ್ಮ ಬಳಿ ಯಾವುದಾದರೂ ಹಳೆಯ ದಾಖಲೆಗಳಿವೆಯೇ?",
     historyComplete: "ಇತಿಹಾಸ ಪೂರ್ಣವಾಯಿತು",
+    medicalHistory: "ವೈದ್ಯಕೀಯ ಇತಿಹಾಸ",
   },
 
   ml: {
@@ -604,6 +613,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "ശുപാർശ ചെയ്യുന്നത്",
     doYouHaveDocs: "നിങ്ങളുടെ പക്കൽ പഴയ രേഖകൾ ഉണ്ടോ?",
     historyComplete: "ചരിത്രം പൂർത്തിയായി",
+    medicalHistory: "വൈദ്യ ചരിത്രം",
   },
 
   pa: {
@@ -664,6 +674,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "ਸਿਫਾਰਸ਼ੀ",
     doYouHaveDocs: "ਕੀ ਤੁਹਾਡੇ ਕੋਲ ਕੋਈ ਪੁਰਾਣੇ ਦਸਤਾਵੇਜ਼ ਹਨ?",
     historyComplete: "ਇਤਿਹਾਸ ਪੂਰਾ ਹੋਇਆ",
+    medicalHistory: "ਡਾਕਟਰੀ ਇਤਿਹਾਸ",
   },
 
   ur: {
@@ -724,6 +735,7 @@ export const TRANSLATIONS: LanguageTranslations = {
     recommendedBadge: "تجویز کردہ",
     doYouHaveDocs: "کیا آپ کے پاس کوئی پرانے دستاویزات ہیں؟",
     historyComplete: "تاریخ مکمل ہوئی",
+    medicalHistory: "طبی تاریخ",
   },
 };
 

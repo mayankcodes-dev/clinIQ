@@ -4,8 +4,8 @@ import Groq from "groq-sdk";
 
 export const CLINIQ_MODELS = {
   // Primary model — high quality clinical synthesis
-  INTERVIEW_FAST: "openai/gpt-oss-120b",
-  INSTANT_UTILITY: "openai/gpt-oss-20b",
+  INTERVIEW_FAST: "llama-3.3-70b-versatile",
+  INSTANT_UTILITY: "llama-3.1-8b-instant",
   SPEECH_TO_TEXT: "whisper-large-v3-turbo",
   DOCUMENT_VISION: "llama-3.2-11b-vision-preview",
 } as const;

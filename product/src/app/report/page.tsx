@@ -14,7 +14,6 @@ import {
   type ClinIQClinicalReport,
 } from "@/lib/sessionStore";
 import { publishPatientToClinicQueue } from "@/lib/clinicQueueStore";
-import ClinIQLoader from "@/components/ClinIQLoader";
 
 type ReportStatus = "loading" | "ready" | "empty" | "error";
 
@@ -114,8 +113,26 @@ function buildShareText(report: ClinIQClinicalReport, name: string, age: string,
 function LoadingReport() {
   return (
     <KioskScreen>
-      <KioskBody className="flex flex-col items-center justify-center gap-5 py-20">
-        <ClinIQLoader message="Structuring clinical report from your interview..." />
+      <KioskBody className="flex flex-col items-center justify-center gap-5 py-20 text-center">
+        <div className="relative">
+          <div className="h-20 w-20 rounded-full border-4 border-teal-100 border-t-teal-600 animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+              <rect x="10" y="3" width="4" height="18" rx="1.5" fill="#0d9488"/>
+              <rect x="3" y="10" width="18" height="4" rx="1.5" fill="#0d9488"/>
+            </svg>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="text-lg font-bold text-neutral-900">Preparing your report&hellip;</p>
+          <p className="text-sm text-neutral-400">ClinIQ AI is structuring your clinical history</p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          {[0,1,2].map(i => (
+            <span key={i} className="h-2 w-2 rounded-full bg-teal-400 inline-block animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }} />
+          ))}
+        </div>
       </KioskBody>
     </KioskScreen>
   );

@@ -441,7 +441,7 @@ function CircularProgress({ current, total }: { current: number; total: number }
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-semibold text-slate-600">
-            Stage {current} of {total}
+            {current} / {total}
           </span>
           <span className="text-xs font-bold text-teal-700">{pct}%</span>
         </div>
@@ -765,11 +765,10 @@ export default function HistoryPage() {
   return (
     <KioskScreen>
       <KioskHeader
-        title={t(lang, "uploadDocuments").replace("Upload", "").trim() || "इतिहास"}
-        subtitle={`Medical History · Stage ${stageIndex + 1} / ${STAGES.length}`}
+        title={t(lang, "medicalHistory")}
+        subtitle={t(lang, "aiPlatformSubtitle")}
         onBack={() => router.push("/patient/consent")}
         progress={progress}
-        stepLabel={`${stageIndex + 1} / ${STAGES.length}`}
         rightSlot={
           <div className="flex gap-1.5">
             <button
