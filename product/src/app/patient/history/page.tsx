@@ -554,19 +554,15 @@ export default function HistoryPage() {
         ur: { chief_complaint:"آج اہم مسئلہ؟",hpi:"کب سے؟",past_history:"پہلے بیماری؟",drug_allergy:"دوائی الرجی؟",family_history:"خاندان؟",personal_history:"کام؟",review_of_systems:"اعضاء؟",ayush_prakriti:"جلد؟",ayush_vikriti:"ابھی؟",ayush_agni:"بھوک؟",ayush_koshtha:"پیٹ؟",ayush_ahara_vihara:"کھانا؟",ayush_nidana:"کیا بدلا؟",ayush_samprapti:"کب؟",ayush_sara:"جلد بال؟",ayush_samhanana:"ساخت؟",ayush_satmya:"برداشت؟",ayush_pramana:"قد؟",ayush_sattva:"ذہن؟",ayush_ahara_shakti:"ہضم؟",ayush_vyayama_shakti:"ورزش؟",ayush_vaya:"عمر؟",summary:"" },
       };
       const fb = INSTANT[lang] ?? INSTANT["hi"];
-      // Use empty string if stage not in instant map — AI response will fill it
-      const instantQ = fb[forStage] ?? "";
+      // Keep fallback available for catch block only — never show it before AI responds
+      const fallbackQ = fb[forStage] ?? "";
 
-      // Clear question to show spinner, then set AI question when ready
+      // Advance stage indicator but keep showing PREVIOUS question until AI responds.
+      // Only the Next button spinner signals that loading is happening.
       setStage(forStage);
-      if (instantQ) {
-        setCurrentQuestion(instantQ);  // show fallback instantly — no blank box
-      } else {
-        setCurrentQuestion("");
-      }
       setAiLoading(true);
 
-      // Then silently upgrade with AI-tailored question
+      // Fetch AI-tailored follow-up question — only update question text on success
       try {
         const res = await resilientFetch("/api/history/chat", {
           method: "POST",
@@ -578,10 +574,15 @@ export default function HistoryPage() {
           setSummary(data.structuredSummary);
           setIsComplete(true);
         } else if (data.question) {
+          // AI returned a tailored question — show it now
           setCurrentQuestion(data.question);
+        } else if (fallbackQ) {
+          // API succeeded but no question field — use static fallback
+          setCurrentQuestion(fallbackQ);
         }
       } catch {
-        // Already showing instant fallback — nothing more to do
+        // Network/Groq failure — show static fallback so patient is never stuck
+        if (fallbackQ) setCurrentQuestion(fallbackQ);
       } finally {
         setAiLoading(false);
       }
@@ -796,7 +797,7 @@ export default function HistoryPage() {
         {/* AI Question bubble */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentQuestion || "loading"}
+            key={stage}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
@@ -849,8 +850,23 @@ export default function HistoryPage() {
           </motion.div>
         </AnimatePresence>
 
+        {/* ── AI loading state — shown while next question is being fetched from Groq */}
+        {aiLoading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-8 text-neutral-400">
+            <div className="flex items-center gap-1.5">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="h-3 w-3 rounded-full bg-brand-400 inline-block animate-bounce"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── VOICE MODE ── */}
-        {inputMode === "voice" && (
+        {inputMode === "voice" && !aiLoading && (
           <div className="flex flex-col items-center gap-4 py-2">
             {/* Big mic button */}
             <motion.button
@@ -923,7 +939,7 @@ export default function HistoryPage() {
         )}
 
         {/* ── TOUCH MODE ── */}
-        {inputMode === "touch" && (
+        {inputMode === "touch" && !aiLoading && (
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               {chips.map((chip) => (
