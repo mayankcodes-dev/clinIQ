@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -464,6 +464,8 @@ export default function HistoryPage() {
   const [stage, setStage] = useState<Stage>("chief_complaint");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState("");
+  // questionKey bumps only when a NEW question arrives — no flash before Groq responds
+  const [questionKey, setQuestionKey] = useState(0);
   const [patientInput, setPatientInput] = useState("");
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [inputMode, setInputMode] = useState<"voice" | "touch">("voice");
@@ -495,7 +497,7 @@ export default function HistoryPage() {
       })
         .then((r) => r.json())
         .then((data) => {
-          if (data.question) setCurrentQuestion(data.question);
+          if (data.question) { setCurrentQuestion(data.question); setQuestionKey((k) => k + 1); }
           setAiLoading(false);
         })
         .catch(() => {
@@ -576,13 +578,15 @@ export default function HistoryPage() {
         } else if (data.question) {
           // AI returned a tailored question — show it now
           setCurrentQuestion(data.question);
+          setQuestionKey((k) => k + 1);
         } else if (fallbackQ) {
           // API succeeded but no question field — use static fallback
           setCurrentQuestion(fallbackQ);
+          setQuestionKey((k) => k + 1);
         }
       } catch {
         // Network/Groq failure — show static fallback so patient is never stuck
-        if (fallbackQ) setCurrentQuestion(fallbackQ);
+        if (fallbackQ) { setCurrentQuestion(fallbackQ); setQuestionKey((k) => k + 1); }
       } finally {
         setAiLoading(false);
       }
@@ -797,7 +801,7 @@ export default function HistoryPage() {
         {/* AI Question bubble */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={stage}
+            key={questionKey}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
