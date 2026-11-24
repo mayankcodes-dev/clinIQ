@@ -283,18 +283,43 @@ a    { color: inherit; }
 .dark-subcopy { font-size: 16px; line-height: 1.75; color: rgba(255,255,255,0.45); max-width: 540px; margin-bottom: 48px; }
 
 .lang-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-start;
 }
 .lang-chip {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 18px; border-radius: 9999px;
+  display: inline-flex;
+  align-items: baseline;   /* ← baseline keeps native + label on same text line */
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 9999px;
+  flex-shrink: 0;
   transition: all 0.2s var(--ease-glassy-out);
   cursor: default;
 }
-.lang-native { color: white; font-size: 15px; font-weight: 600; line-height: 1; }
-.lang-label  { color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Courier New', monospace; }
+/* native script — larger, sets the baseline */
+.lang-native {
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  vertical-align: baseline;
+}
+/* english label — smaller monospace, explicitly aligned to same baseline */
+.lang-label {
+  color: rgba(255,255,255,0.4);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  vertical-align: baseline;
+  line-height: 1.2;
+  /* nudge down slightly so cap-height matches native script middle */
+  position: relative;
+  top: 1px;
+}
 
 .lang-stats-strip { display: none; } /* removed per design */
 
@@ -408,13 +433,16 @@ a    { color: inherit; }
   .mobile-menu-button { display: block; }
   .mobile-nav { display: flex; }
 
-  /* Hero */
+  /* Hero — full phone screen height */
   .hero-section {
-    min-height: 0;
-    height: auto;
+    /* dvh = dynamic viewport height (shrinks when browser toolbar is visible on mobile) */
+    height: 100dvh;
+    min-height: 100svh;   /* svh = small viewport height — safe fallback */
     max-height: none;
-    padding-top: 110px;
-    padding-bottom: 80px;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* keep flex centering — content stays vertically centred */
+    justify-content: center;
   }
   .hero-h1 { font-size: clamp(38px, 9vw, 68px); }
   .hero-subcopy { font-size: 15px; max-width: 480px; }
@@ -448,8 +476,8 @@ a    { color: inherit; }
   /* Navbar */
   .nav-pill { padding-left: 14px; }
 
-  /* Hero */
-  .hero-section { padding-top: 100px; padding-bottom: 72px; }
+  /* Hero — keep full-screen, just tighten font on small phones */
+  .hero-section { padding-top: 0; padding-bottom: 0; }
   .hero-h1 { font-size: clamp(32px, 9.5vw, 54px); letter-spacing: -0.06em; }
   .hero-subcopy { font-size: 14px; line-height: 1.7; }
   .hero-actions { flex-direction: column; align-items: stretch; gap: 10px; }
