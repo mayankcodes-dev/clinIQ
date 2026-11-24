@@ -143,6 +143,13 @@ const TOUCH_OPTIONS_L10N: Record<string, Partial<Record<Stage, string[]>>> = {
   hi: {
     chief_complaint: ["बुखार", "दर्द", "उल्टी", "सांस में तकलीफ", "चक्कर", "कमज़ोरी", "खांसी", "पेट दर्द"],
     hpi: ["आज से", "2–3 दिन से", "1 हफ्ते से", "1 महीने से", "जलन", "दबाव", "हल्का", "तेज़"],
+    symptom_duration: ["आज से", "2–3 दिन से", "1 हफ्ते से", "2 हफ्ते से", "1 महीने से", "3+ महीने से"],
+    symptom_modifiers: ["आराम से कम होता है", "बढ़ता है", "खाने से", "रात को ज़्यादा", "सुबह ज़्यादा", "कोई बदलाव नहीं"],
+    medicines_taken: ["हाँ, ले रहा हूँ", "नहीं", "पेरासिटामोल", "एंटीबायोटिक", "बीपी दवाई", "डायबिटीज दवाई"],
+    allergies: ["कोई नहीं", "पेनिसिलिन", "सल्फा दवाई", "एस्पिरिन", "धूल", "खाने से"],
+    past_surgeries: ["कोई नहीं", "पथरी ऑपरेशन", "हर्निया", "सीजेरियन", "घुटना", "अपेंडिक्स"],
+    habits: ["धूम्रपान", "शराब", "तंबाकू", "कोई नहीं", "नियमित व्यायाम", "शाकाहारी"],
+    family_disease_history: ["मधुमेह", "बीपी", "हृदय रोग", "कैंसर", "टीबी", "कोई नहीं"],
     past_history: ["मधुमेह", "बीपी", "हृदय रोग", "टीबी", "ऑपरेशन", "कोई नहीं"],
     drug_allergy: ["हाँ, दवाई लेता हूँ", "नहीं", "पेनिसिलिन", "सल्फा", "एस्पिरिन", "कोई नहीं"],
     family_history: ["मधुमेह", "बीपी", "हृदय रोग", "कैंसर", "टीबी", "कोई नहीं"],
@@ -167,6 +174,13 @@ const TOUCH_OPTIONS_L10N: Record<string, Partial<Record<Stage, string[]>>> = {
   en: {
     chief_complaint: ["Fever", "Pain", "Vomiting", "Breathing difficulty", "Dizziness", "Weakness", "Cough", "Stomach pain"],
     hpi: ["Today", "2–3 Days", "1 Week", "1 Month", "Burning", "Pressing", "Mild", "Severe"],
+    symptom_duration: ["Today", "2–3 days", "1 week", "2 weeks", "1 month", "3+ months"],
+    symptom_modifiers: ["Better with rest", "Gets worse", "After eating", "Worse at night", "Worse in morning", "No change"],
+    medicines_taken: ["Yes, taking medicine", "No", "Paracetamol", "Antibiotic", "BP medicine", "Diabetes medicine"],
+    allergies: ["None", "Penicillin", "Sulfa drugs", "Aspirin", "Dust", "Food allergy"],
+    past_surgeries: ["None", "Kidney stones", "Hernia", "C-section", "Knee surgery", "Appendix"],
+    habits: ["Smoking", "Alcohol", "Tobacco", "None", "Regular exercise", "Vegetarian"],
+    family_disease_history: ["Diabetes", "High BP", "Heart disease", "Cancer", "TB", "None"],
     past_history: ["Diabetes", "High BP", "Heart disease", "TB", "Surgery", "None"],
     drug_allergy: ["Yes, on medication", "No", "Penicillin", "Sulfa", "Aspirin", "None"],
     family_history: ["Diabetes", "High BP", "Heart disease", "Cancer", "TB", "None"],
@@ -721,8 +735,13 @@ export default function HistoryPage() {
     setPatientInput("");
   }, [stage]);
 
+  // Also clear chips whenever a new question arrives within the same stage
+  useEffect(() => {
+    setSelectedChips([]);
+  }, [questionKey]);
+
   const canSubmit = selectedChips.length > 0 || patientInput.trim().length > 1;
-  const chips = (TOUCH_OPTIONS_L10N[lang] ?? TOUCH_OPTIONS_L10N["hi"])[stage] ?? COMMON_SYMPTOMS.slice(0, 8).map((s) => s.labelHi);
+  const chips = (TOUCH_OPTIONS_L10N[lang] ?? TOUCH_OPTIONS_L10N["hi"])[stage] ?? [];
 
   if (isComplete) {
     return (

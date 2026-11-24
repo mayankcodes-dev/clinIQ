@@ -147,6 +147,7 @@ export default function ReportPage() {
   const [patientAgeStr, setPatientAgeStr] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [error, setError] = useState("");
+  const [tokenNumber, setTokenNumber] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -202,6 +203,61 @@ export default function ReportPage() {
           setStatus("empty");
         }
         return;
+      }
+
+      // ── P1: Assign token + save to DB BEFORE report generation ──
+      // This ensures patient always gets a token even if groq fails.
+      try {
+        const queueRes = await fetch("/api/queue/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lang: storedLanguage,
+            loginMethod: "anonymous",
+            patientName: name,
+            chiefComplaint: "Not yet determined",
+            severity: "moderate",
+            hasDocuments: storedDocuments.length > 0,
+          }),
+        });
+        const queueData = await queueRes.json();
+        if (queueData.token && !cancelled) {
+          setTokenNumber(queueData.token);
+          sessionStorage.setItem("mk_token_number", String(queueData.tokenIndex ?? ""));
+          sessionStorage.setItem("mk_token_display", queueData.token);
+        }
+      } catch {
+        // non-critical — token shown as fallback
+        const fallback = `A-${String(Math.floor(Math.random() * 50) + 1).padStart(3, "0")}`;
+        if (!cancelled) setTokenNumber(fallback);
+      }
+
+      // ── Save session to DB early (non-blocking) ──
+      try {
+        const legacyHistory = readObject("mk_history");
+        const consentRaw = sessionStorage.getItem("mk_consent");
+        await fetch("/api/session/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lang: storedLanguage,
+            mode: ayushMode ? "ayush" : "allopathic",
+            patient: {
+              name: textValue(patient.name, null as unknown as string) || null,
+              gender: textValue(patient.gender, null as unknown as string) || null,
+              yearOfBirth: patient.yearOfBirth ? String(patient.yearOfBirth) : null,
+              abhaNumber: patient.abhaNumber ? String(patient.abhaNumber) : null,
+              mobile: null,
+            },
+            consent: consentRaw ? JSON.parse(consentRaw) : { dataCapture: true, doctorShare: true },
+            history: {
+              messages: Array.isArray(legacyHistory.messages) ? legacyHistory.messages : [],
+            },
+            docs: storedDocuments,
+          }),
+        });
+      } catch {
+        // non-critical
       }
 
       try {
@@ -300,14 +356,30 @@ export default function ReportPage() {
   }
 
   if (status === "error" || !report) {
+    // Even if report fails, we may have already assigned a token — show it
     return (
       <KioskScreen>
-        <KioskBody className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-          <AlertTriangle className="h-12 w-12 text-red-500" />
-          <h2 className="text-xl font-bold text-slate-900">Report could not be created</h2>
-          <p className="max-w-sm text-sm text-slate-500">
-            Something went wrong while generating your report. Please go back and try again.
-          </p>
+        <KioskBody className="flex flex-col items-center justify-center gap-5 py-10 text-center">
+          {tokenNumber ? (
+            <>
+              <div className="rounded-2xl bg-teal-600 text-white px-8 py-5 flex flex-col items-center gap-1 shadow-lg shadow-teal-200 w-full max-w-xs">
+                <p className="text-xs font-semibold uppercase tracking-widest opacity-80">Your Token Number</p>
+                <p className="text-5xl font-black tracking-tight">{tokenNumber}</p>
+                <p className="text-xs opacity-70 mt-1">Please show this at the reception</p>
+              </div>
+              <p className="max-w-sm text-sm text-slate-500">
+                Your information has been saved. Please proceed to the doctor with your token.
+              </p>
+            </>
+          ) : (
+            <>
+              <AlertTriangle className="h-12 w-12 text-red-500" />
+              <h2 className="text-xl font-bold text-slate-900">Something went wrong</h2>
+              <p className="max-w-sm text-sm text-slate-500">
+                Could not generate your report. Please go back and try again.
+              </p>
+            </>
+          )}
           <Button onClick={() => router.push("/patient/summary")}>
             Return to summary
           </Button>
@@ -368,6 +440,14 @@ export default function ReportPage() {
   return (
     <KioskScreen>
       <KioskBody className="pb-6">
+        {/* ── Token Number Banner ── */}
+        {tokenNumber && (
+          <div className="mb-4 rounded-2xl bg-teal-600 text-white px-6 py-4 flex flex-col items-center gap-1 shadow-lg shadow-teal-200">
+            <p className="text-xs font-semibold uppercase tracking-widest opacity-80">Your Token Number</p>
+            <p className="text-5xl font-black tracking-tight">{tokenNumber}</p>
+            <p className="text-xs opacity-70 mt-1">Please show this at the reception</p>
+          </div>
+        )}
         {/* -- H&P Document --------------------------------- */}
         <div
           id="hp-report"

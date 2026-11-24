@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { CLINIQ_MODELS, groqClient } from "@/lib/groq";
+import { CLINIQ_MODELS, groqChatWithFallback } from "@/lib/groq";
 import type {
   ClinIQClinicalReport,
   InterviewTurn,
@@ -218,7 +218,7 @@ ${JSON.stringify(interviewTurns).slice(0, 18_000)}
 SCANNED OCR DOCUMENTS:
 ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
 
-    const completion = await groqClient.chat.completions.create({
+    const completion = await groqChatWithFallback({
       model: CLINIQ_MODELS.INTERVIEW_FAST,
       temperature: 0.1,
       response_format: { type: "json_object" },
