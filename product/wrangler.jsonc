@@ -9,5 +9,30 @@
   },
   "observability": {
     "enabled": true
+  },
+
+  // ── Non-secret runtime config ──────────────────────────────────────────────
+  // These are safe to commit — no credentials, no keys.
+  // Secrets (API keys, DB URL, PIN) are stored encrypted via `wrangler secret put`
+  // and are NEVER committed to source. They persist across deploys automatically.
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://app.cliniq.mayankcodes.dev",
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "BHASHINI_INFERENCE_URL": "https://dhruva-api.bhashini.gov.in/services/inference/pipeline",
+    "ABDM_BASE_URL": "https://dev.abdm.gov.in",
+    "ABDM_GATEWAY_URL": "https://dev.abdm.gov.in/api/hiecm/gateway/v3",
+    "ABDM_ABHA_URL": "https://abhasbx.abdm.gov.in/abha/api/v3"
   }
+
+  // ── Secrets (set once via CLI, never lost on redeploy) ─────────────────────
+  // Run these once from your terminal to register each secret:
+  //   npx wrangler secret put GROQ_API_KEY
+  //   npx wrangler secret put GROQ_API_KEY_2
+  //   npx wrangler secret put GEMINI_API_KEY
+  //   npx wrangler secret put DATABASE_URL
+  //   npx wrangler secret put NEXTAUTH_SECRET
+  //   npx wrangler secret put DOCTOR_PIN
+  //   npx wrangler secret put ELEVENLABS_API_KEY
+  //   npx wrangler secret put BHASHINI_USER_ID
+  //   npx wrangler secret put BHASHINI_API_KEY
 }
