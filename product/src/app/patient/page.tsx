@@ -5,7 +5,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { PRIMARY_LANGUAGES, LANGUAGES, type Language } from "@/lib/constants";
 import { ClinIQLogo } from "@/components/kiosk/KioskLayout";
-import { Lock, Globe } from "lucide-react";
 
 export default function LanguageSelectionPage() {
   const router = useRouter();
@@ -72,17 +71,7 @@ export default function LanguageSelectionPage() {
         </button>
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-neutral-100 py-3 px-6 flex items-center
-                      justify-center gap-4 text-xs text-neutral-300">
-        <Lock size={11} className="shrink-0" />
-        <span>Data Protected</span>
-        <span>·</span>
-        <Globe size={11} className="shrink-0" />
-        <span>Made for Bharat</span>
-        <span>·</span>
-        <span>DPDP 2023</span>
-      </div>
+
     </main>
   );
 }

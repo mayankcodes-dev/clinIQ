@@ -796,25 +796,14 @@ export default function HistoryPage() {
         {/* AI Question bubble */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={aiLoading && !currentQuestion ? "loading" : currentQuestion}
+            key={currentQuestion || "loading"}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="bg-slate-900 rounded-2xl p-4 min-h-[72px] flex items-center shadow-sm"
+            className="bg-slate-900 rounded-2xl p-4 min-h-[72px] flex items-center shadow-sm relative"
           >
-            {aiLoading && !currentQuestion ? (
-              /* Simple minimal 3-dot loader */
-              <div className="flex items-center gap-1.5 px-2">
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="h-2 w-2 rounded-full bg-brand-400 inline-block animate-bounce"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
-                ))}
-              </div>
-            ) : (
+            {currentQuestion ? (
               <div className="flex items-start gap-3 w-full">
                 <button
                   onClick={() => voice.speak(currentQuestion)}
@@ -827,9 +816,34 @@ export default function HistoryPage() {
                     ? <PauseCircle size={18} />
                     : <Volume2 size={18} />}
                 </button>
-                <p className="text-base font-semibold text-white leading-snug pt-1.5">
-                  {currentQuestion}
-                </p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-semibold text-white leading-snug pt-1.5">
+                    {currentQuestion}
+                  </p>
+                  {/* Subtle inline indicator while AI prepares next question */}
+                  {aiLoading && (
+                    <div className="flex items-center gap-1 mt-2 opacity-60">
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="h-1.5 w-1.5 rounded-full bg-brand-300 inline-block animate-bounce"
+                          style={{ animationDelay: `${i * 0.15}s` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* No question yet — first load */
+              <div className="flex items-center gap-1.5 px-2">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className="h-2 w-2 rounded-full bg-brand-400 inline-block animate-bounce"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  />
+                ))}
               </div>
             )}
           </motion.div>

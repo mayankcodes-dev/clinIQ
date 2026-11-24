@@ -1,10 +1,12 @@
 ﻿<div align="center">
 
+<img src="./cliniq_logo.jpg" alt="ClinIQ Logo" width="140" style="border-radius:16px; margin-bottom:12px" />
+
 # ClinIQ
 
 ### AI-Powered Multilingual Clinical History Kiosk
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=nextdotjs)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-15.3-black?logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-38BDF8?logo=tailwindcss)](https://tailwindcss.com)
 [![Groq](https://img.shields.io/badge/Groq-LLaMA_3.1-orange)](https://groq.com)
@@ -72,20 +74,10 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 - Tokens survive server restarts (DB-persisted); graceful in-memory mock fallback if DB is unreachable
 - PIN-protected access — configurable via `DOCTOR_PIN` env var
 
-### 💊 Prescription Builder (B2B — Rx Module)
-- Doctor-facing prescription editor built on the clinic dashboard
-- Searchable drug database with dosage, frequency, duration fields
-- **Printable Rx** — single-page prescription slip formatted for clinic letterhead
-- Saves Rx to the patient's queue entry for record continuity
-
-### 📊 Chronic-Care Analytics & ROI Calculator (B2B — Clinic Analytics)
-- Per-clinic metrics: total intakes, follow-up recall rate, avg intake duration, language distribution
-- **ROI calculator** — estimates consultation time saved and revenue uplift per month
-- Chronic-patient recall module: flags diabetic, hypertensive, and asthma patients for follow-up reminders
-- Data aggregated from Neon Postgres queue entries; zero additional setup
-
 ### Pipeline
 > Items actively scoped but not yet in production:
+- **Prescription Builder** — Doctor-facing Rx editor with drug search, dosage, frequency, and printable prescription slip
+- **Chronic-Care Analytics & ROI Calculator** — Per-clinic metrics: total intakes, follow-up recall rate, avg intake duration; ROI estimator for consultation time saved
 - **ABHA Integration** — live ABDM sandbox linking; patient H&P auto-linked to Ayushman Bharat Health Account
 - **Nurse Dashboard** — vitals entry (BP, SpO₂, weight, temperature) pre-consultation; merged into H&P
 - **Expanded Language Coverage** — currently live across **11 Indian languages** (Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, English); next: Odia, Assamese, Maithili
@@ -194,10 +186,20 @@ cliniq/
 
 ## Patient Flow
 
-```
-[Consent] → [Language + OPD Select] → [AI Interview (voice + tap)]
-     → [Document Scan (optional OCR)] → [Summary Review]
-         → [H&P Report + WhatsApp Share] → [Token Queue Confirmation]
+```mermaid
+flowchart TD
+    A["🏥 Patient arrives at OPD"] --> B["Select Language\n(11 Indian languages)"]
+    B --> C["DPDP Consent Gate"]
+    C --> D["Choose OPD Type\nGeneral / AYUSH"]
+    D --> E["AI Interview\nVoice + Touch Chips\n7 clinical stages"]
+    E --> F{"Upload Documents?\n(optional)"}
+    F -- Yes --> G["OCR Scan\nGemini Vision extracts\nRx · Labs · Discharge"]
+    F -- No --> H["Summary Review\nPatient confirms answers"]
+    G --> H
+    H --> I["H&P Report Generation\nGroq + Gemini\nPhysician-grade English"]
+    I --> J["WhatsApp Share\nOne-tap pre-filled message"]
+    I --> K["Token Queue\nNeon Postgres\nDoctor Dashboard"]
+    K --> L["Doctor sees live queue\n/clinic/dashboard\nName · Complaint · ICD-10 · Wait"]
 ```
 
 Each step stores state in `sessionStorage` via `SessionStore` — no server round-trips until report generation. The doctor dashboard updates in real-time from Neon Postgres.

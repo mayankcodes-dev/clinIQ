@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle, Armchair, Bell, ClipboardList, Leaf, CheckCircle,
-  RefreshCw,
 } from "lucide-react";
 
 interface TokenInfo {
@@ -261,18 +260,7 @@ export default function CompletePage() {
           <WhatsAppShareButton lang={lang} />
         </motion.div>
 
-        {/* New session button */}
-        <Button
-          variant="ghost"
-          size="lg"
-          fullWidth
-          onClick={() => {
-            sessionStorage.clear();
-            router.push("/");
-          }}
-        >
-          <RefreshCw className="h-4 w-4 mr-1.5" /> {t(lang, "newPatient")}
-        </Button>
+
       </KioskBody>
     </KioskScreen>
   );
