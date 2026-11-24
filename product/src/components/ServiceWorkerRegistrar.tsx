@@ -14,7 +14,7 @@ export function ServiceWorkerRegistrar() {
       navigator.serviceWorker
         .register("/sw.js")
         .then((reg) => {
-          console.log("[ClinIQ] Service worker registered:", reg.scope);
+          console.warn("[ClinIQ] Service worker registered:", reg.scope);
         })
         .catch((err) => {
           console.warn("[ClinIQ] Service worker registration failed:", err);

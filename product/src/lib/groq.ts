@@ -75,7 +75,6 @@ export async function groqChatWithFallback(
   // Try primary
   try {
     const client = getPrimaryClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return await (client.chat.completions.create as any)(params);
   } catch (primaryErr) {
     const isRetryable =
@@ -92,7 +91,6 @@ export async function groqChatWithFallback(
       );
       // Invalidate primary so next call re-checks env (key may rotate)
       _primary = null;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return await (secondary.chat.completions.create as any)(params);
     }
 

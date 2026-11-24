@@ -340,6 +340,7 @@ export default function ScanPage() {
                   </span>
                 </div>
               ) : (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={imagePreview ?? ""}
                   alt="Document preview"
@@ -370,7 +371,6 @@ export default function ScanPage() {
 
         <KioskFooter className="space-y-2">
           <Button variant="primary" size="xl" fullWidth onClick={handleExtract}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <CheckCircle2 size={18} className="inline-block mr-1.5 text-white align-middle shrink-0" />
             ClinIQ से पढ़ें · Extract with ClinIQ AI
           </Button>
@@ -453,7 +453,6 @@ export default function ScanPage() {
             className="flex items-center gap-3 bg-brand-600 text-white rounded-2xl px-4 py-3 shadow-sm"
           >
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><rect x="10" y="3" width="4" height="18" rx="1.5" fill="white"/><rect x="3" y="10" width="18" height="4" rx="1.5" fill="white"/></svg>
             </div>
             <div className="flex-1">

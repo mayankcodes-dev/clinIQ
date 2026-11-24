@@ -10,7 +10,6 @@ export const runtime = "nodejs";
 
 // --------- In-process store (survives warm restarts) ------------------------------------------------------------------------------------------------
 declare global {
-  // eslint-disable-next-line no-var
   var __clinicQueue: Map<string, ClinicQueueEntry> | undefined;
 }
 

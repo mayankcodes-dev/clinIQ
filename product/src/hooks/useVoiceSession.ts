@@ -8,7 +8,7 @@
 //
 // All API keys are server-side. No NEXT_PUBLIC_ credentials in the browser bundle.
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import {
   isBhashiniConfigured,
   bhashiniASR,
@@ -121,7 +121,6 @@ export function useVoiceSession({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [engine, setEngine] = useState<VoiceEngine>("none");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const recorderRef = useRef<BhashiniRecorder | null>(null);
@@ -129,7 +128,10 @@ export function useVoiceSession({
   const audioCtxRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const webSpeechInfo = WEB_SPEECH_LANGS[lang] ?? { bcp47: "hi-IN", supported: false };
+  const webSpeechInfo = useMemo(
+    () => WEB_SPEECH_LANGS[lang] ?? { bcp47: "hi-IN", supported: false },
+    [lang]
+  );
 
   // ── Determine active engine on mount / lang change ────────────
   useEffect(() => {
@@ -287,12 +289,9 @@ export function useVoiceSession({
     }
 
     // ── Web Speech API fallback ──────────────────────────────────
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type SpeechRecognitionCtor = new () => any;
     const SpeechRecognitionAPI: SpeechRecognitionCtor | undefined =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).SpeechRecognition ??
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognitionAPI || !webSpeechInfo.supported) {

@@ -315,7 +315,6 @@ async function callGeminiREST(prompt: string): Promise<string | null> {
       }
     );
     if (!res.ok) return null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = await res.json();
     return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
   } catch {

@@ -26,7 +26,7 @@ async function loadCache(): Promise<EmbeddedEntry[]> {
     const data = (mod.default ?? mod) as EmbeddedEntry[];
     _cache = Array.isArray(data) ? data : [];
     if (_cache.length > 0) {
-      console.info(`[RAG] Loaded ${_cache.length} embedded entries from bundled cache`);
+      console.warn(`[RAG] Loaded ${_cache.length} embedded entries from bundled cache`);
     } else {
       console.warn("[RAG] Embedded cache is empty. Run scripts/generate-embeddings.mjs to populate it.");
     }

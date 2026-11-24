@@ -519,7 +519,6 @@ export default function HistoryPage() {
           setAiLoading(false);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Voice session ────────────────────────────────────────────
@@ -700,7 +699,7 @@ export default function HistoryPage() {
       setWaitingForNext(true);
       await fetchNextQuestion(nextStage as Stage, newMessages);
     }
-  }, [selectedChips, patientInput, messages, currentQuestion, stage, stageIndex, lang, fetchNextQuestion]);
+  }, [selectedChips, patientInput, messages, currentQuestion, stage, stageIndex, lang, interviewMode, STAGES, fetchNextQuestion]);
 
   // ── Complete → go to scan page ───────────────────────────────
   useEffect(() => {

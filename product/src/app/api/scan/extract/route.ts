@@ -274,7 +274,7 @@ export async function POST(req: NextRequest) {
     if (!response && lastErr) throw lastErr;
 
     const raw = response.text ?? "";
-    console.log("[scan/extract] Raw response length:", raw.length);
+    console.warn("[scan/extract] Raw response length:", raw.length);
 
     try {
       let extracted: ExtractedDoc = parseModelJson(raw);
@@ -288,7 +288,7 @@ export async function POST(req: NextRequest) {
 
       // â”€â”€ Multi-pass extraction for low confidence â”€â”€
       if (extracted.confidence === "low" && extracted.medications.length === 0 && extracted.labValues.length === 0) {
-        console.log("[scan/extract] Confidence is low, attempting second pass with enhanced prompt.");
+        console.warn("[scan/extract] Confidence is low, attempting second pass with enhanced prompt.");
         const retryPrompt = `The previous extraction had low confidence. Please re-examine this document more carefully. Focus on:\n1. Any medication names (even partially readable)\n2. Any numerical values that could be lab results\n3. Any dates\n4. Doctor or hospital names\n${prompt}`;
         
         const retryParts = [

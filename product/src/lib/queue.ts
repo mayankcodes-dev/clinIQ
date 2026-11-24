@@ -22,9 +22,7 @@ export interface QueuePatient {
 
 // ── Global singleton (survives warm serverless restarts) ──────────
 declare global {
-  // eslint-disable-next-line no-var
   var __mkQueue: QueuePatient[] | undefined;
-  // eslint-disable-next-line no-var
   var __mkTokenCounter: number | undefined;
 }
 

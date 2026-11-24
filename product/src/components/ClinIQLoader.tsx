@@ -17,6 +17,18 @@ const DEFAULT_STEPS = [
   'Almost ready...',
 ];
 
+/** Contextual icon — hoisted outside ClinIQLoader to avoid "component created during render" lint error */
+function ContextIcon({ message, iconSize }: { message: string; iconSize: number }) {
+  const msg = message.toLowerCase();
+  if (msg.includes('report') || msg.includes('document') || msg.includes('record')) {
+    return <FileText size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
+  }
+  if (msg.includes('analys') || msg.includes('structur') || msg.includes('generat')) {
+    return <Brain size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
+  }
+  return <Stethoscope size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
+}
+
 export default function ClinIQLoader({
   message,
   size = 'md',
@@ -48,18 +60,6 @@ export default function ClinIQLoader({
 
   const iconSize = size === 'sm' ? 36 : size === 'lg' ? 72 : 56;
 
-  // Pick a contextual icon based on the message content
-  function ContextIcon() {
-    const msg = (message ?? '').toLowerCase();
-    if (msg.includes('report') || msg.includes('document') || msg.includes('record')) {
-      return <FileText size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
-    }
-    if (msg.includes('analys') || msg.includes('structur') || msg.includes('generat')) {
-      return <Brain size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
-    }
-    return <Stethoscope size={iconSize * 0.5} strokeWidth={1.5} className="text-teal-600" />;
-  }
-
   return (
     <div className={containerClass}>
       {/* Pulsing icon ring */}
@@ -84,7 +84,7 @@ export default function ClinIQLoader({
             strokeDasharray={`${Math.PI * (iconSize - 4) * 0.25} ${Math.PI * (iconSize - 4) * 0.75}`}
           />
         </svg>
-        <ContextIcon />
+        <ContextIcon message={message ?? ''} iconSize={iconSize} />
       </div>
 
       {/* Heading */}

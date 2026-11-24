@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Audit log (no PII — token and status only) ─────────────────────────
-    console.info(`[queue/update] Token=${token} → status=${status} at=${new Date().toISOString()}`);
+    console.warn(`[queue/update] Token=${token} → status=${status} at=${new Date().toISOString()}`);
 
     return NextResponse.json({ success: true, patient: rows[0] });
   } catch (err) {

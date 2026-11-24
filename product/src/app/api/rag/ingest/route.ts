@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  console.info(`[RAG Ingest] Starting embedding of ${KNOWLEDGE_BASE.length} entries...`);
+  console.warn(`[RAG Ingest] Starting embedding of ${KNOWLEDGE_BASE.length} entries...`);
 
   try {
     const embedded = await embedAllEntries(KNOWLEDGE_BASE);
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     invalidateCache();
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.info(`[RAG Ingest] Done. ${embedded.length} entries embedded in ${duration}s`);
+    console.warn(`[RAG Ingest] Done. ${embedded.length} entries embedded in ${duration}s`);
 
     return NextResponse.json({
       success: true,
