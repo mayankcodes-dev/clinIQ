@@ -70,67 +70,23 @@ const CARDS: CardData[] = [
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STICKY_TOP = 88;  // px from viewport top where cards pin
-const STACK_GAP  = 24;  // px between successive sticky tops
+const DESKTOP_STICKY_TOP = 88;  // px from viewport top where cards pin (desktop)
+const DESKTOP_STACK_GAP  = 24;  // px between successive sticky tops (desktop)
+const MOBILE_STICKY_TOP  = 72;  // px from viewport top where cards pin (mobile)
+const MOBILE_STACK_GAP   = 16;  // px between successive sticky tops (mobile)
 
-// ─── Mobile card — plain static, no JS ───────────────────────────────────────
+// ─── Shared scroll-driven stacking hook ───────────────────────────────────────
 
-function MobileCard({ card }: { card: CardData }) {
-  return (
-    <div style={{
-      marginBottom: 20,
-      borderRadius: 20,
-      overflow: "hidden",
-      background: "rgba(255,255,255,0.90)",
-      border: "1px solid rgba(15,23,42,0.07)",
-      boxShadow: "0 2px 16px -4px rgba(15,23,42,0.10)",
-    }}>
-      <div style={{ position: "relative", height: 180, overflow: "hidden" }}>
-        <img src={card.image} alt={card.imageAlt}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-        <div style={{ position: "absolute", inset: 0, background: card.depthGradient, opacity: 0.4,
-          mixBlendMode: "multiply", pointerEvents: "none" }} />
-      </div>
-      <div style={{ padding: "24px 20px 28px" }}>
-        <span style={{
-          display: "inline-flex", alignItems: "center", padding: "3px 10px", borderRadius: 999,
-          background: card.accentColor, color: card.accentText,
-          fontSize: 9, fontWeight: 800, letterSpacing: "0.1em",
-          textTransform: "uppercase", marginBottom: 14,
-        }}>{card.tag}</span>
-        <h3 style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1.18,
-          color: "#0F172A", marginBottom: 10 }}>{card.headline}</h3>
-        <p style={{ fontSize: 13, lineHeight: 1.75, color: "#64748B" }}>{card.body}</p>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
-
-export function StackingFeatures() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Refs to the INNER scale div of each card (what gets transform applied)
-  const innerRefs = useRef<(HTMLDivElement | null)[]>(CARDS.map(() => null));
-  // Refs to the OUTER sticky wrapper (used to read static offsetTop)
-  const outerRefs = useRef<(HTMLDivElement | null)[]>(CARDS.map(() => null));
-
-  // ── Detect mobile ──
+function useStackingScroll(
+  innerRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
+  outerRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
+  enabled: boolean
+) {
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 700);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+    if (!enabled) return;
 
-  // ── Scroll-driven scale (desktop only) ──
-  useEffect(() => {
-    if (isMobile) return;
-
-    // Measure each card's document offsetTop ONCE after mount.
-    // We use a helper instead of getBoundingClientRect() so we don't get
-    // values that shift as sticky cards pin.
+    // Walk the offsetParent chain to get stable document-relative top.
+    // getBoundingClientRect() shifts as sticky cards pin — don't use it.
     const getDocTop = (el: HTMLElement): number => {
       let top = 0;
       let cur: HTMLElement | null = el;
@@ -139,7 +95,7 @@ export function StackingFeatures() {
     };
 
     let docTops: number[] = [];
-    // Delay so layout is fully settled after hydration + sticky paint
+    // 150 ms delay: layout fully settled after hydration + sticky paint
     const t = setTimeout(() => {
       docTops = outerRefs.current.map((el) => (el ? getDocTop(el) : 0));
     }, 150);
@@ -154,13 +110,12 @@ export function StackingFeatures() {
         const inner = innerRefs.current[i];
         if (!inner) return;
 
-        // Card i starts to compress only when card i+1 enters the viewport
-        // from the bottom and slides up to its sticky pin point.
-        // Trigger window: from (docTop[i+1] - vh) to docTop[i+1].
+        // Trigger: card i compresses when card i+1 arrives at its sticky pin.
+        // Window: scrollY from (docTop[i+1] - vh) to docTop[i+1].
         const nextDocTop = docTops[i + 1] ?? null;
 
         if (nextDocTop === null) {
-          // Last card — always full scale, never compressed
+          // Last card — always full scale
           inner.style.transform = "";
           inner.style.filter    = "";
           return;
@@ -170,7 +125,6 @@ export function StackingFeatures() {
         const end      = nextDocTop;
         const progress = Math.max(0, Math.min(1, (scrollY - start) / (end - start)));
 
-        // Each card shrinks a fixed max 3% when the next one pins on top
         const scale  = (1 - progress * 0.03).toFixed(4);
         const bright = (1 - progress * 0.04).toFixed(4);
 
@@ -186,13 +140,104 @@ export function StackingFeatures() {
       clearTimeout(t);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isMobile]);
+  }, [enabled, innerRefs, outerRefs]);
+}
 
-  // ── Mobile layout ──
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export function StackingFeatures() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Refs shared across both layouts
+  const innerRefs = useRef<(HTMLDivElement | null)[]>(CARDS.map(() => null));
+  const outerRefs = useRef<(HTMLDivElement | null)[]>(CARDS.map(() => null));
+
+  // ── Detect mobile ──
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 700);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // ── Scroll-driven stacking — works on BOTH mobile and desktop ──
+  useStackingScroll(innerRefs, outerRefs, true);
+
+  // ── Mobile layout — sticky cards, portrait, full width ──
   if (isMobile) {
     return (
-      <div>
-        {CARDS.map((card) => <MobileCard key={card.tag} card={card} />)}
+      <div style={{ position: "relative", paddingBottom: 32 }}>
+        {CARDS.map((card, i) => (
+          <div
+            key={card.tag}
+            ref={(el) => { outerRefs.current[i] = el; }}
+            style={{
+              position: "sticky",
+              top: MOBILE_STICKY_TOP + i * MOBILE_STACK_GAP,
+              zIndex: 10 + i,
+              marginBottom: 16,
+            }}
+          >
+            {/* inner div — receives imperative scale/brightness */}
+            <div
+              ref={(el) => { innerRefs.current[i] = el; }}
+              style={{
+                borderRadius: 20,
+                overflow: "hidden",
+                background: "rgba(255,255,255,0.90)",
+                backdropFilter: "blur(16px) saturate(1.6)",
+                WebkitBackdropFilter: "blur(16px) saturate(1.6)",
+                border: "1px solid rgba(255,255,255,0.75)",
+                boxShadow: `
+                  inset 0 1px 0 rgba(255,255,255,0.95),
+                  0 8px 28px -6px rgba(15,23,42,0.12)
+                `,
+                transformOrigin: "top center",
+                transition: "transform 0.22s cubic-bezier(0.16,1,0.3,1), filter 0.22s ease",
+              }}
+            >
+              {/* Image strip */}
+              <div style={{ position: "relative", height: 180, overflow: "hidden" }}>
+                <img
+                  src={card.image}
+                  alt={card.imageAlt}
+                  style={{
+                    position: "absolute", inset: 0,
+                    width: "100%", height: "100%", objectFit: "cover",
+                  }}
+                />
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: card.depthGradient, opacity: 0.4,
+                  mixBlendMode: "multiply", pointerEvents: "none",
+                }} />
+              </div>
+
+              {/* Copy */}
+              <div style={{ padding: "24px 20px 28px" }}>
+                <span style={{
+                  display: "inline-flex", alignItems: "center",
+                  padding: "3px 10px", borderRadius: 999,
+                  background: card.accentColor, color: card.accentText,
+                  fontSize: 9, fontWeight: 800, letterSpacing: "0.1em",
+                  textTransform: "uppercase", marginBottom: 14,
+                  boxShadow: `0 1px 4px ${card.accentText}22`,
+                }}>
+                  {card.tag}
+                </span>
+                <h3 style={{
+                  fontSize: 18, fontWeight: 800, letterSpacing: "-0.05em",
+                  lineHeight: 1.18, color: "#0F172A", marginBottom: 10,
+                }}>
+                  {card.headline}
+                </h3>
+                <p style={{ fontSize: 13, lineHeight: 1.75, color: "#64748B" }}>
+                  {card.body}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -206,7 +251,7 @@ export function StackingFeatures() {
           ref={(el) => { outerRefs.current[i] = el; }}
           style={{
             position: "sticky",
-            top: STICKY_TOP + i * STACK_GAP,
+            top: DESKTOP_STICKY_TOP + i * DESKTOP_STACK_GAP,
             zIndex: 10 + i,
             marginBottom: 24,
           }}
@@ -226,7 +271,6 @@ export function StackingFeatures() {
                 0 12px 40px -8px rgba(15,23,42,0.10)
               `,
               transformOrigin: "top center",
-              // transition handles smooth easing on fast scroll
               transition: "transform 0.22s cubic-bezier(0.16,1,0.3,1), filter 0.22s ease",
             }}
           >
