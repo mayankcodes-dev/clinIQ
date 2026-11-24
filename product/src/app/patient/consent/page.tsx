@@ -107,7 +107,7 @@ export default function ConsentPage() {
   function handleProceed() {
     stop(); // stop audio when proceeding
     sessionStorage.setItem("mk_consent", JSON.stringify(checked));
-    router.push("/patient/opd-select");
+    router.push("/patient/intake");
   }
 
   function handlePlayAudio() {

@@ -58,7 +58,7 @@ export function middleware(req: NextRequest) {
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
       "media-src 'self' blob:",
-      "connect-src 'self' https://generativelanguage.googleapis.com https://dhruva-api.bhashini.gov.in https://dev.abdm.gov.in https://abhasbx.abdm.gov.in",
+      "connect-src 'self' https://generativelanguage.googleapis.com https://dhruva-api.bhashini.gov.in",
       "worker-src 'self' blob:", // Service worker
       "frame-ancestors 'none'",
     ].join("; ")

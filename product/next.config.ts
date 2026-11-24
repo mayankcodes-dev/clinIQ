@@ -30,7 +30,6 @@ const nextConfig: NextConfig = {
       { source: '/doctor/clinic', destination: '/clinic/dashboard', permanent: false },
     ];
   },
-  // crypto kept server-side for ABDM HMAC signing
   serverExternalPackages: ["crypto"],
   // Security headers
   async headers() {
