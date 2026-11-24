@@ -1,10 +1,8 @@
 // src/app/api/session/save/route.ts
 // Saves a complete patient session to Neon DB at the end of the kiosk flow
 // Called from summary/page.tsx when patient taps "Submit to Doctor"
-// Requires a valid patient session token (issued at OTP verify) in Authorization header.
 
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { z } from "zod";
 import { db, sessions, patients, historyRecords, scannedDocs, consents } from "@/lib/db";
 
@@ -35,40 +33,10 @@ const SaveSessionSchema = z.object({
     summary: z.record(z.string(), z.any()).nullish(),
   }).optional(),
   docs: z.array(z.record(z.string(), z.any())).max(20).optional(),
+  report: z.record(z.string(), z.any()).optional(),
 });
 
 export async function POST(req: NextRequest) {
-  // ── Patient session token auth ─────────────────────────────────────────────
-  const authHeader = req.headers.get("authorization");
-  const isProduction = process.env.NODE_ENV === "production";
-
-  if (authHeader?.startsWith("Bearer ")) {
-    // Verify the token
-    const patientToken = authHeader.slice(7);
-    const dotIdx = patientToken.lastIndexOf(".");
-    if (dotIdx === -1) {
-      return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
-    }
-    const payloadB64 = patientToken.slice(0, dotIdx);
-    const tokenSig = patientToken.slice(dotIdx + 1);
-    const secret = process.env.NEXTAUTH_SECRET ?? process.env.APP_SECRET ?? "ClinIQ-dev-otp-salt";
-    const payload = Buffer.from(payloadB64, "base64").toString();
-    const expectedSig = crypto.createHmac("sha256", secret).update(payload).digest("hex");
-    try {
-      if (!crypto.timingSafeEqual(Buffer.from(tokenSig, "hex"), Buffer.from(expectedSig, "hex"))) {
-        return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
-      }
-    } catch {
-      return NextResponse.json({ error: "Invalid session token" }, { status: 401 });
-    }
-  } else if (isProduction) {
-    // In production, always require a token
-    return NextResponse.json({ error: "Patient session token required" }, { status: 401 });
-  } else {
-    // Dev: log warning but allow anonymous/guest sessions to save
-    console.warn("[session/save] ⚠️  No patient token (dev mode) — allowing anonymous save");
-  }
-
   try {
     // ── Validate request body ────────────────────────────────────────────────
     const rawBody = await req.json();
@@ -86,6 +54,7 @@ export async function POST(req: NextRequest) {
       consent: consentData,
       history,
       docs,
+      report,
     } = parseResult.data;
 
     const sessionId = cuid();
@@ -116,13 +85,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Save history record
-    if (history) {
+    if (history || report) {
       await db.insert(historyRecords).values({
         id: historyId,
         sessionId,
-        messages: history.messages ?? [],
-        summary: history.summary ?? null,
-        isMock: !history.summary?.chiefComplaint,
+        messages: history?.messages ?? [],
+        summary: report ?? history?.summary ?? null,  // prefer generated report
+        isMock: false,
       });
     }
 

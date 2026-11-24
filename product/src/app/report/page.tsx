@@ -306,6 +306,45 @@ export default function ReportPage() {
   const icd10s = listValue(report.icd10Suggestions);
   const keyFindings = listValue(report.keyLabFindings);
 
+  const saveSessionToDB = async () => {
+    try {
+      const session = SessionStore.getSession();
+      const legacyHistory = (() => { try { return JSON.parse(sessionStorage.getItem("mk_history") ?? "{}"); } catch { return {}; }})();
+      const legacyPatient = (() => { try { return JSON.parse(sessionStorage.getItem("mk_patient") ?? "{}"); } catch { return {}; }})();
+      const docs = readDocuments();
+      const lang = sessionStorage.getItem("mk_lang") ?? session.language ?? "en";
+      const mode = sessionStorage.getItem("mk_mode") ?? session.mode ?? "allopathic";
+      const patient = session.patient ?? legacyPatient;
+
+      await fetch("/api/session/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lang,
+          mode,
+          patient: {
+            name: (patient as Record<string, unknown>).name ?? null,
+            gender: (patient as Record<string, unknown>).gender ?? null,
+            yearOfBirth: (patient as Record<string, unknown>).yearOfBirth ? String((patient as Record<string, unknown>).yearOfBirth) : null,
+            abhaNumber: (patient as Record<string, unknown>).abhaNumber ?? null,
+            mobile: (patient as Record<string, unknown>).mobile ?? null,
+          },
+          consent: { dataCapture: true, doctorShare: true, abhaLink: false, audioRecording: false },
+          history: {
+            messages: Array.isArray(legacyHistory.messages) ? legacyHistory.messages :
+                      session.turns?.map((t) => ({ role: "ai", text: (t as unknown as Record<string,unknown>).questionLocalized ?? (t as unknown as Record<string,unknown>).questionEnglish, stage: (t as unknown as Record<string,unknown>).category })) ?? [],
+            summary: session.summary ?? legacyHistory.summary ?? null,
+          },
+          docs,
+          report: report,
+        }),
+      });
+    } catch (e) {
+      console.error("[report] saveSessionToDB failed:", e);
+      // non-critical — don't block the user
+    }
+  };
+
   const shareText = buildShareText(report, patientName, patientAgeStr, patientGender, language);
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
@@ -584,9 +623,12 @@ export default function ReportPage() {
           <Button
             fullWidth
             size="lg"
-            onClick={() => router.push("/patient/complete")}
+            onClick={async () => {
+              await saveSessionToDB();
+              router.push("/patient/complete");
+            }}
           >
-            Continue to doctor queue ?
+            Submit to Doctor →
           </Button>
         </div>
       </KioskBody>

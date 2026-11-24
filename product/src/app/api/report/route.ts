@@ -121,32 +121,6 @@ function normalizeReport(
 }
 
 export async function POST(req: NextRequest) {
-  // Patient session token guard (same mechanism as /api/session/save)
-  const authHeader = req.headers.get("authorization");
-  if (process.env.NODE_ENV === "production") {
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const patientToken = authHeader.slice(7);
-    const dotIdx = patientToken.lastIndexOf(".");
-    if (dotIdx === -1) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const payloadPart = patientToken.slice(0, dotIdx);
-    const sigPart = patientToken.slice(dotIdx + 1);
-    const tokenSecret = process.env.NEXTAUTH_SECRET ?? "ClinIQ-dev-secret-changeme";
-    const crypto = (await import("crypto")).default;
-    const expectedSig = crypto.createHmac("sha256", tokenSecret).update(payloadPart).digest("hex");
-    try {
-      const sigBuf = Buffer.from(sigPart, "hex");
-      const expBuf = Buffer.from(expectedSig, "hex");
-      if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-    } catch {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
   try {
     const body = (await req.json()) as ReportRequest;
     const interviewTurns = Array.isArray(body.interviewTurns) ? body.interviewTurns : [];

@@ -214,8 +214,12 @@ export default function ScanPage() {
               >
                 <dt.Icon size={28} className="shrink-0 text-brand-700" strokeWidth={1.5} />
                 <div>
-                  <p className="font-bold text-neutral-900">{dt.hi}</p>
-                  <p className="text-xs text-neutral-400">{dt.en}</p>
+                  <p className="font-bold text-neutral-900">
+                    {["hi","mr","gu","pa","ur"].includes(lang) ? dt.hi : dt.en}
+                  </p>
+                  <p className="text-xs text-neutral-400">
+                    {["hi","mr","gu","pa","ur"].includes(lang) ? dt.en : dt.hi}
+                  </p>
                 </div>
                 {selectedType === dt.id && (
                   <div className="ml-auto h-6 w-6 rounded-full bg-brand-600
@@ -272,8 +276,12 @@ export default function ScanPage() {
             size="lg"
             fullWidth
             onClick={handleContinue}
+            className={scannedDocs.length === 0 ? "text-red-500 hover:text-red-600" : ""}
           >
-            {scannedDocs.length > 0 ? <><CheckCircle2 size={16} className="inline mr-1 align-middle" /> Done — Continue to Summary</> : <>Skip — No Documents <ChevronRight size={16} className="inline ml-0.5 align-middle" /></>}
+            {scannedDocs.length > 0
+              ? <><CheckCircle2 size={16} className="inline mr-1 align-middle" /> Done — Continue to Summary</>
+              : <span className="text-red-500 font-semibold flex items-center justify-center gap-1">Skip — No Documents <ChevronRight size={16} /></span>
+            }
           </Button>
         </KioskFooter>
 
@@ -385,28 +393,37 @@ export default function ScanPage() {
   if (step === "processing") {
     return (
       <KioskScreen>
-        <KioskBody className="flex flex-col items-center justify-center gap-6 py-16">
-          <ClinIQLoader />
-          <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-neutral-900">ClinIQ पढ़ रहा है…</h2>
-            <p className="text-sm text-neutral-400">ClinIQ AI is reading your document</p>
+        <KioskBody className="flex flex-col items-center justify-center gap-5 py-20 text-center">
+          {/* Pulsing teal ring */}
+          <div className="relative">
+            <div className="h-20 w-20 rounded-full border-4 border-brand-100 border-t-brand-600 animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+                <rect x="10" y="3" width="4" height="18" rx="1.5" fill="#0d9488"/>
+                <rect x="3" y="10" width="18" height="4" rx="1.5" fill="#0d9488"/>
+              </svg>
+            </div>
           </div>
-          <div className="text-left w-full max-w-xs space-y-2">
-            {[
-              "Recognising text...",
-              "Identifying medications...",
-              "Extracting lab values...",
-              "Mapping diagnoses...",
-            ].map((step, i) => (
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.6 }}
-                className="flex items-center gap-2 text-sm text-neutral-500"
-              >
-                <CheckCircle2 size={14} className="text-brand-500 shrink-0" /> {step}
-              </motion.div>
+          <div className="space-y-1">
+            <p className="text-lg font-bold text-neutral-900">
+              {lang === "hi" ? "पढ़ा जा रहा है…" :
+               lang === "ta" ? "படிக்கப்படுகிறது…" :
+               lang === "te" ? "చదువుతోంది…" :
+               lang === "bn" ? "পড়া হচ্ছে…" :
+               lang === "mr" ? "वाचले जात आहे…" :
+               lang === "gu" ? "વાંચવામાં આવી રહ્યું છે…" :
+               lang === "kn" ? "ಓದಲಾಗುತ್ತಿದೆ…" :
+               lang === "ml" ? "വായിക്കുന്നു…" :
+               lang === "pa" ? "ਪੜ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ…" :
+               lang === "ur" ? "پڑھا جا رہا ہے…" :
+               "Reading document…"}
+            </p>
+            <p className="text-sm text-neutral-400">ClinIQ AI is extracting your medical data</p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {[0,1,2].map(i => (
+              <span key={i} className="h-2 w-2 rounded-full bg-brand-400 inline-block animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }} />
             ))}
           </div>
         </KioskBody>

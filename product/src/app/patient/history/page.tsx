@@ -470,6 +470,7 @@ export default function HistoryPage() {
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [inputMode, setInputMode] = useState<"voice" | "touch">("voice");
   const [aiLoading, setAiLoading] = useState(false);
+  const [waitingForNext, setWaitingForNext] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [summary, setSummary] = useState<StructuredSummary | null>(null);
   const [voiceError, setVoiceError] = useState("");
@@ -559,8 +560,7 @@ export default function HistoryPage() {
       // Keep fallback available for catch block only — never show it before AI responds
       const fallbackQ = fb[forStage] ?? "";
 
-      // Advance stage indicator but keep showing PREVIOUS question until AI responds.
-      // Only the Next button spinner signals that loading is happening.
+      // Advance stage indicator. waitingForNext hides old question text until AI responds.
       setStage(forStage);
       setAiLoading(true);
 
@@ -573,20 +573,23 @@ export default function HistoryPage() {
         });
         const data = await res.json();
         if (data.isComplete && data.structuredSummary) {
+          setWaitingForNext(false);
           setSummary(data.structuredSummary);
           setIsComplete(true);
         } else if (data.question) {
           // AI returned a tailored question — show it now
+          setWaitingForNext(false);
           setCurrentQuestion(data.question);
           setQuestionKey((k) => k + 1);
         } else if (fallbackQ) {
           // API succeeded but no question field — use static fallback
+          setWaitingForNext(false);
           setCurrentQuestion(fallbackQ);
           setQuestionKey((k) => k + 1);
         }
       } catch {
         // Network/Groq failure — show static fallback so patient is never stuck
-        if (fallbackQ) { setCurrentQuestion(fallbackQ); setQuestionKey((k) => k + 1); }
+        if (fallbackQ) { setWaitingForNext(false); setCurrentQuestion(fallbackQ); setQuestionKey((k) => k + 1); }
       } finally {
         setAiLoading(false);
       }
@@ -693,7 +696,8 @@ export default function HistoryPage() {
         setAiLoading(false);
       }
     } else {
-      // Keep previous question visible while loading - aiLoading spinner shows on Next button
+      // Set waitingForNext so the question bubble shows only dots until AI responds
+      setWaitingForNext(true);
       await fetchNextQuestion(nextStage as Stage, newMessages);
     }
   }, [selectedChips, patientInput, messages, currentQuestion, stage, stageIndex, lang, fetchNextQuestion]);
@@ -808,7 +812,7 @@ export default function HistoryPage() {
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="bg-slate-900 rounded-2xl p-4 min-h-[72px] flex items-center shadow-sm relative"
           >
-            {currentQuestion ? (
+            {currentQuestion && !waitingForNext ? (
               <div className="flex items-start gap-3 w-full">
                 <button
                   onClick={() => voice.speak(currentQuestion)}
@@ -853,21 +857,6 @@ export default function HistoryPage() {
             )}
           </motion.div>
         </AnimatePresence>
-
-        {/* ── AI loading state — shown while next question is being fetched from Groq */}
-        {aiLoading && (
-          <div className="flex flex-col items-center justify-center gap-3 py-8 text-neutral-400">
-            <div className="flex items-center gap-1.5">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className="h-3 w-3 rounded-full bg-brand-400 inline-block animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ── VOICE MODE ── */}
         {inputMode === "voice" && !aiLoading && (
