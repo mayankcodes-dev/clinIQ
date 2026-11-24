@@ -1,13 +1,14 @@
 // src/app/api/history/chat/route.ts
-// Gemini-powered adaptive clinical history-taking AI — RAG-enhanced.
+// Groq-powered adaptive clinical history-taking AI — RAG-enhanced.
 // Generates the next clinical question using:
 //   1. RAG context retrieved from clinical knowledge base
 //   2. AYUSH Dashavidha Pariksha mode when requested
 //   3. Red-flag detection via emergency RAG chunks
-//   4. Fallback static questions when Gemini / RAG unavailable
+//   4. Fallback static questions when Groq unavailable
+// Groq dual-key failover: GROQ_API_KEY → GROQ_API_KEY_2 → deterministic fallback
 
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { groqChatWithFallback, CLINIQ_MODELS } from "@/lib/groq";
 import { embedText } from "@/lib/rag/embedder";
 import {
   retrieveByVector,
@@ -16,13 +17,6 @@ import {
   formatContextForLLM,
 } from "@/lib/rag/retriever";
 import type { KnowledgeDomain } from "@/lib/rag/knowledge-base";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-
-// ── Grok (xAI) client — OpenAI-compatible API ────────────────────────────────
-const GROK_API_KEY = process.env.GROK_API_KEY;
-const GROK_API_URL = process.env.GROK_API_URL ?? "https://api.x.ai/v1";
-const GROK_MODEL = process.env.GROK_MODEL ?? "grok-3-mini-fast";
 
 const LANG_NAMES: Record<string, string> = {
   hi: "Hindi",   en: "English",    bn: "Bengali",   ta: "Tamil",
@@ -279,132 +273,59 @@ JSON Schema:
 }`;
 }
 
-// ── Grok (xAI) call helper — for conversation question generation ─────────────
+// ── Groq question-generation helper (dual-key failover via lib/groq.ts) ──────
 
-async function callGrok(systemPrompt: string, userPrompt: string): Promise<string | null> {
-  if (!GROK_API_KEY) {
-    // Fallback to Gemini if Grok key not configured
-    return callGeminiForSummary(systemPrompt + "\n\n" + userPrompt);
+async function callGroq(systemPrompt: string, userPrompt: string): Promise<string | null> {
+  try {
+    const completion = await groqChatWithFallback({
+      model: CLINIQ_MODELS.INTERVIEW_FAST,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user",   content: userPrompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 300,
+    });
+    return completion.choices[0]?.message?.content?.trim() ?? null;
+  } catch (err) {
+    console.warn("[history/chat] Groq call failed:", err instanceof Error ? err.message : err);
+    return null;
   }
-
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const response = await fetch(`${GROK_API_URL}/chat/completions`, {
-        method: "POST",
-        signal: AbortSignal.timeout(12000),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${GROK_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: GROK_MODEL,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
-          ],
-          temperature: 0.7,
-          max_tokens: 300,
-        }),
-      });
-
-      if (response.status === 429) {
-        // Rate limited — wait then retry
-        if (attempt === 0) {
-          await new Promise((r) => setTimeout(r, 3000));
-          continue;
-        }
-        break;
-      }
-
-      if (!response.ok) {
-        console.warn(`[history/chat] Grok (xAI) API error: ${response.status}`);
-        break;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data: any = await response.json();
-      const text = data?.choices?.[0]?.message?.content?.trim();
-      if (text) return text;
-      break;
-    } catch (err) {
-      console.warn("[history/chat] Grok (xAI) call failed:", err instanceof Error ? err.message : err);
-      if (attempt === 0) {
-        await new Promise((r) => setTimeout(r, 2000));
-        continue;
-      }
-      break;
-    }
-  }
-
-  // Fallback to Gemini if Grok fails
-  console.warn("[history/chat] Grok (xAI) failed, falling back to Gemini for question generation");
-  return callGeminiLegacy(systemPrompt, userPrompt);
 }
 
-// ── Gemini REST helper — works with AQ.* API keys (X-goog-api-key header) ────
-// The @google/genai SDK requires AIza... keys. Our key is AQ.* → REST only.
+// ── Gemini REST fallback — summary JSON only ──────────────────────────────────
+// Groq is used for all question generation. Gemini is kept only as a last-resort
+// for structured summary JSON if Groq completely fails on the summary stage.
 
-async function callGeminiREST(systemPrompt: string, userPrompt: string): Promise<string | null> {
+async function callGeminiREST(prompt: string): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
-
-  const modelsToTry = [
-    process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
-    "gemini-2.5-flash",
-    "gemini-1.5-flash-002",
-    "gemini-1.5-flash",
-  ].filter(Boolean) as string[];
-
-  for (const model of modelsToTry) {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-goog-api-key": apiKey,
-            },
-            signal: AbortSignal.timeout(15000),
-            body: JSON.stringify({
-              ...(systemPrompt ? { system_instruction: { parts: [{ text: systemPrompt }] } } : {}),
-              contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
-            }),
-          }
-        );
-
-        if (res.status === 429) {
-          if (attempt === 0) { await new Promise((r) => setTimeout(r, 5000)); continue; }
-          break;
-        }
-        if (!res.ok) {
-          console.warn(`[history/chat] Gemini REST ${model} error: ${res.status}`);
-          break;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data: any = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        if (text) return text;
-        break;
-      } catch (err) {
-        console.warn(`[history/chat] Gemini REST ${model} failed:`, err instanceof Error ? err.message : err);
-        if (attempt === 0) { await new Promise((r) => setTimeout(r, 2000)); continue; }
-        break;
+  const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-goog-api-key": apiKey },
+        signal: AbortSignal.timeout(15000),
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+        }),
       }
-    }
+    );
+    if (!res.ok) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
-// Keep same call sites working
-const callGeminiLegacy = callGeminiREST;
-const callGeminiForSummary = (prompt: string) => callGeminiREST("", prompt);
-
-
-
+// Keep same call sites working (summary stage uses Gemini as last resort)
+const callGeminiLegacy = (sys: string, usr: string) => callGeminiREST(sys + "\n\n" + usr);
+const callGeminiForSummary = (prompt: string) => callGeminiREST(prompt);
 
 // ── Fallback questions ────────────────────────────────────────────────────────
 
@@ -751,20 +672,20 @@ export async function POST(req: NextRequest) {
     if (stage === "summary" || isComplete) {
       const summaryPrompt = buildSummaryPrompt(messages, mode);
       try {
-        const modelsToTry = [
-          process.env.GEMINI_MODEL,
-          "gemini-2.5-flash",
-          "gemini-2.0-flash",
-          "gemini-1.5-flash",
-        ].filter(Boolean) as string[];
-
+        // Try Groq first (dual-key failover), then Gemini as last resort
         let raw = "{}";
-        for (const model of modelsToTry) {
-          try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const resp: any = await ai.models.generateContent({ model, contents: summaryPrompt });
-            if (resp?.text) { raw = resp.text; break; }
-          } catch { /* try next */ }
+        try {
+          const groqResp = await groqChatWithFallback({
+            model: CLINIQ_MODELS.INTERVIEW_FAST,
+            messages: [{ role: "user", content: summaryPrompt }],
+            temperature: 0.2,
+            max_tokens: 1200,
+          });
+          raw = groqResp.choices[0]?.message?.content?.trim() ?? "{}";
+        } catch {
+          // Groq failed — fall back to Gemini for JSON
+          const geminiRaw = await callGeminiForSummary(summaryPrompt);
+          if (geminiRaw) raw = geminiRaw;
         }
 
         const cleaned = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -889,16 +810,16 @@ NEVER respond in Hindi if the selected language is not Hindi.
 Reply with ONLY the question — no label, no prefix, no explanation.`;
 
 
-    const grokResponse = await callGrok(systemPrompt, userPrompt);
+    const groqResponse = await callGroq(systemPrompt, userPrompt);
 
     // ── Script validation: reject if AI returned Devanagari for a non-Devanagari language
     const DEVANAGARI_LANGS = new Set(["hi", "mr", "ne", "sa"]);
-    const hasDevanagari = /[\u0900-\u097F]/.test(grokResponse ?? "");
+    const hasDevanagari = /[\u0900-\u097F]/.test(groqResponse ?? "");
     const usesFallback = !DEVANAGARI_LANGS.has(lang) && hasDevanagari;
 
     const question = usesFallback
       ? getFallbackQuestion(stage, lang)   // AI replied in Hindi — use deterministic fallback
-      : (grokResponse ?? getFallbackQuestion(stage, lang));
+      : (groqResponse ?? getFallbackQuestion(stage, lang));
 
     return NextResponse.json({
       question,

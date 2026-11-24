@@ -29,7 +29,7 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 2. Conducts a structured clinical interview using voice TTS — no typing required
 3. Accepts uploaded prescriptions, lab reports, and discharge summaries via camera OCR
 4. Generates a physician-grade **History & Physical (H&P)** document in medical English
-5. Pushes the patient to a **live token queue** visible on the doctor's dashboard
+5. Optionally pushes to a **live token queue** (pipeline — `/clinic/dashboard`)
 6. Sends the full H&P via **WhatsApp** for teleconsultation or mobile review
 
 ---
@@ -68,14 +68,9 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 - **Gemini Vision** extracts medications, diagnoses, lab values, doctor names, dates
 - Extracted data merges into the H&P under `KEY LABORATORY AND DOCUMENT FINDINGS`
 
-### 🏥 Live Doctor Queue (B2B — Clinic Dashboard)
-- Every completed intake auto-assigns a **token number** (A-001, A-002 …) persisted in Neon Postgres
-- Doctor dashboard at `/clinic/dashboard` shows the live queue: patient name, chief complaint, severity level, ICD-10 hint, wait time
-- Tokens survive server restarts (DB-persisted); graceful in-memory mock fallback if DB is unreachable
-- PIN-protected access — configurable via `DOCTOR_PIN` env var
-
 ### Pipeline
 > Items actively scoped but not yet in production:
+- **Doctor Queue Dashboard** — Code complete at `/clinic/dashboard` (token queue, PIN-protected, ICD-10 hints, wait time); will be surfaced as a separate clinic-staff interface in the next B2B release
 - **Prescription Builder** — Doctor-facing Rx editor with drug search, dosage, frequency, and printable prescription slip
 - **Chronic-Care Analytics & ROI Calculator** — Per-clinic metrics: total intakes, follow-up recall rate, avg intake duration; ROI estimator for consultation time saved
 - **ABHA Integration** — live ABDM sandbox linking; patient H&P auto-linked to Ayushman Bharat Health Account

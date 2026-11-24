@@ -3,42 +3,106 @@ import "server-only";
 import Groq from "groq-sdk";
 
 export const CLINIQ_MODELS = {
-  // Groq models active 2026: openai/gpt-oss-120b for high-quality clinical synthesis
+  // Primary model — high quality clinical synthesis
   INTERVIEW_FAST: "openai/gpt-oss-120b",
   INSTANT_UTILITY: "openai/gpt-oss-20b",
   SPEECH_TO_TEXT: "whisper-large-v3-turbo",
-  // Vision OCR falls through to Gemini; keep for text tasks
   DOCUMENT_VISION: "llama-3.2-11b-vision-preview",
 } as const;
 
-// Lazy singleton — created on first request, not at module load time.
-// This prevents next build from throwing during static page collection
-// when GROQ_API_KEY is not set in the build environment.
-let _client: Groq | null = null;
+// ── Dual-key lazy singletons ─────────────────────────────────────────────────
+// GROQ_API_KEY   → primary key (required)
+// GROQ_API_KEY_2 → secondary key (optional failover)
+// If the primary key returns a 401/429/5xx, the client automatically retries
+// once using the secondary key before throwing. Build never fails if keys are
+// absent — they are resolved lazily on first request.
 
-export function getGroqClient(): Groq {
-  if (_client) return _client;
+let _primary: Groq | null = null;
+let _secondary: Groq | null = null;
 
-  const apiKey = process.env.GROQ_API_KEY || process.env.GROK_API_KEY;
-
-  if (process.env.GROQ_API_KEY === undefined && process.env.GROK_API_KEY) {
-    console.warn(
-      "GROK_API_KEY is deprecated. Rename it to GROQ_API_KEY before the next deployment."
-    );
-  }
-
-  if (!apiKey) {
-    throw new Error(
-      "GROQ_API_KEY is not configured. Set GROQ_API_KEY in the Cloudflare Pages environment variables."
-    );
-  }
-
-  _client = new Groq({ apiKey, timeout: 15_000, maxRetries: 2 });
-  return _client;
+function makeClient(key: string): Groq {
+  return new Groq({ apiKey: key, timeout: 15_000, maxRetries: 2 });
 }
 
-// Keep groqClient as a convenience re-export for existing callers that
-// reference it directly — but make it a getter so it stays lazy.
+function getPrimaryClient(): Groq {
+  if (_primary) return _primary;
+
+  // Support legacy GROK_API_KEY (typo) as a last resort
+  const key =
+    process.env.GROQ_API_KEY ||
+    process.env.GROQ_API_KEY_2 ||
+    process.env.GROK_API_KEY;
+
+  if (!key) {
+    throw new Error(
+      "GROQ_API_KEY is not configured. Add it to Cloudflare Pages → Settings → Environment Variables."
+    );
+  }
+
+  _primary = makeClient(key);
+  return _primary;
+}
+
+function getSecondaryClient(): Groq | null {
+  if (_secondary !== undefined && _secondary !== null) return _secondary;
+  const key = process.env.GROQ_API_KEY_2;
+  if (!key) {
+    _secondary = null;
+    return null;
+  }
+  _secondary = makeClient(key);
+  return _secondary;
+}
+
+// ── Public API ───────────────────────────────────────────────────────────────
+
+/**
+ * Returns the primary Groq client.
+ * Throws at runtime (not build time) if no key is configured.
+ */
+export function getGroqClient(): Groq {
+  return getPrimaryClient();
+}
+
+/**
+ * Wraps a Groq chat completion call with dual-key failover.
+ * If the primary key fails (401, 429, 5xx), retries once with GROQ_API_KEY_2.
+ * Falls back gracefully — callers never need to handle key rotation themselves.
+ */
+export async function groqChatWithFallback(
+  params: Omit<Parameters<Groq["chat"]["completions"]["create"]>[0], "stream"> & { stream?: false }
+): Promise<Groq.Chat.ChatCompletion> {
+  // Try primary
+  try {
+    const client = getPrimaryClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return await (client.chat.completions.create as any)(params);
+  } catch (primaryErr) {
+    const isRetryable =
+      primaryErr instanceof Groq.APIError &&
+      (primaryErr.status === 401 ||
+        primaryErr.status === 429 ||
+        (primaryErr.status >= 500 && primaryErr.status < 600));
+
+    const secondary = getSecondaryClient();
+
+    if (isRetryable && secondary) {
+      console.warn(
+        `[groq] Primary key failed (${(primaryErr as InstanceType<typeof Groq.APIError>).status}), switching to GROQ_API_KEY_2`
+      );
+      // Invalidate primary so next call re-checks env (key may rotate)
+      _primary = null;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return await (secondary.chat.completions.create as any)(params);
+    }
+
+    throw primaryErr;
+  }
+}
+
+// ── Backward-compat shim ─────────────────────────────────────────────────────
+// Existing callers that do `groqClient.chat.completions.create(...)` still work.
+// New callers should prefer `groqChatWithFallback(...)` for automatic failover.
 export const groqClient = {
   get chat() { return getGroqClient().chat; },
   get audio() { return getGroqClient().audio; },
