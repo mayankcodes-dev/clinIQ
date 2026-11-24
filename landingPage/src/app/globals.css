@@ -282,9 +282,13 @@ a    { color: inherit; }
 .dark-h2 { font-size: clamp(36px,5vw,64px); font-weight: 800; letter-spacing: -0.07em; line-height: 1.02; color: white; margin-bottom: 16px; }
 .dark-subcopy { font-size: 16px; line-height: 1.75; color: rgba(255,255,255,0.45); max-width: 540px; margin-bottom: 48px; }
 
-.lang-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
 .lang-chip {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   padding: 10px 18px; border-radius: 9999px;
   transition: all 0.2s var(--ease-glassy-out);
   cursor: default;
@@ -394,27 +398,87 @@ a    { color: inherit; }
 @media (max-width: 1020px) {
   .desktop-nav { gap: 14px; }
 }
+
+/* ── Tablet (≤820px) ── */
 @media (max-width: 820px) {
+  /* Navbar */
   .site-header { inset: 10px 0 auto; padding: 0 12px; }
   .nav-pill { min-height: 56px; padding-left: 18px; }
   .desktop-nav { display: none; }
   .mobile-menu-button { display: block; }
   .mobile-nav { display: flex; }
-  .hero-section { min-height: 0; padding-top: 115px; padding-bottom: 100px; }
-  .hero-h1 { font-size: clamp(44px,10vw,68px); }
-  .hero-subcopy { font-size: 15px; }
-  .steps-grid-3 { grid-template-columns: 1fr; }
+
+  /* Hero */
+  .hero-section {
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    padding-top: 110px;
+    padding-bottom: 80px;
+  }
+  .hero-h1 { font-size: clamp(38px, 9vw, 68px); }
+  .hero-subcopy { font-size: 15px; max-width: 480px; }
+
+  /* Sections */
+  .section-pad     { padding: 80px 0; }
+  .section-pad-top { padding-top: 80px; padding-bottom: 44px; }
+  .dark-section    { padding: 80px 0; }
+  .soft-section    { padding: 80px 0; }
+
+  /* Languages grid — fewer columns */
+  .lang-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+
+  /* Pilot */
+  .pilot-section { padding: 80px 0 !important; }
+  .pilot-h2 { font-size: clamp(28px, 7vw, 52px) !important; }
+
+  /* Legacy stubs */
+  .steps-grid-3    { grid-template-columns: 1fr; }
   .pilot-glassy-card { grid-template-columns: 1fr; }
   .pilot-benefits-card { display: none; }
-  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-grid     { grid-template-columns: 1fr; gap: 28px; }
   .lang-stats-strip { flex-direction: column; gap: 20px; }
+
+  /* Page container tighter padding */
+  .page-container { width: min(100%, calc(100% - 32px)); }
 }
+
+/* ── Mobile (≤520px) ── */
 @media (max-width: 520px) {
-  .hero-actions { flex-direction: column; align-items: stretch; }
-  .hero-actions a { width: 100%; text-align: center; }
-  .section-pad { padding: 78px 0; }
-  .dark-section { padding: 78px 0; }
-  .soft-section { padding: 78px 0; }
+  /* Navbar */
+  .nav-pill { padding-left: 14px; }
+
+  /* Hero */
+  .hero-section { padding-top: 100px; padding-bottom: 72px; }
+  .hero-h1 { font-size: clamp(32px, 9.5vw, 54px); letter-spacing: -0.06em; }
+  .hero-subcopy { font-size: 14px; line-height: 1.7; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .hero-actions a,
+  .hero-actions button { width: 100% !important; text-align: center; justify-content: center; }
+
+  /* Hero bottom wave — make taller so transition is smooth */
+  .hero-bottom-wave svg { height: 60px; }
+
+  /* Sections */
+  .section-pad     { padding: 64px 0; }
+  .section-pad-top { padding-top: 64px; padding-bottom: 32px; }
+  .dark-section    { padding: 64px 0; }
+  .soft-section    { padding: 64px 0; }
+  .section-h2      { font-size: clamp(28px, 8vw, 44px) !important; }
+
+  /* Languages grid — 2 col on small phones */
+  .lang-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
+  .lang-chip { padding: 10px 10px !important; }
+  .lang-native { font-size: 18px !important; }
+  .lang-label  { font-size: 9px !important; }
+
+  /* Pilot section */
+  .pilot-section { padding: 64px 0 !important; }
+  .pilot-h2 { font-size: clamp(24px, 8vw, 44px) !important; }
+  .pilot-body { font-size: 14px !important; }
+
+  /* Page container: tightest on phone */
+  .page-container { width: min(100%, calc(100% - 24px)); }
 }
 
 /* ── Keyframes ──────────────────────────────────────────────────────────────── */

@@ -57,24 +57,27 @@ const STEPS: Step[] = [
 export function HowItWorks() {
   const [active, setActive] = useState(2);
   const [autoPlay, setAutoPlay] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!autoPlay) return;
+    const check = () => setIsMobile(window.innerWidth < 700);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    if (!autoPlay || isMobile) return;
     intervalRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % STEPS.length);
     }, 3000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [autoPlay]);
+  }, [autoPlay, isMobile]);
 
-  const handleHover = (idx: number) => {
-    setActive(idx);
-    setAutoPlay(false);
-  };
-
-  const handleClick = (idx: number) => {
+  const handleInteract = (idx: number) => {
     setActive(idx);
     setAutoPlay(false);
   };
@@ -84,49 +87,51 @@ export function HowItWorks() {
       id="how-it-works"
       style={{
         position: "relative",
-        height: "100vh",
-        minHeight: 600,
-        maxHeight: 1080,
+        // On desktop: full-screen. On mobile: auto height so content breathes
+        minHeight: isMobile ? "auto" : "100vh",
         overflow: "hidden",
         background: "#FFFFFF",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        padding: isMobile ? "80px 0 72px" : "0",
       }}
     >
-      {/* subtle bg blobs */}
-      <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        <div style={{
-          position: "absolute", width: "50vw", height: "50vw", borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, rgba(2,132,199,0.05) 0%, transparent 70%)",
-          top: "-10%", left: "-5%",
-          animation: "hiw-blob-a 18s ease-in-out infinite alternate",
-        }} />
-        <div style={{
-          position: "absolute", width: "40vw", height: "40vw", borderRadius: "50%",
-          background: "radial-gradient(ellipse at center, rgba(13,148,136,0.04) 0%, transparent 70%)",
-          bottom: "0%", right: "0%",
-          animation: "hiw-blob-a 14s ease-in-out infinite alternate-reverse",
-        }} />
-      </div>
+      {/* bg blobs — desktop only */}
+      {!isMobile && (
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+          <div style={{
+            position: "absolute", width: "50vw", height: "50vw", borderRadius: "50%",
+            background: "radial-gradient(ellipse at center, rgba(2,132,199,0.05) 0%, transparent 70%)",
+            top: "-10%", left: "-5%",
+            animation: "hiw-blob-a 18s ease-in-out infinite alternate",
+          }} />
+          <div style={{
+            position: "absolute", width: "40vw", height: "40vw", borderRadius: "50%",
+            background: "radial-gradient(ellipse at center, rgba(13,148,136,0.04) 0%, transparent 70%)",
+            bottom: "0%", right: "0%",
+            animation: "hiw-blob-a 14s ease-in-out infinite alternate-reverse",
+          }} />
+        </div>
+      )}
 
-      {/* ── max-width container ── */}
+      {/* max-width container */}
       <div style={{
         position: "relative", zIndex: 2,
-        width: "min(1160px, calc(100% - 48px))",
+        width: "min(1160px, calc(100% - 32px))",
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 56,
+        gap: isMobile ? 40 : 56,
       }}>
 
         {/* heading */}
         <div style={{ textAlign: "center" }}>
           <h2 style={{
             color: "#0F172A",
-            fontSize: "clamp(36px,5vw,64px)",
+            fontSize: "clamp(32px, 5vw, 64px)",
             fontWeight: 800, letterSpacing: "-0.07em", lineHeight: 1.02,
             margin: 0,
           }}>
@@ -136,125 +141,157 @@ export function HowItWorks() {
           </h2>
         </div>
 
-        {/* cards row */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
-          width: "100%",
-        }}>
-          {STEPS.map((step, i) => {
-            const isActive = i === active;
-            return (
+        {/* cards — grid on desktop, accordion-style stack on mobile */}
+        {isMobile ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
+            {STEPS.map((step, i) => (
               <div
                 key={step.num}
-                onClick={() => handleClick(i)}
-              onMouseEnter={() => handleHover(i)}
+                onClick={() => handleInteract(i)}
                 style={{
-                  position: "relative",
-                  padding: "36px 32px 40px",
-                  borderRadius: 24,
+                  padding: "28px 24px 32px",
+                  borderRadius: 20,
                   cursor: "pointer",
-                  /* glass surface */
-                  background: isActive
-                    ? "rgba(255,255,255,0.90)"
-                    : "rgba(248,250,252,0.6)",
-                  backdropFilter: "blur(16px) saturate(1.8)",
-                  WebkitBackdropFilter: "blur(16px) saturate(1.8)",
-                  border: `1px solid ${isActive ? "rgba(2,132,199,0.18)" : "rgba(15,23,42,0.06)"}`,
-                  boxShadow: isActive
-                    ? "inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 32px -8px rgba(2,132,199,0.14), 0 20px 48px -12px rgba(15,23,42,0.08)"
-                    : "inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 12px -4px rgba(15,23,42,0.06)",
-                  transition: "all 0.38s cubic-bezier(0.16,1,0.3,1)",
-                  transform: isActive ? "translateY(-3px)" : "translateY(0)",
+                  background: "rgba(255,255,255,0.90)",
+                  border: "1px solid rgba(15,23,42,0.08)",
+                  boxShadow: "0 2px 12px -4px rgba(15,23,42,0.08)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 0,
+                  position: "relative",
                 }}
               >
-                {/* active top accent line */}
-                {isActive && (
-                  <div style={{
-                    position: "absolute", top: 0, left: 24, right: 24, height: 2,
-                    background: "linear-gradient(90deg, transparent, #0284C7, transparent)",
-                    borderRadius: "0 0 2px 2px",
-                  }} />
-                )}
-
-                {/* icon + step num row */}
+                {/* always-visible top accent bar */}
                 <div style={{
-                  display: "flex", alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 24,
-                }}>
-                  <div style={{
-                    color: isActive ? "#0284C7" : "rgba(15,23,42,0.18)",
-                    transition: "color 0.35s ease",
-                  }}>
-                    {step.icon}
-                  </div>
+                  position: "absolute", top: 0, left: 24, right: 24, height: 2,
+                  background: "linear-gradient(90deg, transparent, #0284C7, transparent)",
+                  borderRadius: "0 0 2px 2px",
+                }} />
+
+                {/* icon + step num */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                  <div style={{ color: "#0284C7" }}>{step.icon}</div>
                   <span style={{
                     fontFamily: "'Courier New', monospace",
-                    fontSize: 11, fontWeight: 800, letterSpacing: "0.1em",
-                    color: isActive ? "#0284C7" : "rgba(15,23,42,0.15)",
-                    transition: "color 0.35s ease",
+                    fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", color: "#0284C7",
                   }}>
                     {step.num}
                   </span>
                 </div>
 
-                {/* headline */}
                 <h3 style={{
-                  fontSize: "clamp(16px,1.5vw,21px)",
-                  fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 1.18,
-                  color: isActive ? "#0F172A" : "rgba(15,23,42,0.22)",
-                  marginBottom: 14,
-                  transition: "color 0.35s ease",
+                  fontSize: 18, fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 1.2,
+                  color: "#0F172A", marginBottom: 10,
                 }}>
                   {step.headline}
                 </h3>
-
-                {/* body */}
-                <p style={{
-                  fontSize: 14, lineHeight: 1.75,
-                  color: isActive ? "#475569" : "rgba(15,23,42,0.18)",
-                  margin: 0,
-                  transition: "color 0.35s ease",
-                }}>
+                <p style={{ fontSize: 14, lineHeight: 1.75, color: "#475569", margin: 0 }}>
                   {step.body}
                 </p>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 20,
+              width: "100%",
+            }}>
+              {STEPS.map((step, i) => {
+                const isActive = i === active;
+                return (
+                  <div
+                    key={step.num}
+                    onClick={() => handleInteract(i)}
+                    onMouseEnter={() => handleInteract(i)}
+                    style={{
+                      position: "relative",
+                      padding: "36px 32px 40px",
+                      borderRadius: 24,
+                      cursor: "pointer",
+                      background: isActive ? "rgba(255,255,255,0.90)" : "rgba(248,250,252,0.6)",
+                      backdropFilter: "blur(16px) saturate(1.8)",
+                      WebkitBackdropFilter: "blur(16px) saturate(1.8)",
+                      border: `1px solid ${isActive ? "rgba(2,132,199,0.18)" : "rgba(15,23,42,0.06)"}`,
+                      boxShadow: isActive
+                        ? "inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 32px -8px rgba(2,132,199,0.14), 0 20px 48px -12px rgba(15,23,42,0.08)"
+                        : "inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 12px -4px rgba(15,23,42,0.06)",
+                      transition: "all 0.38s cubic-bezier(0.16,1,0.3,1)",
+                      transform: isActive ? "translateY(-3px)" : "translateY(0)",
+                      display: "flex", flexDirection: "column", gap: 0,
+                    }}
+                  >
+                    {isActive && (
+                      <div style={{
+                        position: "absolute", top: 0, left: 24, right: 24, height: 2,
+                        background: "linear-gradient(90deg, transparent, #0284C7, transparent)",
+                        borderRadius: "0 0 2px 2px",
+                      }} />
+                    )}
 
-        {/* progress dots */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {STEPS.map((_, i) => (
-            <div
-              key={i}
-              onClick={() => handleClick(i)}
-              onMouseEnter={() => handleHover(i)}
-              style={{
-                width: active === i ? 28 : 8, height: 8,
-                borderRadius: 999, cursor: "pointer",
-                background: active === i ? "#0284C7" : "rgba(15,23,42,0.12)",
-                transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
-              }}
-            />
-          ))}
-        </div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+                      <div style={{ color: isActive ? "#0284C7" : "rgba(15,23,42,0.18)", transition: "color 0.35s ease" }}>
+                        {step.icon}
+                      </div>
+                      <span style={{
+                        fontFamily: "'Courier New', monospace",
+                        fontSize: 11, fontWeight: 800, letterSpacing: "0.1em",
+                        color: isActive ? "#0284C7" : "rgba(15,23,42,0.15)",
+                        transition: "color 0.35s ease",
+                      }}>
+                        {step.num}
+                      </span>
+                    </div>
+
+                    <h3 style={{
+                      fontSize: "clamp(16px,1.5vw,21px)",
+                      fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 1.18,
+                      color: isActive ? "#0F172A" : "rgba(15,23,42,0.22)",
+                      marginBottom: 14,
+                      transition: "color 0.35s ease",
+                    }}>
+                      {step.headline}
+                    </h3>
+
+                    <p style={{
+                      fontSize: 14, lineHeight: 1.75,
+                      color: isActive ? "#475569" : "rgba(15,23,42,0.18)",
+                      margin: 0,
+                      transition: "color 0.35s ease",
+                    }}>
+                      {step.body}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* progress dots — desktop only */}
+            <div style={{ display: "flex", gap: 8 }}>
+              {STEPS.map((_, i) => (
+                <div
+                  key={i}
+                  onClick={() => handleInteract(i)}
+                  onMouseEnter={() => handleInteract(i)}
+                  style={{
+                    width: active === i ? 28 : 8, height: 8,
+                    borderRadius: 999, cursor: "pointer",
+                    background: active === i ? "#0284C7" : "rgba(15,23,42,0.12)",
+                    transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <style>{`
         @keyframes hiw-blob-a {
           0%   { transform: translate(0,0) scale(1); }
           100% { transform: translate(4%,6%) scale(1.08); }
-        }
-        @media (max-width: 700px) {
-          #how-it-works [style*="repeat(3, 1fr)"] {
-            grid-template-columns: 1fr !important;
-          }
         }
       `}</style>
     </section>

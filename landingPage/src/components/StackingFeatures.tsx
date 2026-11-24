@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// ─── Card data (minimal) ──────────────────────────────────────────────────────
-
 interface CardData {
   tag: string;
   accentColor: string;
@@ -12,7 +10,6 @@ interface CardData {
   body: string;
   image: string;
   imageAlt: string;
-  // subtle inline illustration shown as depth layer inside the image pane
   depthGradient: string;
 }
 
@@ -59,8 +56,6 @@ const CARDS: CardData[] = [
   },
 ];
 
-// ─── Scroll tracking ──────────────────────────────────────────────────────────
-
 const STICKY_TOP_BASE = 88;
 const CARD_STACK_GAP  = 28;
 
@@ -69,28 +64,28 @@ interface SingleCardProps {
   idx: number;
   total: number;
   progress: number;
+  isMobile: boolean;
 }
 
-function SingleCard({ card, idx, total, progress }: SingleCardProps) {
-  const scale  = 1 - (total - 1 - idx) * 0.016 * Math.min(progress, 1);
-  const bright = 1 - (total - 1 - idx) * 0.004 * Math.min(progress, 1);
+function SingleCard({ card, idx, total, progress, isMobile }: SingleCardProps) {
+  const scale  = isMobile ? 1 : 1 - (total - 1 - idx) * 0.016 * Math.min(progress, 1);
+  const bright = isMobile ? 1 : 1 - (total - 1 - idx) * 0.004 * Math.min(progress, 1);
   const top    = STICKY_TOP_BASE + idx * CARD_STACK_GAP;
 
   return (
     <div
       style={{
-        position: "sticky",
-        top,
-        zIndex: 10 + idx,
-        marginBottom: 20,
-        borderRadius: 28,
+        position: isMobile ? "relative" : "sticky",
+        top: isMobile ? undefined : top,
+        zIndex: isMobile ? undefined : 10 + idx,
+        marginBottom: isMobile ? 20 : 20,
+        borderRadius: isMobile ? 20 : 28,
         overflow: "hidden",
-        transform: `scale(${scale})`,
-        filter: `brightness(${bright})`,
+        transform: isMobile ? undefined : `scale(${scale})`,
+        filter: isMobile ? undefined : `brightness(${bright})`,
         transformOrigin: "top center",
         transition: "transform 0.35s cubic-bezier(0.16,1,0.3,1), filter 0.35s ease",
-        willChange: "transform",
-        /* glassy card surface */
+        willChange: isMobile ? undefined : "transform",
         background: "rgba(255,255,255,0.80)",
         backdropFilter: "blur(20px) saturate(1.8)",
         WebkitBackdropFilter: "blur(20px) saturate(1.8)",
@@ -102,88 +97,128 @@ function SingleCard({ card, idx, total, progress }: SingleCardProps) {
         `,
       }}
     >
-      {/* 2-column body */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 360 }}>
-
-        {/* ── Left: minimal copy ── */}
-        <div style={{
-          padding: "44px 44px 44px 40px",
-          display: "flex", flexDirection: "column", justifyContent: "center", gap: 0,
-        }}>
-          {/* Tag pill */}
-          <span style={{
-            display: "inline-flex", alignSelf: "flex-start",
-            alignItems: "center", padding: "4px 12px", borderRadius: 999,
-            background: card.accentColor, color: card.accentText,
-            fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
-            textTransform: "uppercase", marginBottom: 20,
-            boxShadow: `0 1px 4px ${card.accentText}22`,
-          }}>
-            {card.tag}
-          </span>
-
-          <h3 style={{
-            fontSize: "clamp(22px,2.2vw,30px)", fontWeight: 800,
-            letterSpacing: "-0.055em", lineHeight: 1.1,
-            color: "#0F172A", marginBottom: 14,
-          }}>
-            {card.headline}
-          </h3>
-
-          <p style={{
-            fontSize: 15, lineHeight: 1.75, color: "#64748B",
-            maxWidth: 380,
-          }}>
-            {card.body}
-          </p>
-        </div>
-
-        {/* ── Right: image with depth layers ── */}
-        <div style={{ position: "relative", overflow: "hidden", borderRadius: "0 28px 28px 0" }}>
-          {/* Base image */}
-          <img
-            src={card.image}
-            alt={card.imageAlt}
-            style={{
+      {/* Mobile: stacked layout. Desktop: 2-col grid */}
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {/* image on top for mobile */}
+          <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
+            <img
+              src={card.image}
+              alt={card.imageAlt}
+              style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%",
+                objectFit: "cover", objectPosition: "center",
+              }}
+            />
+            <div style={{
               position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-            }}
-          />
-          {/* Depth layer 1 — coloured tint matching card accent */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: card.depthGradient,
-            opacity: 0.35,
-            mixBlendMode: "multiply",
-            pointerEvents: "none",
-          }} />
-          {/* Depth layer 2 — dark-to-transparent vignette for text legibility */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(to right, rgba(255,255,255,0.22) 0%, rgba(0,0,0,0.08) 100%)",
-            pointerEvents: "none",
-          }} />
-          {/* Depth layer 3 — subtle inner glass rim at the left edge */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(to right, rgba(255,255,255,0.18) 0%, transparent 32%)",
-            pointerEvents: "none",
-          }} />
+              background: card.depthGradient,
+              opacity: 0.35, mixBlendMode: "multiply",
+              pointerEvents: "none",
+            }} />
+          </div>
+
+          {/* text below */}
+          <div style={{ padding: "28px 24px 32px", display: "flex", flexDirection: "column", gap: 0 }}>
+            <span style={{
+              display: "inline-flex", alignSelf: "flex-start",
+              alignItems: "center", padding: "4px 12px", borderRadius: 999,
+              background: card.accentColor, color: card.accentText,
+              fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+              textTransform: "uppercase", marginBottom: 16,
+              boxShadow: `0 1px 4px ${card.accentText}22`,
+            }}>
+              {card.tag}
+            </span>
+            <h3 style={{
+              fontSize: 20, fontWeight: 800,
+              letterSpacing: "-0.055em", lineHeight: 1.15,
+              color: "#0F172A", marginBottom: 10,
+            }}>
+              {card.headline}
+            </h3>
+            <p style={{ fontSize: 14, lineHeight: 1.75, color: "#64748B" }}>
+              {card.body}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 360 }}>
+          {/* Left: copy */}
+          <div style={{
+            padding: "44px 44px 44px 40px",
+            display: "flex", flexDirection: "column", justifyContent: "center", gap: 0,
+          }}>
+            <span style={{
+              display: "inline-flex", alignSelf: "flex-start",
+              alignItems: "center", padding: "4px 12px", borderRadius: 999,
+              background: card.accentColor, color: card.accentText,
+              fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+              textTransform: "uppercase", marginBottom: 20,
+              boxShadow: `0 1px 4px ${card.accentText}22`,
+            }}>
+              {card.tag}
+            </span>
+            <h3 style={{
+              fontSize: "clamp(22px,2.2vw,30px)", fontWeight: 800,
+              letterSpacing: "-0.055em", lineHeight: 1.1,
+              color: "#0F172A", marginBottom: 14,
+            }}>
+              {card.headline}
+            </h3>
+            <p style={{ fontSize: 15, lineHeight: 1.75, color: "#64748B", maxWidth: 380 }}>
+              {card.body}
+            </p>
+          </div>
+
+          {/* Right: image */}
+          <div style={{ position: "relative", overflow: "hidden", borderRadius: "0 28px 28px 0" }}>
+            <img
+              src={card.image}
+              alt={card.imageAlt}
+              style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%",
+                objectFit: "cover", objectPosition: "center",
+              }}
+            />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: card.depthGradient,
+              opacity: 0.35, mixBlendMode: "multiply", pointerEvents: "none",
+            }} />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to right, rgba(255,255,255,0.22) 0%, rgba(0,0,0,0.08) 100%)",
+              pointerEvents: "none",
+            }} />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to right, rgba(255,255,255,0.18) 0%, transparent 32%)",
+              pointerEvents: "none",
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── Container ────────────────────────────────────────────────────────────────
-
 export function StackingFeatures() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [progresses, setProgresses] = useState<number[]>(CARDS.map(() => 0));
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 700);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return; // no sticky scroll tracking needed on mobile
     const container = containerRef.current;
     if (!container) return;
     let rafId = 0;
@@ -201,12 +236,19 @@ export function StackingFeatures() {
     };
     rafId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafId);
-  }, []);
+  }, [isMobile]);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", paddingBottom: 40 }}>
+    <div ref={containerRef} style={{ position: "relative", paddingBottom: isMobile ? 0 : 40 }}>
       {CARDS.map((card, i) => (
-        <SingleCard key={card.tag} card={card} idx={i} total={CARDS.length} progress={progresses[i]} />
+        <SingleCard
+          key={card.tag}
+          card={card}
+          idx={i}
+          total={CARDS.length}
+          progress={progresses[i]}
+          isMobile={isMobile}
+        />
       ))}
     </div>
   );
