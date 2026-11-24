@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-<img src="./cliniq_logo.jpg" alt="ClinIQ Logo" width="140" style="border-radius:16px; margin-bottom:12px" />
+<img src="./product/public/cliniq_logo.jpg" alt="ClinIQ Logo" width="140" style="border-radius:16px; margin-bottom:12px" />
 
 # ClinIQ
 
