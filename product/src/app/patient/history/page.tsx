@@ -481,6 +481,38 @@ const TOUCH_OPTIONS_L10N: Record<string, Partial<Record<Stage, string[]>>> = {
     ayush_vyayama_shakti: ["Good", "Moderate", "Poor"],
     ayush_vaya: ["Young", "Normal", "Old"],
   },
+  or: {
+    chief_complaint: ["ଜ୍ୱର", "ଯନ୍ତ୍ରଣା", "ବାନ୍ତି", "ଶ୍ୱାସ ସମସ୍ୟା", "ମୁଣ୍ଡ ବୁଲାଣି", "ଦୁର୍ବଳତା", "କାଶ", "ପେଟ ଯନ୍ତ୍ରଣା"],
+    hpi: ["ଆଜି", "2–3 ଦିନ", "1 ସପ୍ତାହ", "1 ମାସ", "ଜ୍ୱଳନ", "ଚାପ", "ହାଲୁକା", "ତୀଳ"],
+    symptom_duration: ["ଆଜି", "2–3 ଦିନ", "1 ସପ୍ତାହ", "2 ସପ୍ତାହ", "1 ମାସ", "3+ ମାସ"],
+    symptom_modifiers: ["ଆରାମ ରେ କମ", "ବଢ଼େ", "ଖାଇବା ପରେ", "ରାତିରେ ଅଧିକ", "ସକାଳ ଅଧିକ", "ପରିବର୍ତ୍ତନ ନାହିଁ"],
+    medicines_taken: ["ହଁ", "ନାଁ", "ପ୍ୟାରାସିଟାମୋଲ", "ଆଣ୍ଟିବାୟୋଟିକ", "ରକ୍ତଚାପ ଔଷଧ", "ମଧୁମେହ ଔଷଧ"],
+    allergies: ["କିଛି ନାହିଁ", "ପେନିସିଲିନ", "ସଲ୍ଫା", "ଆସ୍ପିରିନ", "ଧୂଳି", "ଖାଦ୍ୟ"],
+    past_surgeries: ["କିଛି ନାହିଁ", "ପଥର", "ହର୍ନିଆ", "ସିଜ଼େରିଆନ", "ଆଣ୍ଠୁ", "ଅ୍ୟାପେଣ୍ଡିକ୍ସ"],
+    habits: ["ଧୂମ୍ରପାନ", "ମଦ", "ତମ୍ବାଖୁ", "କିଛି ନାହିଁ", "ନିୟମିତ ବ୍ୟାୟାମ", "ଶାକାହାରୀ"],
+    family_disease_history: ["ମଧୁମେହ", "ରକ୍ତଚାପ", "ହୃଦ ରୋଗ", "କ୍ୟାନ୍ସର", "ଟିବି", "କିଛି ନାହିଁ"],
+    past_history: ["ମଧୁମେହ", "ରକ୍ତଚାପ", "ହୃଦ ରୋଗ", "ଟିବି", "ଅପ୍ଟ ଅପରେସନ", "କିଛି ନାହିଁ"],
+    drug_allergy: ["ହଁ", "ନାଁ", "ପେନିସିଲିନ", "ସଲ୍ଫା", "ଆସ୍ପିରିନ", "କିଛି ନାହିଁ"],
+    family_history: ["ମଧୁମେହ", "ରକ୍ତଚାପ", "ହୃଦ ରୋଗ", "କ୍ୟାନ୍ସର", "ଟିବି", "କିଛି ନାହିଁ"],
+    personal_history: ["ଧୂମ୍ରପାନ", "ମଦ", "ତମ୍ବାଖୁ", "ଶାକାହାରୀ", "କିଛି ନାହିଁ"],
+    review_of_systems: ["ଆଖି", "କାନ", "ଛାତି", "ପେଟ", "ଗଣ୍ଠି", "କିଛି ନାହିଁ"],
+  },
+  as: {
+    chief_complaint: ["জ্বৰ", "বিষ", "বমি", "উশাহ লোৱাত অসুবিধা", "মূৰ ঘূৰোৱা", "দুৰ্বলতা", "কাহ", "পেটৰ বিষ"],
+    hpi: ["আজি", "2–3 দিন", "1 সপ্তাহ", "1 মাহ", "জ্বলা", "চাপ", "লঘু", "তীব্ৰ"],
+    symptom_duration: ["আজি", "2–3 দিন", "1 সপ্তাহ", "2 সপ্তাহ", "1 মাহ", "3+ মাহ"],
+    symptom_modifiers: ["বিশ্ৰামত কমে", "বাঢ়ে", "খোৱাৰ পাছত", "ৰাতি বেছি", "পুৱা বেছি", "কোনো পৰিৱৰ্তন নাই"],
+    medicines_taken: ["হয়", "নাই", "প্যাৰাচিটামল", "এন্টিবায়টিক", "ব্লাড প্ৰেছাৰৰ দৰব", "ডায়বেটিছৰ দৰব"],
+    allergies: ["একো নাই", "পেনিচিলিন", "চালফা", "এচপিৰিন", "ধূলি", "খাদ্যৰ পৰা"],
+    past_surgeries: ["একো নাই", "পাথৰ", "হাৰ্নিয়া", "চিজাৰিয়ান", "আঁঠু", "এপেণ্ডিক্স"],
+    habits: ["ধূমপান", "মদ্যপান", "তামোল-পাণ", "একো নাই", "নিয়মীয়া ব্যায়াম", "নিৰামিষাশী"],
+    family_disease_history: ["ডায়বেটিছ", "ৰক্তচাপ", "হৃদৰোগ", "কেন্সাৰ", "যক্ষ্মা", "একো নাই"],
+    past_history: ["ডায়বেটিছ", "ৰক্তচাপ", "হৃদৰোগ", "যক্ষ্মা", "অপাৰেশ্যন", "একো নাই"],
+    drug_allergy: ["হয়", "নাই", "পেনিচিলিন", "চালফা", "এচপিৰিন", "একো নাই"],
+    family_history: ["ডায়বেটিছ", "ৰক্তচাপ", "হৃদৰোগ", "কেন্সাৰ", "যক্ষ্মা", "একো নাই"],
+    personal_history: ["ধূমপান", "মদ্যপান", "তামোল-পাণ", "নিৰামিষাশী", "একো নাই"],
+    review_of_systems: ["চকু", "কাণ", "বুকু", "পেট", "গাঁঠি", "একো নাই"],
+  },
 };
 
 
@@ -631,6 +663,8 @@ export default function HistoryPage() {
         ml: { chief_complaint:"ഇന്ന് പ്രധാന പ്രശ്നം?",hpi:"എപ്പോൾ തുടങ്ങി?",symptom_duration:"ഈ പ്രശ്നം എത്ര ദിവസമായി?",symptom_modifiers:"എന്തെങ്കിലും കുറയ്ക്കുന്നോ കൂടുന്നോ?",medicines_taken:"ഇതിനായി മരുന്ന് കഴിച്ചോ?",allergies:"മരുന്നിന് ആലർജി ഉണ്ടോ?",past_surgeries:"മുൻ ശസ്ത്രക്രിയ ഉണ്ടോ?",habits:"ജീവിതശൈലി ശീലങ്ങൾ?",family_disease_history:"കുടുംബത്തിൽ പ്രധാന രോഗ ചരിത്രം?",past_history:"മുൻ രോഗം?",drug_allergy:"മരുന്ന് ആലർജി?",family_history:"കുടുംബ ചരിത്രം?",personal_history:"തൊഴിൽ?",review_of_systems:"ഇതര ഭാഗം?",ayush_prakriti:"ചർമം?",ayush_vikriti:"ഇപ്പോൾ?",ayush_agni:"വിശപ്പ്?",ayush_koshtha:"മലം?",ayush_ahara_vihara:"ഭക്ഷണം?",ayush_nidana:"മാറ്റം?",ayush_samprapti:"എപ്പോൾ?",ayush_sara:"ചർമം മുടി?",ayush_samhanana:"ഘടന?",ayush_satmya:"സഹിഷ്ണുത?",ayush_pramana:"ഉയരം?",ayush_sattva:"മനോ?",ayush_ahara_shakti:"ദഹനം?",ayush_vyayama_shakti:"വ്യായാമം?",ayush_vaya:"പ്രായം?",summary:"" },
         pa: { chief_complaint:"ਅੱਜ ਮੁੱਖ ਸਮੱਸਿਆ?",hpi:"ਕਦੋਂ ਸ਼ੁਰੂ?",symptom_duration:"ਇਹ ਸਮੱਸਿਆ ਕਿੰਨੇ ਸਮੇਂ ਤੋਂ?",symptom_modifiers:"ਕੋਈ ਚੀਜ਼ ਘਟਾਉਂਦੀ ਜਾਂ ਵਧਾਉਂਦੀ?",medicines_taken:"ਇਸ ਲਈ ਦਵਾਈ ਲਈ?",allergies:"ਕਿਸੇ ਦਵਾਈ ਤੋਂ ਐਲਰਜੀ?",past_surgeries:"ਪਹਿਲਾਂ ਆਪਰੇਸ਼ਨ ਹੋਇਆ?",habits:"ਜੀਵਨਸ਼ੈਲੀ ਦੀਆਂ ਆਦਤਾਂ?",family_disease_history:"ਪਰਿਵਾਰ ਵਿੱਚ ਵੱਡੀ ਬਿਮਾਰੀ?",past_history:"ਪਹਿਲਾਂ ਬਿਮਾਰੀ?",drug_allergy:"ਦਵਾਈ ਐਲਰਜੀ?",family_history:"ਪਰਿਵਾਰ?",personal_history:"ਕੰਮ?",review_of_systems:"ਹੋਰ ਅੰਗ?",ayush_prakriti:"ਚਮੜੀ?",ayush_vikriti:"ਹੁਣ?",ayush_agni:"ਭੁੱਖ?",ayush_koshtha:"ਪੇਟ?",ayush_ahara_vihara:"ਖਾਣਾ?",ayush_nidana:"ਕੀ ਬਦਲਿਆ?",ayush_samprapti:"ਕਦੋਂ?",ayush_sara:"ਚਮੜੀ ਵਾਲ?",ayush_samhanana:"ਢਾਂਚਾ?",ayush_satmya:"ਸਹਿਣਸ਼ੀਲਤਾ?",ayush_pramana:"ਕੱਦ?",ayush_sattva:"ਮਾਨਸਿਕ?",ayush_ahara_shakti:"ਪਾਚਨ?",ayush_vyayama_shakti:"ਕਸਰਤ?",ayush_vaya:"ਉਮਰ?",summary:"" },
         ur: { chief_complaint:"آج اہم مسئلہ؟",hpi:"کب سے؟",symptom_duration:"یہ مسئلہ کب سے ہے؟",symptom_modifiers:"کوئی چیز کم یا زیادہ کرتی ہے؟",medicines_taken:"اس کے لیے دوائی لی؟",allergies:"کسی دوائی سے الرجی؟",past_surgeries:"پہلے آپریشن ہوا؟",habits:"طرزِ زندگی کی عادات؟",family_disease_history:"خاندان میں بڑی بیماری؟",past_history:"پہلے بیماری؟",drug_allergy:"دوائی الرجی؟",family_history:"خاندان؟",personal_history:"کام؟",review_of_systems:"اعضاء؟",ayush_prakriti:"جلد؟",ayush_vikriti:"ابھی؟",ayush_agni:"بھوک؟",ayush_koshtha:"پیٹ؟",ayush_ahara_vihara:"کھانا؟",ayush_nidana:"کیا بدلا؟",ayush_samprapti:"کب؟",ayush_sara:"جلد بال؟",ayush_samhanana:"ساخت؟",ayush_satmya:"برداشت؟",ayush_pramana:"قد؟",ayush_sattva:"ذہن؟",ayush_ahara_shakti:"ہضم؟",ayush_vyayama_shakti:"ورزش؟",ayush_vaya:"عمر؟",summary:"" },
+        or: { chief_complaint:"ଆଜି ଆପଣଙ୍କ ମୁଖ୍ୟ ସମସ୍ୟା କଣ?",hpi:"ଏହା କଦ ଆରମ୍ଭ ହୋଇଥିଲା?",symptom_duration:"ଏହି ସମସ୍ୟା କେତେ ଦିନ ଧରି ଅଛି?",symptom_modifiers:"କିଛି ଏହାକୁ କମ ବା ଅଧିକ କରୁଛି?",medicines_taken:"ଆପଣ ଏଥିପାଇଁ ଔଷଧ ଖାଇଛନ୍ତି?",allergies:"ଆପଣଙ୍କ ଔଷଧ ଆଲର୍ଜି ଅଛି?",past_surgeries:"ଆଗରୁ ଅପ୍ଟ ହୋଇଛି?",habits:"ଆପଣଙ୍କ ଜୀବନଶୈଳୀ?",family_disease_history:"ପରିବାରରେ ବଡ ରୋଗ ଅଛି?",past_history:"ଆଗରୁ ବଡ ରୋଗ ହୋଇଛି?",drug_allergy:"ଔଷଧ ଆଲର୍ଜି?",family_history:"ପରିବାର ରୋଗ ଇତିହାସ?",personal_history:"ଆପଣ କ'ଣ କାମ କରନ୍ତି?",review_of_systems:"ଅନ୍ୟ ଅଙ୍ଗରେ ସମସ୍ୟା?",ayush_prakriti:"ଚର୍ମ?",ayush_vikriti:"ବର୍ତ୍ତମାନ?",ayush_agni:"ଭୋକ?",ayush_koshtha:"ମଳ?",ayush_ahara_vihara:"ଖାଦ୍ୟ?",ayush_nidana:"କ'ଣ ବଦଳିଲା?",ayush_samprapti:"କଦ ବଢ଼େ?",ayush_sara:"ଚର୍ମ ଚୁଲ?",ayush_samhanana:"ଶରୀର?",ayush_satmya:"ସହ୍ୟ?",ayush_pramana:"ଉଚ୍ଚତା?",ayush_sattva:"ମାନସିକ?",ayush_ahara_shakti:"ହଜମ?",ayush_vyayama_shakti:"ବ୍ୟାୟାମ?",ayush_vaya:"ବୟସ?",summary:"" },
+        as: { chief_complaint:"আজি আপোনাৰ মূল সমস্যা কি?",hpi:"এইটো কেতিয়াৰ পৰা?",symptom_duration:"এই সমস্যা কিমান দিন ধৰি আছে?",symptom_modifiers:"কিবা কম বা বেছি কৰে নেকি?",medicines_taken:"আপুনি ইয়াৰ বাবে দৰব খাইছেনে?",allergies:"দৰবৰ এলাৰ্জি আছে নেকি?",past_surgeries:"আগতে অপাৰেশ্যন হৈছিল?",habits:"আপোনাৰ জীৱনশৈলী?",family_disease_history:"পৰিয়ালত ডাঙৰ ৰোগ আছে?",past_history:"আগতে ডাঙৰ ৰোগ হৈছিল?",drug_allergy:"দৰব এলাৰ্জি?",family_history:"পৰিয়ালৰ ৰোগৰ ইতিহাস?",personal_history:"আপুনি কি কাম কৰে?",review_of_systems:"আন অংগত সমস্যা?",ayush_prakriti:"ছাল?",ayush_vikriti:"এতিয়া?",ayush_agni:"ভোক?",ayush_koshtha:"মল?",ayush_ahara_vihara:"খাদ্য?",ayush_nidana:"কি সলনি?",ayush_samprapti:"কেতিয়া?",ayush_sara:"ছাল চুলি?",ayush_samhanana:"শৰীৰ?",ayush_satmya:"সহ্য?",ayush_pramana:"উচ্চতা?",ayush_sattva:"মানসিক?",ayush_ahara_shakti:"হজম?",ayush_vyayama_shakti:"ব্যায়াম?",ayush_vaya:"বয়স?",summary:"" },
       };
       const fb = INSTANT[lang] ?? INSTANT["hi"];
       // Keep fallback available for catch block only — never show it before AI responds

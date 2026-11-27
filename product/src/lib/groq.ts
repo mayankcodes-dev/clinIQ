@@ -3,11 +3,11 @@ import "server-only";
 import Groq from "groq-sdk";
 
 export const CLINIQ_MODELS = {
-  // Primary model — high quality clinical synthesis
-  INTERVIEW_FAST: "llama-3.3-70b-versatile",
-  INSTANT_UTILITY: "llama-3.1-8b-instant",
+  // Primary model — best available on Groq (Nov 2026 roster)
+  INTERVIEW_FAST: "qwen/qwen3.8-27b",
+  INSTANT_UTILITY: "openai/gpt-oss-20b",
   SPEECH_TO_TEXT: "whisper-large-v3-turbo",
-  DOCUMENT_VISION: "llama-3.2-11b-vision-preview",
+  DOCUMENT_VISION: "openai/gpt-oss-20b",   // vision fallback; primary is Gemini
 } as const;
 
 // ── Dual-key lazy singletons ─────────────────────────────────────────────────
@@ -80,6 +80,7 @@ export async function groqChatWithFallback(
     const isRetryable =
       primaryErr instanceof Groq.APIError &&
       (primaryErr.status === 401 ||
+        primaryErr.status === 404 ||   // model_not_found / model_decommissioned
         primaryErr.status === 429 ||
         (primaryErr.status >= 500 && primaryErr.status < 600));
 
