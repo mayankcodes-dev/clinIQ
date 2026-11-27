@@ -65,16 +65,6 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 - On desktop the PDF is generated from the full report HTML; on mobile the Web Share API opens the PDF
 - Enables instant teleconsultation referral and mobile review by the doctor
 
-### ❌ Removed Features
-| Feature | Reason |
-|---------|--------|
-| Privacy / गोपनीयता section on summary page | Redundant — consent captured at `/patient/consent` |
-| "Encrypted · Shared only with treating doctor" text | Covered by DPDP consent footer |
-| Print/Save PDF button on `/report` page | PDF only on `/patient/complete` to avoid confusion |
-| Print/Save PDF button on `/patient/summary` page | Single save-point policy |
-| "SIH 2026 PS 26047" in report footer | Hackathon reference removed for production |
-| "Your Aadhaar is never stored" on consent page | No Aadhaar collected; line was misleading |
-
 ### 📸 OCR Document Scan
 - Patient uploads previous prescriptions, lab reports, discharge summaries, X-ray findings
 - **Gemini Vision** extracts medications, diagnoses, lab values, doctor names, dates
