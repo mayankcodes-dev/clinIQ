@@ -20,7 +20,7 @@ import {
   User, Mic, Hand, FileText, Clock, Activity,
   AlertTriangle, CheckCircle2, Leaf, Pill, FlaskConical,
   Building2, ScanLine, FileSearch, AlertCircle, Lock,
-  Printer, ChevronRight,
+  ChevronRight,
 } from "lucide-react";
 
 type SummaryStatus = "generating" | "ready";
@@ -252,6 +252,14 @@ export default function SummaryPage() {
     }
 
     await new Promise((r) => setTimeout(r, 400));
+
+    // Clear patient session data after successful submission so next patient starts fresh
+    [
+      "mk_history", "mk_touch", "mk_docs", "mk_consent",
+      "mk_patient", "mk_lang", "mk_mode", "mk_summary_submitted",
+      "cliniq_active_patient_session_v1",
+    ].forEach((k) => sessionStorage.removeItem(k));
+
     router.push("/report");
   }
 
@@ -628,23 +636,6 @@ export default function SummaryPage() {
             </p>
           )}
         </div>
-
-        <button
-          onClick={() => {
-            const esc = (s: string) => (s || "—").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const summaryText = !isMock
-              ? `Patient${patient.name ? ` ${patient.name}` : ""}${patientAge ? ` (${patientAge})` : ""} presents with ${(summary.chiefComplaint || "complaints").toLowerCase()}. ${summary.hpi && summary.hpi !== "—" ? summary.hpi + " " : ""}${summary.pastHistory && summary.pastHistory !== "—" ? `PMHx: ${summary.pastHistory}. ` : ""}${summary.drugAllergy && summary.drugAllergy !== "—" ? `Medications/Allergies: ${summary.drugAllergy}.` : ""}`
-              : "Voice history not recorded. Review document extracts above.";
-
-            const reportHTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>ClinIQ Clinical Record</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',-apple-system,sans-serif;font-size:12px;max-width:800px;margin:0 auto;padding:20px;color:#1e293b;line-height:1.5}.header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:16px 20px;border-radius:10px;margin-bottom:16px}.header h1{font-size:18px;font-weight:800}.section{border:1px solid #e5e7eb;border-radius:8px;margin:10px 0;overflow:hidden}.section-title{background:#f9fafb;padding:8px 12px;font-weight:700;font-size:11px;text-transform:uppercase;color:#374151;border-bottom:1px solid #e5e7eb}.section-body{padding:12px;font-size:12px}.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:10px;color:#6b7280;text-align:center}@media print{body{margin:0;padding:10px}}</style></head><body><div class="header"><h1>ClinIQ</h1><p>AI Clinical Intake Record &nbsp;·&nbsp; ${now}</p></div><div class="section"><div class="section-title">Patient</div><div class="section-body"><p>Name: ${esc(patient.name || "")} &nbsp; Age: ${patientAge || "—"} &nbsp; Language: ${lang.toUpperCase()}</p></div></div><div class="section"><div class="section-title">AI Generated Summary (For Physician)</div><div class="section-body"><p style="font-style:italic;color:#374151">${summaryText}</p></div></div><div class="footer"><p>DPDP 2023 Compliant · ABDM Compliant · Shared with treating physician only</p></div></body></html>`;
-
-            const win = window.open("", "_blank", "width=900,height=900");
-            if (win) { win.document.write(reportHTML); win.document.close(); win.onload = () => win.print(); }
-          }}
-          className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold py-3 rounded-2xl transition-colors flex items-center justify-center gap-2 shadow-sm"
-        >
-          <Printer size={16} /> रिपोर्ट सेव / प्रिंट करें · Save PDF / Print Report
-        </button>
 
       </KioskBody>
 

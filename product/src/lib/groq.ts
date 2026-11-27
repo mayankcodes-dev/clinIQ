@@ -69,13 +69,34 @@ export function getGroqClient(): Groq {
  * If the primary key fails (401, 429, 5xx), retries once with GROQ_API_KEY_2.
  * Falls back gracefully — callers never need to handle key rotation themselves.
  */
+/**
+ * Strips Qwen3 / other models' chain-of-thought thinking blocks.
+ * Models like qwen/qwen3.8-27b emit <think>...</think> before the answer.
+ * This helper removes those blocks so patients never see raw reasoning.
+ */
+function stripThinkingBlocks(text: string | null | undefined): string {
+  if (!text) return "";
+  return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+}
+
+/** Applies stripThinkingBlocks to every choice in a ChatCompletion in-place */
+function sanitizeCompletion(completion: Groq.Chat.ChatCompletion): Groq.Chat.ChatCompletion {
+  for (const choice of completion.choices) {
+    if (choice.message?.content) {
+      choice.message.content = stripThinkingBlocks(choice.message.content);
+    }
+  }
+  return completion;
+}
+
 export async function groqChatWithFallback(
   params: Omit<Parameters<Groq["chat"]["completions"]["create"]>[0], "stream"> & { stream?: false }
 ): Promise<Groq.Chat.ChatCompletion> {
   // Try primary
   try {
     const client = getPrimaryClient();
-    return await (client.chat.completions.create as any)(params);
+    const result = await (client.chat.completions.create as any)(params);
+    return sanitizeCompletion(result);
   } catch (primaryErr) {
     const isRetryable =
       primaryErr instanceof Groq.APIError &&
@@ -92,7 +113,8 @@ export async function groqChatWithFallback(
       );
       // Invalidate primary so next call re-checks env (key may rotate)
       _primary = null;
-      return await (secondary.chat.completions.create as any)(params);
+      const fallbackResult = await (secondary.chat.completions.create as any)(params);
+      return sanitizeCompletion(fallbackResult);
     }
 
     throw primaryErr;
