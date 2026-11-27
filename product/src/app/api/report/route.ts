@@ -58,6 +58,31 @@ function getChiefComplaintEnglish(
     || optionalText(chiefComplaintTurn.questionLocalized);
 }
 
+async function callGeminiForReport(prompt: string): Promise<string | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        signal: AbortSignal.timeout(25_000),
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 3_000, responseMimeType: "application/json" },
+        }),
+      }
+    );
+    if (!res.ok) return null;
+    const data = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
@@ -218,19 +243,27 @@ ${JSON.stringify(interviewTurns).slice(0, 18_000)}
 SCANNED OCR DOCUMENTS:
 ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
 
-    const completion = await groqChatWithFallback({
-      model: CLINIQ_MODELS.INTERVIEW_FAST,
-      temperature: 0.1,
-      response_format: { type: "json_object" },
-      max_tokens: 3_000,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: sourcePrompt },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content;
-    if (typeof raw !== "string" || !raw.trim()) {
+    let raw: string;
+    try {
+      const completion = await groqChatWithFallback({
+        model: CLINIQ_MODELS.INTERVIEW_FAST,
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+        max_tokens: 3_000,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: sourcePrompt },
+        ],
+      });
+      raw = completion.choices[0]?.message?.content ?? "";
+      if (!raw.trim()) throw new Error("EMPTY_RESPONSE");
+    } catch {
+      // Groq failed — fall back to Gemini REST
+      const geminiRaw = await callGeminiForReport(systemPrompt + "\n\nUSER:\n" + sourcePrompt);
+      if (!geminiRaw) throw new Error("REPORT_GENERATION_FAILED");
+      raw = geminiRaw;
+    }
+    if (!raw.trim()) {
       throw new Error("REPORT_GENERATION_FAILED");
     }
 

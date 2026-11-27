@@ -15,17 +15,17 @@ import { SessionStore } from "@/lib/sessionStore";
 
 // ── Localised labels ──────────────────────────────────────────────────────────
 const L = {
-  en: { title: "About You", sub: "Basic information", name: "Full Name", namePh: "e.g. Ravi Kumar", age: "Age (years)", agePh: "e.g. 42", sex: "Sex", male: "Male", female: "Female", other: "Other", cont: "Continue →", skip: "Skip" },
-  hi: { title: "आपके बारे में", sub: "बुनियादी जानकारी", name: "पूरा नाम", namePh: "जैसे रवि कुमार", age: "उम्र (वर्ष)", agePh: "जैसे 42", sex: "लिंग", male: "पुरुष", female: "महिला", other: "अन्य", cont: "आगे बढ़ें →", skip: "छोड़ें" },
-  bn: { title: "আপনার সম্পর্কে", sub: "মৌলিক তথ্য", name: "পুরো নাম", namePh: "যেমন রবি কুমার", age: "বয়স (বছর)", agePh: "যেমন 42", sex: "লিঙ্গ", male: "পুরুষ", female: "মহিলা", other: "অন্যান্য", cont: "এগিয়ে যান →", skip: "এড়িয়ে যান" },
-  ta: { title: "உங்களைப் பற்றி", sub: "அடிப்படை தகவல்", name: "முழு பெயர்", namePh: "எ.கா. ரவி குமார்", age: "வயது (ஆண்டுகள்)", agePh: "எ.கா. 42", sex: "பாலினம்", male: "ஆண்", female: "பெண்", other: "மற்றவை", cont: "தொடரவும் →", skip: "தவிர்" },
-  te: { title: "మీ గురించి", sub: "ప్రాథమిక సమాచారం", name: "పూర్తి పేరు", namePh: "ఉదా. రవి కుమార్", age: "వయసు (సంవత్సరాలు)", agePh: "ఉదా. 42", sex: "లింగం", male: "పురుషుడు", female: "మహిళ", other: "ఇతర", cont: "కొనసాగించు →", skip: "దాటవేయి" },
-  mr: { title: "तुमच्याबद्दल", sub: "मूलभूत माहिती", name: "पूर्ण नाव", namePh: "उदा. रवि कुमार", age: "वय (वर्षे)", agePh: "उदा. 42", sex: "लिंग", male: "पुरुष", female: "स्त्री", other: "इतर", cont: "पुढे जा →", skip: "वगळा" },
-  gu: { title: "તમારા વિશે", sub: "મૂળભૂત માહિતી", name: "પૂરું નામ", namePh: "ઉ.દા. રવિ કુમાર", age: "ઉંમર (વર્ષ)", agePh: "ઉ.દા. 42", sex: "જાતિ", male: "પુરુષ", female: "સ્ત્રી", other: "અન્ય", cont: "આગળ વધો →", skip: "છોડો" },
-  kn: { title: "ನಿಮ್ಮ ಬಗ್ಗೆ", sub: "ಮೂಲ ಮಾಹಿತಿ", name: "ಪೂರ್ಣ ಹೆಸರು", namePh: "ಉದಾ. ರವಿ ಕುಮಾರ್", age: "ವಯಸ್ಸು (ವರ್ಷ)", agePh: "ಉದಾ. 42", sex: "ಲಿಂಗ", male: "ಪುರುಷ", female: "ಮಹಿಳೆ", other: "ಇತರ", cont: "ಮುಂದುವರಿಸಿ →", skip: "ಬಿಡಿ" },
-  ml: { title: "നിങ്ങളെ കുറിച്ച്", sub: "അടിസ്ഥാന വിവരം", name: "മുഴുവൻ പേര്", namePh: "ഉദാ. രവി കുമാർ", age: "പ്രായം (വർഷം)", agePh: "ഉദാ. 42", sex: "ലിംഗം", male: "പുരുഷൻ", female: "സ്ത്രീ", other: "മറ്റുള്ളവ", cont: "തുടരുക →", skip: "ഒഴിവാക്കുക" },
-  pa: { title: "ਤੁਹਾਡੇ ਬਾਰੇ", sub: "ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ", name: "ਪੂਰਾ ਨਾਮ", namePh: "ਜਿਵੇਂ ਰਵੀ ਕੁਮਾਰ", age: "ਉਮਰ (ਸਾਲ)", agePh: "ਜਿਵੇਂ 42", sex: "ਲਿੰਗ", male: "ਪੁਰਸ਼", female: "ਇਸਤਰੀ", other: "ਹੋਰ", cont: "ਅੱਗੇ ਵਧੋ →", skip: "ਛੱਡੋ" },
-  ur: { title: "آپ کے بارے میں", sub: "بنیادی معلومات", name: "پورا نام", namePh: "مثلاً رavi کمار", age: "عمر (سال)", agePh: "مثلاً 42", sex: "جنس", male: "مرد", female: "عورت", other: "دیگر", cont: "آگے بڑھیں →", skip: "چھوڑیں" },
+  en: { title: "About You", sub: "Basic information", name: "Full Name", namePh: "e.g. Ravi Kumar", age: "Age (years)", agePh: "e.g. 42", sex: "Sex", male: "Male", female: "Female", other: "Other", cont: "Continue →" },
+  hi: { title: "आपके बारे में", sub: "बुनियादी जानकारी", name: "पूरा नाम", namePh: "जैसे रवि कुमार", age: "उम्र (वर्ष)", agePh: "जैसे 42", sex: "लिंग", male: "पुरुष", female: "महिला", other: "अन्य", cont: "आगे बढ़ें →" },
+  bn: { title: "আপনার সম্পর্কে", sub: "মৌলিক তথ্য", name: "পুরো নাম", namePh: "যেমন রবি কুমার", age: "বয়স (বছর)", agePh: "যেমন 42", sex: "লিঙ্গ", male: "পুরুষ", female: "মহিলা", other: "অন্যান্য", cont: "এগিয়ে যান →" },
+  ta: { title: "உங்களைப் பற்றி", sub: "அடிப்படை தகவல்", name: "முழு பெயர்", namePh: "எ.கா. ரவி குமார்", age: "வயது (ஆண்டுகள்)", agePh: "எ.கா. 42", sex: "பாலினம்", male: "ஆண்", female: "பெண்", other: "மற்றவை", cont: "தொடரவும் →" },
+  te: { title: "మీ గురించి", sub: "ప్రాథమిక సమాచారం", name: "పూర్తి పేరు", namePh: "ఉదా. రవి కుమార్", age: "వయసు (సంవత్సరాలు)", agePh: "ఉదా. 42", sex: "లింగం", male: "పురుషుడు", female: "మహిళ", other: "ఇతర", cont: "కొనసాగించు →" },
+  mr: { title: "तुमच्याबद्दल", sub: "मूलभूत माहिती", name: "पूर्ण नाव", namePh: "उदा. रवि कुमार", age: "वय (वर्षे)", agePh: "उदा. 42", sex: "लिंग", male: "पुरुष", female: "स्त्री", other: "इतर", cont: "पुढे जा →" },
+  gu: { title: "તમારા વિશે", sub: "મૂળભૂત માહિતી", name: "પૂરું નામ", namePh: "ઉ.દા. રવિ કુમાર", age: "ઉંમર (વર્ષ)", agePh: "ઉ.દા. 42", sex: "જાતિ", male: "પુરુષ", female: "સ્ત્રી", other: "અન્ય", cont: "આગળ વધો →" },
+  kn: { title: "ನಿಮ್ಮ ಬಗ್ಗೆ", sub: "ಮೂಲ ಮಾಹಿತಿ", name: "ಪೂರ್ಣ ಹೆಸರು", namePh: "ಉದಾ. ರವಿ ಕುಮಾರ್", age: "ವಯಸ್ಸು (ವರ್ಷ)", agePh: "ಉದಾ. 42", sex: "ಲಿಂಗ", male: "ಪುರುಷ", female: "ಮಹಿಳೆ", other: "ಇತರ", cont: "ಮುಂದುವರಿಸಿ →" },
+  ml: { title: "നിങ്ങളെ കുറിച്ച്", sub: "അടിസ്ഥാന വിവരം", name: "മുഴുവൻ പേര്", namePh: "ഉദാ. രവി കുമാർ", age: "പ്രായം (വർഷം)", agePh: "ഉദാ. 42", sex: "ലിംഗം", male: "പുരുഷൻ", female: "സ്ത്രീ", other: "മറ്റുള്ളവ", cont: "തുടരുക →" },
+  pa: { title: "ਤੁਹਾਡੇ ਬਾਰੇ", sub: "ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ", name: "ਪੂਰਾ ਨਾਮ", namePh: "ਜਿਵੇਂ ਰਵੀ ਕੁਮਾਰ", age: "ਉਮਰ (ਸਾਲ)", agePh: "ਜਿਵੇਂ 42", sex: "ਲਿੰਗ", male: "ਪੁਰਸ਼", female: "ਇਸਤਰੀ", other: "ਹੋਰ", cont: "ਅੱਗੇ ਵਧੋ →" },
+  ur: { title: "آپ کے بارے میں", sub: "بنیادی معلومات", name: "پورا نام", namePh: "مثلاً رavi کمار", age: "عمر (سال)", agePh: "مثلاً 42", sex: "جنس", male: "مرد", female: "عورت", other: "دیگر", cont: "آگے بڑھیں →" },
 };
 
 type Sex = "male" | "female" | "other" | "";
@@ -49,13 +49,14 @@ export default function IntakePage() {
   }, []);
 
   const lc = L[lang as keyof typeof L] ?? L.hi;
+  // Name, age, and sex are required — no optional skip
   const canContinue = name.trim().length >= 2 && age.trim() && sex;
 
-  function handleContinue(skip = false) {
-    const patient = skip ? {} : {
-      name: name.trim() || null,
-      gender: sex || null,
-      age: age.trim() || null,
+  function handleContinue() {
+    const patient = {
+      name: name.trim(),
+      gender: sex,
+      age: age.trim(),
       yearOfBirth: age.trim() ? String(new Date().getFullYear() - parseInt(age)) : null,
     };
     sessionStorage.setItem("mk_patient", JSON.stringify(patient));
@@ -150,28 +151,20 @@ export default function IntakePage() {
         </motion.div>
 
         {/* Mandatory notice */}
-        <p className="text-xs text-neutral-400 text-center pt-1">
-          Name · Age · Sex are needed for the doctor&apos;s record.
+        <p className="text-xs text-red-500 text-center pt-1 font-medium">
+          Name, Age, and Sex are required for your medical record.
         </p>
       </KioskBody>
 
-      <KioskFooter className="space-y-2">
+      <KioskFooter>
         <Button
           variant="primary"
           size="xl"
           fullWidth
           disabled={!canContinue}
-          onClick={() => handleContinue(false)}
+          onClick={() => handleContinue()}
         >
           {lc.cont}
-        </Button>
-        <Button
-          variant="ghost"
-          size="lg"
-          fullWidth
-          onClick={() => handleContinue(true)}
-        >
-          {lc.skip}
         </Button>
       </KioskFooter>
     </KioskScreen>

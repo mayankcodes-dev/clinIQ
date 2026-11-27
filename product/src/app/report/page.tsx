@@ -380,8 +380,8 @@ export default function ReportPage() {
               </p>
             </>
           )}
-          <Button onClick={() => router.push("/patient/summary")}>
-            Return to summary
+          <Button onClick={() => router.push(tokenNumber ? "/patient/complete" : "/patient/summary")}>
+            {tokenNumber ? "Complete — Proceed to Doctor" : "Return to summary"}
           </Button>
         </KioskBody>
       </KioskScreen>
@@ -500,10 +500,6 @@ export default function ReportPage() {
                   minute: "2-digit",
                 })}
               </span>
-              <br />
-              <span>Author: ClinIQ AI — Multilingual Clinical History System</span>
-              <br />
-              <span>Language: {language.toUpperCase()}</span>
             </div>
           </div>
 
