@@ -21,7 +21,7 @@ let _primary: Groq | null = null;
 let _secondary: Groq | null = null;
 
 function makeClient(key: string): Groq {
-  return new Groq({ apiKey: key, timeout: 15_000, maxRetries: 2 });
+  return new Groq({ apiKey: key, timeout: 45_000, maxRetries: 1 });
 }
 
 function getPrimaryClient(): Groq {

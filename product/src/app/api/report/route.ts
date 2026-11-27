@@ -68,10 +68,10 @@ async function callGeminiForReport(prompt: string): Promise<string | null> {
       {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        signal: AbortSignal.timeout(25_000),
+        signal: AbortSignal.timeout(55_000),
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 3_000, responseMimeType: "application/json" },
+          generationConfig: { temperature: 0.1, maxOutputTokens: 8_000, responseMimeType: "application/json" },
         }),
       }
     );
@@ -238,10 +238,10 @@ Return JSON only with exactly this shape:
 ${JSON.stringify(patientDetails)}
 
 INTERVIEW TURNS:
-${JSON.stringify(interviewTurns).slice(0, 18_000)}
+${JSON.stringify(interviewTurns).slice(0, 10_000)}
 
 SCANNED OCR DOCUMENTS:
-${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
+${JSON.stringify(scannedDocuments).slice(0, 15_000)}`;
 
     let raw: string;
     try {
@@ -249,7 +249,7 @@ ${JSON.stringify(scannedDocuments).slice(0, 30_000)}`;
         model: CLINIQ_MODELS.INTERVIEW_FAST,
         temperature: 0.1,
         response_format: { type: "json_object" },
-        max_tokens: 3_000,
+        max_tokens: 4_096,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: sourcePrompt },
