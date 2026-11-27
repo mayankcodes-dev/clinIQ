@@ -238,7 +238,7 @@ export default function ConsentPage() {
         ))}
 
         <p className="text-xs text-neutral-400 text-center pt-1">
-          {t(lang, "aadhaarNeverStored")} · You can withdraw consent at any time.
+          You can withdraw consent at any time.
         </p>
       </KioskBody>
 

@@ -9,7 +9,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.3-black?logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-38BDF8?logo=tailwindcss)](https://tailwindcss.com)
-[![Groq](https://img.shields.io/badge/Groq-LLaMA_3.1-orange)](https://groq.com)
+[![Groq](https://img.shields.io/badge/Groq-Qwen3_8B-orange)](https://groq.com)
 [![Neon](https://img.shields.io/badge/Neon-Postgres-00E5BF?logo=postgresql)](https://neon.tech)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -25,29 +25,32 @@
 
 ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital and clinic reception desks. In under 4 minutes, it:
 
-1. Greets the patient in their chosen language (11 Indian languages + English)
+1. Greets the patient in their chosen language (**23 UI languages** — 12 Tier 1 + 11 Tier 2 Indian languages)
 2. Conducts a structured clinical interview using voice TTS — no typing required
 3. Accepts uploaded prescriptions, lab reports, and discharge summaries via camera OCR
 4. Generates a physician-grade **History & Physical (H&P)** document in medical English
-5. Optionally pushes to a **live token queue** (pipeline — `/clinic/dashboard`)
-6. Sends the full H&P via **WhatsApp** for teleconsultation or mobile review
+5. Pushes to a **live token queue** visible on the doctor dashboard (`/doctor`)
+6. Shares the full H&P via **WhatsApp as a PDF** for teleconsultation or mobile review
 
 ---
 
 ## Features
 
-### 🗣️ Voice-First, 11-Language Interview
-- Full intake conducted via text-to-speech across **Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and English**
-- Powered by **Bhashini Dhruva** (government-grade ASR/TTS) with ElevenLabs as premium voice fallback
+### 🗣️ Voice-First, 23-Language Interview
+- Full intake conducted via text-to-speech across **23 UI languages**:
+  - **Tier 1 (12):** Hindi · English · Bengali · Tamil · Telugu · Marathi · Gujarati · Kannada · Malayalam · Punjabi · Odia · Assamese
+  - **Tier 2 (11):** Urdu · Sanskrit · Maithili · Nepali · Konkani · Dogri · Manipuri · Bodo · Santali · Kashmiri · Sindhi
+- **Voice (ASR + TTS):** Bhashini Dhruva covers all 22 official Indian scheduled languages; ElevenLabs used for first-attempt premium voice (auto-falls back to Bhashini on 402)
 - Quick-tap chip answers for semi-literate patients — no typing, no spelling
 
 ### 🧠 Adaptive AI Interview Engine
-- Groq LLaMA 3.1 drives a 7-stage structured clinical interview:  
-  `Chief Complaint → HPI → Past History → Drug & Allergy → Family History → Personal History → Review of Systems`
-- **AYUSH mode** extends the interview with full Dashavidha Pariksha — Prakriti, Vikriti, Agni, Koshtha, Ahara-Vihara, Nidana, and 10 more Ayurvedic parameters
+- **`qwen/qwen3.8-27b`** on Groq drives a 14-stage structured clinical interview with automatic fallback to `openai/gpt-oss-20b` on any key/model error
+- Qwen3 chain-of-thought `<think>` blocks are **stripped before returning** — patients never see internal reasoning
+- Dual Groq key failover (`GROQ_API_KEY` → `GROQ_API_KEY_2`) + Gemini 2.5 Flash as final fallback
+- Interview stages: `chief_complaint → hpi → onset_duration → severity_character → associated_symptoms → past_medical_history → medications → allergies → family_disease_history → personal_social_history → review_of_systems → ayush_assessment → red_flag_check → closing`
+- **AYUSH mode** extends the interview with Dashavidha Pariksha — Prakriti, Vikriti, Agni, Koshtha, and Ayurvedic parameters
 - Questions are dynamically generated from prior answers — not a rigid script
-- **flight-shield SingleFlight** deduplicates concurrent LLM calls per session, preventing thundering-herd on rapid taps
-- Deterministic fallback for every stage — kiosk **never shows a blank screen**
+- Deterministic INSTANT fallback questions in 13 languages — kiosk **never shows a blank screen**
 
 ### 📄 Physician-Grade H&P Report
 - Gemini 2.5 Flash + Groq LLaMA jointly produce a **single-page, Georgia-serif H&P** in professional medical English:
@@ -58,10 +61,19 @@ ClinIQ is a **pre-consultation intake platform** deployed as a kiosk at hospital
 - One-click **Print / Save as PDF**
 
 ### 💬 WhatsApp Share
-- Full H&P pre-formatted as a WhatsApp message — bold headers, structured sections
-- One tap opens WhatsApp Web / app with the report pre-filled
+- WhatsApp button on `/patient/complete` triggers a **full PDF print dialog** — patient or staff save the structured H&P as PDF
+- On desktop the PDF is generated from the full report HTML; on mobile the Web Share API opens the PDF
 - Enables instant teleconsultation referral and mobile review by the doctor
-- Works on both desktop (WhatsApp Web) and mobile (native app deep-link)
+
+### ❌ Removed Features
+| Feature | Reason |
+|---------|--------|
+| Privacy / गोपनीयता section on summary page | Redundant — consent captured at `/patient/consent` |
+| "Encrypted · Shared only with treating doctor" text | Covered by DPDP consent footer |
+| Print/Save PDF button on `/report` page | PDF only on `/patient/complete` to avoid confusion |
+| Print/Save PDF button on `/patient/summary` page | Single save-point policy |
+| "SIH 2026 PS 26047" in report footer | Hackathon reference removed for production |
+| "Your Aadhaar is never stored" on consent page | No Aadhaar collected; line was misleading |
 
 ### 📸 OCR Document Scan
 - Patient uploads previous prescriptions, lab reports, discharge summaries, X-ray findings
@@ -165,17 +177,17 @@ cliniq/
 | **Language** | TypeScript 5 (strict) | End-to-end type safety across API ↔ client |
 | **Styling** | Tailwind CSS 4 + CVA | CSS-first config, variant-aware component primitives |
 | **LLM — Interview** | Groq LLaMA 3.1 70B | Sub-200ms inference for real-time question generation |
-| **LLM — H&P Report** | Groq LLaMA 3.1 70B + Gemini 2.5 Flash | Dual-model for reliability; Gemini fallback |
+| **LLM — Interview** | Groq `qwen/qwen3.8-27b` + `openai/gpt-oss-20b` fallback | Dual-key + dual-model failover; `<think>` blocks stripped |
+| **LLM — H&P Report** | Groq `qwen/qwen3.8-27b` + Gemini 2.5 Flash fallback | Dual-model for reliability; 55s timeout on Gemini |
 | **LLM — Vision OCR** | Gemini 2.5 Flash Vision | Multi-page prescription + lab report extraction |
-| **TTS** | Bhashini Dhruva API | Govt-certified Indian language TTS (11 languages) |
-| **TTS Fallback** | ElevenLabs | Premium voice for English and high-fidelity fallback |
-| **Database** | Neon Postgres (serverless) | HTTP driver — works on Cloudflare Pages edge runtime |
+| **TTS** | Bhashini Dhruva API | 22 Indian scheduled languages |
+| **TTS Fallback** | ElevenLabs | Premium voice; auto-falls back to Bhashini on 402 |
+| **Database** | Neon Postgres (serverless) | HTTP driver — works on Cloudflare Workers edge runtime |
 | **ORM** | Drizzle ORM | Type-safe SQL, zero-overhead, edge-compatible |
-| **Request Dedup** | flight-shield (SingleFlight) | Prevents thundering-herd on concurrent LLM calls |
-| **RAG** | Hybrid BM25 + cosine similarity | Indian clinical protocol grounding, local knowledge base |
+| **RAG** | Bundled BM25 + cosine similarity | 21 Indian clinical protocol entries, no runtime vector DB |
 | **Auth** | HMAC-SHA256 session tokens | Doctor PIN hashed; no JWT library dependency |
-| **Testing** | Vitest 3 | 33 unit + integration tests (summary, queue, OCR, analytics) |
-| **Deployment** | Cloudflare Pages + OpenNext | Edge runtime, global CDN, zero cold-start |
+| **Testing** | Vitest 3 | 35 unit + integration tests (8 files) |
+| **Deployment** | Cloudflare Workers + OpenNext | Edge runtime, global CDN, zero cold-start |
 
 ---
 
@@ -183,18 +195,17 @@ cliniq/
 
 ```mermaid
 flowchart TD
-    A["🏥 Patient arrives at OPD"] --> B["Select Language\n(11 Indian languages)"]
-    B --> C["DPDP Consent Gate"]
-    C --> D["Choose OPD Type\nGeneral / AYUSH"]
-    D --> E["AI Interview\nVoice + Touch Chips\n7 clinical stages"]
-    E --> F{"Upload Documents?\n(optional)"}
-    F -- Yes --> G["OCR Scan\nGemini Vision extracts\nRx · Labs · Discharge"]
-    F -- No --> H["Summary Review\nPatient confirms answers"]
-    G --> H
-    H --> I["H&P Report Generation\nGroq + Gemini\nPhysician-grade English"]
-    I --> J["WhatsApp Share\nOne-tap pre-filled message"]
-    I --> K["Token Queue\nNeon Postgres\nDoctor Dashboard"]
-    K --> L["Doctor sees live queue\n/clinic/dashboard\nName · Complaint · ICD-10 · Wait"]
+    A["🏥 Patient arrives at OPD"] --> B["Select Language\n(23 UI languages)"]
+    B --> C["Login\n(Anonymous / Mobile OTP)"]
+    C --> D["DPDP Consent Gate\n(/patient/consent)"]
+    D --> E["Choose OPD Type\nGeneral / AYUSH\n(/patient/opd-select)"]
+    E --> F["AI Interview\nVoice + Touch Chips\n14 clinical stages\n(/patient/history)"]
+    F --> G{"Upload Documents?\n(optional)\n(/patient/scan)"}
+    G -- Yes --> H["OCR Scan\nGemini Vision extracts\nRx · Labs · Discharge"]
+    G -- No --> I["Summary Review\n(/patient/summary)"]
+    H --> I
+    I --> J["Full H&P Report\n(/report)\nPhysician-grade English"]
+    J --> K["Token Queue\n(/patient/complete)\nDoctor Dashboard → /doctor"]
 ```
 
 Each step stores state in `sessionStorage` via `SessionStore` — no server round-trips until report generation. The doctor dashboard updates in real-time from Neon Postgres.

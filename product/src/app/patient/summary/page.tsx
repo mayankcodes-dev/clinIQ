@@ -252,14 +252,8 @@ export default function SummaryPage() {
     }
 
     await new Promise((r) => setTimeout(r, 400));
-
-    // Clear patient session data after successful submission so next patient starts fresh
-    [
-      "mk_history", "mk_touch", "mk_docs", "mk_consent",
-      "mk_patient", "mk_lang", "mk_mode", "mk_summary_submitted",
-      "cliniq_active_patient_session_v1",
-    ].forEach((k) => sessionStorage.removeItem(k));
-
+    // NOTE: session is intentionally NOT cleared here — /report page reads it to render the report.
+    // Session is cleared in /patient/complete after queue submission succeeds.
     router.push("/report");
   }
 

@@ -97,8 +97,14 @@ export default function CompletePage() {
       const data = await res.json();
       if (data.success) {
         setTokenInfo(data);
-        // Save token to session
+        // Save token before clearing other session keys
         sessionStorage.setItem("mk_token", JSON.stringify(data));
+        // Clear patient session so next patient starts fresh
+        [
+          "mk_history", "mk_touch", "mk_docs", "mk_consent",
+          "mk_patient", "mk_lang", "mk_mode", "mk_summary_submitted",
+          "cliniq_active_patient_session_v1",
+        ].forEach((k) => sessionStorage.removeItem(k));
       } else {
         setError("Could not join queue. Please see staff.");
       }
