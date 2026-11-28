@@ -1,11 +1,13 @@
-@import "tailwindcss";
-
 /* ── Indic script web fonts ──────────────────────────────────────────────────
    next/font only supports a subset of Noto Sans scripts. These @imports cover
    the remaining Indian language scripts that are outside its type definitions:
+   Bengali (bn/as/mni), Tamil (ta), Telugu (te), Gujarati (gu),
    Kannada (kn), Malayalam (ml), Gurmukhi/Punjabi (pa), Odia (or), Arabic (ur/ks/sd)
-   All use display=swap so text is never invisible while fonts load. */
+   All use display=swap so text is never invisible while fonts load.
+   NOTE: @import url() must precede @import "tailwindcss" per CSS spec. */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
 
 /* ─── Design Tokens ──────────────────────────────────────────── */
 @theme {
