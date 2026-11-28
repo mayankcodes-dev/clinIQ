@@ -638,7 +638,7 @@ export default function SummaryPage() {
           {submitted ? "Submitting…" : (
             <span className="flex items-center gap-2">
               <ChevronRight size={18} />
-              {t(lang, "submitToDoctor")}
+              {t(lang, "generateReport")}
             </span>
           )}
         </Button>

@@ -335,6 +335,18 @@ export default function ReportPage() {
     };
   }, []);
 
+  // Capture the rendered H&P HTML so /patient/complete can print it as PDF
+  useEffect(() => {
+    if (status !== "ready") return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById("hp-report");
+      if (el) {
+        sessionStorage.setItem("mk_report_html", el.outerHTML);
+      }
+    }, 600); // small delay to let React finish painting the report
+    return () => clearTimeout(timer);
+  }, [status]);
+
   if (status === "loading") return <LoadingReport />;
 
   if (status === "empty") {
