@@ -5,7 +5,7 @@
    the remaining Indian language scripts that are outside its type definitions:
    Kannada (kn), Malayalam (ml), Gurmukhi/Punjabi (pa), Odia (or), Arabic (ur/ks/sd)
    All use display=swap so text is never invisible while fonts load. */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap");
 
 /* ─── Design Tokens ──────────────────────────────────────────── */
 @theme {
@@ -56,10 +56,13 @@
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
 
-  /* Typography */
-  --font-sans: var(--font-inter), var(--font-noto),
-    "Noto Sans Kannada", "Noto Sans Malayalam", "Noto Sans Gurmukhi",
-    "Noto Sans Oriya", "Noto Naskh Arabic",
+  /* Typography — var(--font-noto-dev) is injected by next/font in layout.tsx
+     and covers Devanagari (hi, mr, ne, sa, doi, mai, kok). The named families
+     cover the remaining Indian scripts loaded via Google Fonts @import above. */
+  --font-sans: var(--font-inter), var(--font-noto-dev),
+    "Noto Sans Bengali", "Noto Sans Tamil", "Noto Sans Telugu",
+    "Noto Sans Gujarati", "Noto Sans Kannada", "Noto Sans Malayalam",
+    "Noto Sans Gurmukhi", "Noto Sans Oriya", "Noto Naskh Arabic",
     system-ui, sans-serif;
 
   /* Radii */
