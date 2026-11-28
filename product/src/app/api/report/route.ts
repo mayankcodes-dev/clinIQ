@@ -146,6 +146,15 @@ function normalizeReport(
 }
 
 export async function POST(req: NextRequest) {
+  // Guard: both LLM keys absent → 503 so the UI can show a friendly message
+  // instead of an unhandled internal error. If even one key is set we proceed.
+  if (!process.env.GROQ_API_KEY && !process.env.GEMINI_API_KEY) {
+    return NextResponse.json(
+      { error: "Report generation is unavailable: no AI API key is configured. Set GROQ_API_KEY or GEMINI_API_KEY." },
+      { status: 503 }
+    );
+  }
+
   try {
     const body = (await req.json()) as ReportRequest;
     const interviewTurns = Array.isArray(body.interviewTurns) ? body.interviewTurns : [];

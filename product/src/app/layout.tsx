@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   ),
   title: "ClinIQ — AI Clinical History Kiosk",
   description:
-    "AI-powered multilingual clinical history-taking kiosk for Indian hospitals and AYUSH clinics. Speaks 13 Indian languages. PS 26047 | Ministry of AYUSH | SIH 2026",
+    "AI-powered multilingual clinical history-taking kiosk for Indian hospitals. Supports 23 Indian languages. PS 26047 | SIH 2026",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
     title: "ClinIQ",
   },
   keywords: [
-    "ClinIQ", "ABHA", "ABDM", "clinical history",
-    "AYUSH", "multilingual healthcare", "SIH 2026",
-    "Bhashini", "voice kiosk",
+    "ClinIQ", "clinical history", "AI kiosk",
+    "multilingual healthcare", "SIH 2026", "23 Indian languages",
+    "voice kiosk", "pre-consultation", "Bhashini",
   ],
   openGraph: {
     title: "ClinIQ — AI Clinical History Kiosk",
