@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* ── Indic script web fonts ──────────────────────────────────────────────────
+   next/font only supports a subset of Noto Sans scripts. These @imports cover
+   the remaining Indian language scripts that are outside its type definitions:
+   Kannada (kn), Malayalam (ml), Gurmukhi/Punjabi (pa), Odia (or), Arabic (ur/ks/sd)
+   All use display=swap so text is never invisible while fonts load. */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap");
+
 /* ─── Design Tokens ──────────────────────────────────────────── */
 @theme {
   /* Primary — Navy */
@@ -50,7 +57,10 @@
   --color-neutral-900: #111827;
 
   /* Typography */
-  --font-sans: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-noto),
+    "Noto Sans Kannada", "Noto Sans Malayalam", "Noto Sans Gurmukhi",
+    "Noto Sans Oriya", "Noto Naskh Arabic",
+    system-ui, sans-serif;
 
   /* Radii */
   --radius-sm:  0.5rem;

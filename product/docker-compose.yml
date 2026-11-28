@@ -1,50 +1,45 @@
 version: "3.9"
-# MediKiosk — Docker Compose for local self-hosting.
-# Production deployment is Cloudflare Pages (see .ai/CLOUDFLARE_ENV.md).
-# Redis removed — the app does NOT use Redis. All persistence is via Neon Postgres.
+# ClinIQ — Docker Compose for local self-hosting.
+# Production deployment is Cloudflare Workers (npm run deploy).
+#
+# Quick start:
+#   1. cp .env.example .env   (then fill in keys — all optional for basic demo)
+#   2. docker compose up
+#   3. Open http://localhost:3000
+#
+# The app starts and shows its main screen without any API keys.
+# AI features degrade gracefully when keys are absent:
+#   - No GROQ_API_KEY     → deterministic fallback questions served
+#   - No GEMINI_API_KEY   → keyword RAG (no embeddings), no document OCR
+#   - No ELEVENLABS_*     → Bhashini TTS / browser speech synthesis used
+#   - No DATABASE_URL     → queue & doctor dashboard disabled; interview works
 
 services:
-  web:
+  cliniq:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: cliniq
     ports:
       - "3000:3000"
+    env_file:
+      - path: .env
+        required: false         # app starts without .env — all keys are optional
     environment:
       - NODE_ENV=production
-      # ── Required ───────────────────────────────────────────────
-      - DATABASE_URL=${DATABASE_URL}                             # Neon Postgres connection string
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}                       # min 32-char random string
-      - DOCTOR_PIN=${DOCTOR_PIN}                                 # 6+ digit PIN for doctor dashboard
-      # ── Bhashini TTS/ASR (optional — voice features degrade gracefully)
-      - BHASHINI_USER_ID=${BHASHINI_USER_ID:-}
-      - BHASHINI_API_KEY=${BHASHINI_API_KEY:-}
-      # ── Twilio SMS (optional — 0000 bypass works in dev/demo)
-      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
-      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER:-}
-      # ── ABDM (optional — mock adapter used when not set)
-      - ABDM_CLIENT_ID=${ABDM_CLIENT_ID:-}
-      - ABDM_CLIENT_SECRET=${ABDM_CLIENT_SECRET:-}
-      - ABDM_BASE_URL=${ABDM_BASE_URL:-https://dev.abdm.gov.in}
-      - ABDM_ENV=${ABDM_ENV:-dev}
-      - ABDM_FACILITY_ID=${ABDM_FACILITY_ID:-}
-      # ── App public URL — used for ABDM callbacks and OG tags
-      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://app.medikiosk.mayankcodes.dev}
-      # ── RAG ingest protection
-      - INGEST_SECRET=${INGEST_SECRET:-}
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_APP_VERSION=1.0.0
+      - GEMINI_MODEL=gemini-2.5-flash
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
     restart: unless-stopped
     networks:
-      - medikiosk
+      - cliniq-net
 
 networks:
-  medikiosk:
+  cliniq-net:
     driver: bridge
-
